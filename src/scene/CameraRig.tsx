@@ -15,11 +15,21 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 // Google-Maps-style controls: drag to pan, wheel/pinch to zoom, drag-rotate to
 // orbit/tilt within limits. Double-click eases the camera back to the opening
 // aerial. Panning is clamped so you can't drift off the city.
-export function CameraRig() {
+export interface FocusTarget {
+  x: number
+  z: number
+  nonce: number
+}
+
+export function CameraRig({ focus }: { focus: FocusTarget | null }) {
   const ref = useRef<ElementRef<typeof MapControls>>(null)
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
   const recentering = useRef(false)
+  const flying = useRef(false)
+  const flyTarget = useRef(new Vector3())
+  const flyPos = useRef(new Vector3())
+  const lastNonce = useRef(0)
 
   useEffect(() => {
     const el = gl.domElement
@@ -34,6 +44,30 @@ export function CameraRig() {
   useFrame((_, dt) => {
     const c = ref.current
     if (!c) return
+
+    // Fly-to a searched/recommended place (preserve viewing angle).
+    if (focus && focus.nonce !== lastNonce.current) {
+      lastNonce.current = focus.nonce
+      flying.current = true
+      flyTarget.current.set(focus.x, 0, focus.z)
+      const dir = camera.position.clone().sub(c.target)
+      dir.y = Math.max(dir.y, 34)
+      dir.setLength(96)
+      flyPos.current.copy(flyTarget.current).add(dir)
+      c.enabled = false
+    }
+
+    if (flying.current) {
+      easing.damp3(camera.position, flyPos.current, 0.3, dt)
+      easing.damp3(c.target, flyTarget.current, 0.3, dt)
+      c.update()
+      if (camera.position.distanceTo(flyPos.current) < 0.8) {
+        flying.current = false
+        c.enabled = true
+      }
+      return
+    }
+
     if (recentering.current) {
       easing.damp3(camera.position, DEFAULT_CAMERA_POS, 0.28, dt)
       easing.damp3(c.target, ORIGIN, 0.28, dt)

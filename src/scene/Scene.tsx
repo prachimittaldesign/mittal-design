@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Loader } from '@react-three/drei'
-import { CameraRig, DEFAULT_CAMERA_TUPLE } from './CameraRig'
+import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
 import { CityWorld } from './CityWorld'
 import { Hero } from '../components/Hero'
 import { AboutPanel } from '../components/AboutPanel'
@@ -11,9 +11,10 @@ import type { Project, Landmark } from '../types'
 interface SceneProps {
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: Landmark, rect: DOMRect) => void
+  focus: FocusTarget | null
 }
 
-export function Scene({ onSelect, onSelectLandmark }: SceneProps) {
+export function Scene({ onSelect, onSelectLandmark, focus }: SceneProps) {
   const [docked, setDocked] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setDocked(true), 2400)
@@ -51,7 +52,7 @@ export function Scene({ onSelect, onSelectLandmark }: SceneProps) {
           <CityWorld onSelect={onSelect} onSelectLandmark={onSelectLandmark} />
         </Suspense>
 
-        <CameraRig />
+        <CameraRig focus={focus} />
       </Canvas>
 
       <Loader />
