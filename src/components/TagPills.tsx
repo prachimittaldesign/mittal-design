@@ -19,7 +19,7 @@ const TAGS: { tag: string; icon: ReactNode }[] = [
 
 export function TagPills({ activeTag, onChange }: TagPillsProps) {
   return (
-    <div className="pointer-events-none absolute left-1/2 top-4 z-30 flex max-w-[min(620px,62vw)] -translate-x-1/2 gap-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="pointer-events-none absolute left-0 right-0 top-[calc(0.75rem+env(safe-area-inset-top)+52px)] z-30 flex max-w-full gap-2 overflow-x-auto px-3 [scrollbar-width:none] sm:left-1/2 sm:right-auto sm:top-4 sm:max-w-[min(620px,62vw)] sm:-translate-x-1/2 sm:px-2 [&::-webkit-scrollbar]:hidden">
       {TAGS.map(({ tag, icon }) => {
         const active = activeTag === tag
         return (

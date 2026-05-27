@@ -35,7 +35,7 @@ export default function App() {
   )
 
   return (
-    <div className="h-full">
+    <div className="relative h-full w-full overflow-hidden">
       <Scene
         appearance={appearance}
         layers={layers}

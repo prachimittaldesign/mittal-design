@@ -26,9 +26,9 @@ export function LayersControl({ layers, onChange, layer, onLayerChange }: Layers
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="pointer-events-auto absolute bottom-4 left-4 z-20">
+    <div className="pointer-events-auto absolute bottom-[calc(72px+env(safe-area-inset-bottom))] left-3 z-20 sm:bottom-4 sm:left-4">
       {open && (
-        <div className="absolute bottom-0 left-[calc(100%+10px)] w-[200px] rounded-[14px] border border-black/10 bg-white/95 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)] backdrop-blur-md">
+        <div className="absolute bottom-[calc(100%+10px)] left-0 w-[200px] rounded-[14px] border border-black/10 bg-white/95 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)] backdrop-blur-md sm:bottom-0 sm:left-[calc(100%+10px)]">
           <div className="mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-ink-soft/70">
             Layers
           </div>

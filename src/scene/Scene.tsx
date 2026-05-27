@@ -77,7 +77,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 
 function Hint() {
   return (
-    <div className="pointer-events-none absolute bottom-5 left-1/2 z-[15] flex -translate-x-1/2 items-center gap-[7px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft opacity-50">
+    <div className="pointer-events-none absolute bottom-5 left-1/2 z-[15] hidden -translate-x-1/2 items-center gap-[7px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft opacity-50 sm:flex">
       <span
         className="h-[5px] w-[5px] rounded-full bg-ink-soft"
         style={{ animation: 'pulseDot 1.8s ease-in-out infinite' }}

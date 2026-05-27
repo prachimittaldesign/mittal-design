@@ -27,7 +27,7 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
   }
 
   return (
-    <div className="absolute left-4 top-4 z-30 w-[min(360px,90vw)]">
+    <div className="absolute left-3 right-[60px] top-[calc(0.75rem+env(safe-area-inset-top))] z-30 w-auto sm:left-4 sm:right-auto sm:top-4 sm:w-[min(360px,90vw)]">
       <div className="flex items-center gap-[10px] rounded-full border border-black/10 bg-white/85 px-[18px] py-[11px] shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-md">
         <SearchIcon />
         <input

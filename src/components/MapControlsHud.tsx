@@ -13,7 +13,7 @@ export function MapControlsHud({ view, onToggleView, onCmd }: MapControlsHudProp
     'flex h-[44px] w-[44px] items-center justify-center rounded-[12px] border border-black/10 bg-white/90 shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors hover:bg-white'
 
   return (
-    <div className="pointer-events-auto absolute bottom-4 right-4 z-20 flex flex-col items-center gap-3">
+    <div className="pointer-events-auto absolute bottom-[calc(72px+env(safe-area-inset-bottom))] right-3 z-20 flex flex-col items-center gap-3 sm:bottom-4 sm:right-4">
       <button onClick={onToggleView} className={`${btn} text-[12px] font-bold text-ink`} aria-label="Toggle 2D / 3D view">
         {view === '3d' ? '2D' : '3D'}
       </button>

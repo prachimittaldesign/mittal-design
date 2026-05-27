@@ -67,7 +67,7 @@ export function TakeoverShell({ tileRect, accent, onClose, children }: TakeoverS
         <div
           className={[
             'absolute inset-0 overflow-y-auto overflow-x-hidden',
-            'px-[min(10vw,96px)] pt-[88px] pb-[80px]',
+            'px-[min(10vw,96px)] pt-[calc(88px+env(safe-area-inset-top))] pb-[calc(80px+env(safe-area-inset-bottom))]',
             'transition-opacity duration-[360ms] delay-[320ms]',
             open ? 'opacity-100' : 'opacity-0',
           ].join(' ')}
@@ -80,7 +80,7 @@ export function TakeoverShell({ tileRect, accent, onClose, children }: TakeoverS
       <button
         onClick={handleClose}
         className={[
-          'fixed right-[22px] top-[22px] z-[60] flex h-11 w-11 items-center justify-center',
+          'fixed right-[max(22px,env(safe-area-inset-right))] top-[max(22px,env(safe-area-inset-top))] z-[60] flex h-11 w-11 items-center justify-center',
           'rounded-[22px] border-none bg-ink/[0.09] text-[20px] leading-none text-ink',
           'transition-opacity duration-[360ms] delay-[320ms] hover:bg-ink/[0.16]',
           open ? 'opacity-100' : 'opacity-0',

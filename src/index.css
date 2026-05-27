@@ -16,9 +16,15 @@
   #root {
     height: 100%;
   }
+  /* Track the dynamic viewport so mobile browser chrome can't hide the
+     bottom HUD; `height: 100%` above stays as the fallback. */
+  #root {
+    height: 100dvh;
+  }
   body {
     margin: 0;
     overflow: hidden;
+    overscroll-behavior: none;
     background: var(--color-sand);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -30,6 +36,8 @@
      this to a pointer on hover by setting the canvas cursor directly. */
   .scene-canvas {
     cursor: grab;
+    /* Let pan/pinch reach the canvas instead of scrolling/zooming the page. */
+    touch-action: none;
   }
   .scene-canvas:active {
     cursor: grabbing;
