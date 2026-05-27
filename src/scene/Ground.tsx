@@ -42,7 +42,7 @@ export function Ground() {
           <meshBasicMaterial
             color={districtTint(qd.q)}
             transparent
-            opacity={0.32}
+            opacity={0.2}
             depthWrite={false}
           />
         </mesh>
