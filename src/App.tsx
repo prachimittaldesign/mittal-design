@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Scene } from './scene/Scene'
 import { ProjectOverlay } from './components/ProjectOverlay'
 import { PlaceOverlay } from './components/PlaceOverlay'
@@ -10,6 +10,7 @@ import { MusicPlayer } from './components/MusicPlayer'
 import { Legend } from './components/Legend'
 import type { FocusTarget } from './scene/CameraRig'
 import type { Place } from './scene/lib/places'
+import { useIsNight } from './lib/useIsNight'
 import type { Appearance, CameraCmd, LayerState, MapLayer, ViewMode, Project, Landmark } from './types'
 
 type Overlay =
@@ -29,6 +30,14 @@ export default function App() {
   const [layer, setLayer] = useState<MapLayer | null>(null)
   const [view, setView] = useState<ViewMode>('3d')
   const [cameraCmd, setCameraCmd] = useState<CameraCmd | null>(null)
+
+  // Flip the whole HUD to dark "night glass" when Hyderabad is dark. Toggled on
+  // <body> so portaled menus (About) inherit the tokens too.
+  const night = useIsNight()
+  useEffect(() => {
+    document.body.classList.toggle('night', night)
+    return () => document.body.classList.remove('night')
+  }, [night])
 
   const appearance = useMemo<Appearance>(
     () => ({ mode: layer ? 'layer' : activeTag ? 'tag' : 'default', activeTag, layer }),

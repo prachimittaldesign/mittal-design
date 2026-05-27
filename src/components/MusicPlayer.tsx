@@ -50,23 +50,23 @@ export function MusicPlayer() {
 
   return (
     <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+64px)] left-3 z-20 sm:bottom-[80px] sm:left-4">
-      <div className="flex max-w-[232px] items-center gap-[10px] rounded-full border border-black/10 bg-white/85 px-[10px] py-[7px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
+      <div className="hud flex max-w-[232px] items-center gap-[10px] rounded-full border px-[10px] py-[7px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
         <button
           onClick={toggle}
           aria-label={playing ? 'Pause' : 'Play'}
-          className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ink text-paper transition-transform hover:scale-105"
+          className="hud-fill hud-fill-text flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105"
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
         </button>
         <div className="min-w-0 flex-1 leading-tight">
-          <div className="truncate text-[12px] font-semibold text-ink">{track.title}</div>
-          <div className="truncate text-[10px] text-ink-soft">{track.artist}</div>
+          <div className="hud-text truncate text-[12px] font-semibold">{track.title}</div>
+          <div className="hud-soft truncate text-[10px]">{track.artist}</div>
         </div>
         {PLAYLIST.length > 1 && (
           <button
             onClick={next}
             aria-label="Next track"
-            className="flex h-6 w-6 flex-shrink-0 items-center justify-center text-ink-soft transition-colors hover:text-ink"
+            className="hud-soft flex h-6 w-6 flex-shrink-0 items-center justify-center transition-colors"
           >
             <NextIcon />
           </button>

@@ -30,8 +30,8 @@ export function TagPills({ activeTag, onChange }: TagPillsProps) {
               'pointer-events-auto flex flex-shrink-0 items-center gap-[6px] rounded-full border px-[13px] py-[7px]',
               'text-[12px] font-medium shadow-[0_2px_10px_rgba(0,0,0,0.08)] backdrop-blur-md transition-colors',
               active
-                ? 'border-ink bg-ink text-paper'
-                : 'border-black/10 bg-white/90 text-ink hover:bg-white',
+                ? 'hud-on'
+                : 'hud hud-text hud-hover',
             ].join(' ')}
           >
             <span className="flex-shrink-0">{icon}</span>

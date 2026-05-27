@@ -7,75 +7,78 @@ interface MapControlsHudProps {
 }
 
 // Skyline silhouette icon — buildings of different heights in a row.
-function SkylineIcon() {
+// Street View "pegman" — the little figure that completes the walk-the-city
+// metaphor for the skyline / presentation mode.
+function PegmanIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-[18px] w-[18px] text-ink">
-      <rect x="2"  y="13" width="3" height="7" rx="0.5" stroke="currentColor" strokeWidth="1.6" fill="none" />
-      <rect x="6"  y="9"  width="3" height="11" rx="0.5" stroke="currentColor" strokeWidth="1.6" fill="none" />
-      <rect x="10" y="5"  width="4" height="15" rx="0.5" stroke="currentColor" strokeWidth="1.6" fill="none" />
-      <rect x="15" y="8"  width="3" height="12" rx="0.5" stroke="currentColor" strokeWidth="1.6" fill="none" />
-      <rect x="19" y="12" width="3" height="8"  rx="0.5" stroke="currentColor" strokeWidth="1.6" fill="none" />
+    <svg viewBox="0 0 24 24" fill="none" className="h-[19px] w-[19px]">
+      <circle cx="12" cy="4.4" r="2.4" fill="currentColor" />
+      <path
+        d="M12 7.4c-2 0-3.2 1.1-3.5 2.9l-.8 4.2h2l.5-3v9h1.4v-5h.8v5h1.4v-9l.5 3h2l-.8-4.2C15.2 8.5 14 7.4 12 7.4z"
+        fill="currentColor"
+      />
     </svg>
   )
 }
 
 export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) {
   const btn =
-    'flex h-[44px] w-[44px] items-center justify-center rounded-[12px] border border-black/10 bg-white/90 shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors hover:bg-white'
+    'hud hud-hover flex h-[44px] w-[44px] items-center justify-center rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors'
 
   return (
     <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-20 flex flex-col items-center gap-3 sm:bottom-4 sm:right-4">
 
-      {/* View mode: 3D → 2D → Skyline */}
-      <div className="flex flex-col overflow-hidden rounded-[12px] border border-black/10 bg-white/90 shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
+      {/* View mode: 3D → 2D → Street View (skyline presentation) */}
+      <div className="hud flex flex-col overflow-hidden rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
         <button
           onClick={() => onSetView('3d')}
-          className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold text-ink transition-colors hover:bg-black/[0.05] ${view === '3d' ? 'bg-ink text-paper hover:bg-ink' : ''}`}
+          className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold transition-colors ${view === '3d' ? 'hud-on' : 'hud-text hud-hover'}`}
           aria-label="3D city view"
         >
           3D
         </button>
-        <div className="h-px bg-black/10" />
+        <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
           onClick={() => onSetView('iso')}
-          className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold transition-colors hover:bg-black/[0.05] ${view === 'iso' ? 'bg-ink text-paper hover:bg-ink' : 'text-ink'}`}
+          className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold transition-colors ${view === 'iso' ? 'hud-on' : 'hud-text hud-hover'}`}
           aria-label="2D map view"
         >
           2D
         </button>
-        <div className="h-px bg-black/10" />
+        <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
           onClick={() => onSetView('skyline')}
-          className={`flex h-[44px] w-[44px] items-center justify-center transition-colors hover:bg-black/[0.05] ${view === 'skyline' ? 'bg-ink text-paper hover:bg-ink' : 'text-ink'}`}
-          aria-label="Skyline view"
+          className={`flex h-[44px] w-[44px] items-center justify-center transition-colors ${view === 'skyline' ? 'hud-on' : 'hud-text hud-hover'}`}
+          aria-label="Street view / skyline presentation"
+          title="Street View — walk the skyline"
         >
-          <SkylineIcon />
+          <PegmanIcon />
         </button>
       </div>
 
       {/* Recenter */}
-      <button onClick={() => onCmd('recenter')} className={btn} aria-label="Recenter">
-        <svg viewBox="0 0 24 24" fill="none" className="h-[19px] w-[19px] text-ink">
+      <button onClick={() => onCmd('recenter')} className={`${btn} hud-text`} aria-label="Recenter">
+        <svg viewBox="0 0 24 24" fill="none" className="h-[19px] w-[19px]">
           <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </button>
 
       {/* Zoom */}
-      <div className="flex flex-col overflow-hidden rounded-[12px] border border-black/10 bg-white/90 shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
+      <div className="hud flex flex-col overflow-hidden rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
         <button
           onClick={() => onCmd('zoomIn')}
-          className="flex h-[44px] w-[44px] items-center justify-center text-ink transition-colors hover:bg-black/[0.05]"
+          className="hud-text hud-hover flex h-[44px] w-[44px] items-center justify-center transition-colors"
           aria-label="Zoom in"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-[18px] w-[18px]">
             <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
-        <div className="h-px bg-black/10" />
+        <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
           onClick={() => onCmd('zoomOut')}
-          className="flex h-[44px] w-[44px] items-center justify-center text-ink transition-colors hover:bg-black/[0.05]"
+          className="hud-text hud-hover flex h-[44px] w-[44px] items-center justify-center transition-colors"
           aria-label="Zoom out"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-[18px] w-[18px]">

@@ -31,6 +31,30 @@
   }
 }
 
+/* HUD glass tokens — frosted-white by day; dark "night glass" when <body> has
+   the .night class (toggled from Hyderabad time in App). Cards reference these
+   via the .hud* utility classes below, so a single flip restyles the whole HUD. */
+:root {
+  --hud-bg: rgba(255, 255, 255, 0.86);
+  --hud-bg-strong: rgba(255, 255, 255, 0.95);
+  --hud-hover: #ffffff;
+  --hud-border: rgba(0, 0, 0, 0.1);
+  --hud-text: #1b1b1b;
+  --hud-soft: #4a463f;
+  --hud-accent-bg: #1b1b1b;
+  --hud-accent-text: #fbf7ee;
+}
+body.night {
+  --hud-bg: rgba(20, 28, 43, 0.72);
+  --hud-bg-strong: rgba(20, 28, 43, 0.88);
+  --hud-hover: rgba(38, 50, 72, 0.92);
+  --hud-border: rgba(255, 255, 255, 0.14);
+  --hud-text: #f2ede1;
+  --hud-soft: rgba(242, 237, 225, 0.66);
+  --hud-accent-bg: #f2ede1;
+  --hud-accent-text: #1b1b1b;
+}
+
 @layer components {
   /* Google-Maps-style grab affordance on the 3D canvas. Buildings override
      this to a pointer on hover by setting the canvas cursor directly. */
@@ -41,6 +65,51 @@
   }
   .scene-canvas:active {
     cursor: grabbing;
+  }
+
+  /* HUD glass utilities — all colour transitions ease so day↔night is smooth. */
+  .hud {
+    background-color: var(--hud-bg);
+    border-color: var(--hud-border);
+    transition: background-color 700ms, border-color 700ms, color 700ms;
+  }
+  .hud-strong {
+    background-color: var(--hud-bg-strong);
+    border-color: var(--hud-border);
+    transition: background-color 700ms, border-color 700ms, color 700ms;
+  }
+  .hud-hover:hover {
+    background-color: var(--hud-hover);
+  }
+  .hud-text {
+    color: var(--hud-text);
+    transition: color 700ms;
+  }
+  .hud-soft {
+    color: var(--hud-soft);
+    transition: color 700ms;
+  }
+  /* Solid accent chip (active pill / play button): inverts with the theme. */
+  .hud-on {
+    background-color: var(--hud-accent-bg);
+    color: var(--hud-accent-text);
+    border-color: var(--hud-accent-bg);
+    transition: background-color 700ms, border-color 700ms, color 700ms;
+  }
+  .hud-fill {
+    background-color: var(--hud-accent-bg);
+    transition: background-color 700ms;
+  }
+  .hud-fill-text {
+    color: var(--hud-accent-text);
+    transition: color 700ms;
+  }
+  .hud-bd-on {
+    border-color: var(--hud-text);
+    transition: border-color 700ms;
+  }
+  .hud-input::placeholder {
+    color: var(--hud-soft);
   }
 }
 

@@ -7,15 +7,15 @@ import type { Weather } from '../lib/weather'
 export function WeatherClock({ time, weather }: { time: HyderabadClock; weather: Weather | null }) {
   return (
     <div className="pointer-events-none absolute left-3 top-[calc(0.75rem+env(safe-area-inset-top)+96px)] z-20 sm:left-4 sm:top-[64px]">
-      <div className="flex items-center gap-[8px] rounded-full border border-black/10 bg-white/85 px-[13px] py-[7px] text-[12px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
-        <span className="font-semibold text-ink">Hyderabad</span>
-        <span className="tabular-nums text-ink-soft">
+      <div className="hud flex items-center gap-[8px] rounded-full border px-[13px] py-[7px] text-[12px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
+        <span className="hud-text font-semibold">Hyderabad</span>
+        <span className="hud-soft tabular-nums">
           {time.label} {time.period}
         </span>
         {weather && (
           <>
-            <span className="text-ink-soft/40">·</span>
-            <span className="tabular-nums text-ink-soft">{weather.tempC}°</span>
+            <span className="hud-soft">·</span>
+            <span className="hud-soft tabular-nums">{weather.tempC}°</span>
             <span aria-hidden title={weather.label}>
               {weather.icon}
             </span>
