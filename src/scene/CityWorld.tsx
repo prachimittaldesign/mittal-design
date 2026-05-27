@@ -9,6 +9,7 @@ import { CityFill } from './CityFill'
 import { Building } from './Building'
 import { Landmark } from './Landmark'
 import { StreetSigns, AvenueLabels, GatewayLabels } from './StreetSigns'
+import { StreetFurniture } from './StreetFurniture'
 import { Mountains } from './Mountains'
 import { Pond } from './Pond'
 import { Birds } from './Birds'
@@ -95,6 +96,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         <Ground />
         <Roads />
         <Props />
+        <StreetFurniture />
         <Mountains />
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}

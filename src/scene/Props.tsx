@@ -43,14 +43,14 @@ export function Props() {
 
   return (
     <group>
-      {/* Tree foliage */}
+      {/* Tree canopies — round spheres, Bruno-Simon style */}
       <Instances limit={Math.max(TREES.length, 1)} castShadow>
-        <coneGeometry args={[1.3, 3.2, 7]} />
-        <meshStandardMaterial roughness={1} />
+        <sphereGeometry args={[1.6, 8, 7]} />
+        <meshStandardMaterial roughness={0.95} />
         {TREES.map((t) => (
           <Instance
             key={t.id}
-            position={[t.position[0], 3.0 * t.scale, t.position[2]]}
+            position={[t.position[0], (1.6 + 1.6) * t.scale, t.position[2]]}
             scale={t.scale}
             color={FOLIAGE[hash(t.id) % FOLIAGE.length]}
           />
@@ -59,10 +59,10 @@ export function Props() {
 
       {/* Tree trunks */}
       <Instances limit={Math.max(TREES.length, 1)}>
-        <cylinderGeometry args={[0.22, 0.28, 1.4, 6]} />
+        <cylinderGeometry args={[0.18, 0.24, 3.2, 6]} />
         <meshStandardMaterial color={TRUNK} roughness={1} />
         {TREES.map((t) => (
-          <Instance key={t.id} position={[t.position[0], 0.7 * t.scale, t.position[2]]} scale={t.scale} />
+          <Instance key={t.id} position={[t.position[0], 1.6 * t.scale, t.position[2]]} scale={t.scale} />
         ))}
       </Instances>
 
