@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { Color, Group, MeshStandardMaterial, type Object3D } from 'three'
+import { Color, Group, MeshStandardMaterial, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
 import { bodyColor, roofColor, DIM_GREY, layerColor, GLASS_WINDOW, WARM_WINDOW } from './lib/cityTheme'
@@ -54,6 +54,7 @@ interface BuildingProps {
   appearance: Appearance
   showLabel: boolean
   view: ViewMode
+  skylineX: number   // target X position when view === 'skyline'
   onHover: (id: string | null) => void
   onSelect: (project: Project, object: Object3D) => void
 }
@@ -80,11 +81,21 @@ function massing(w: number, height: number, roof: RoofStyle): Tier[] {
   return [{ size: [w, height, w], y: height / 2 }]
 }
 
-export function Building({ def, hovered, appearance, showLabel, view, onHover, onSelect }: BuildingProps) {
+export function Building({ def, hovered, appearance, showLabel, view, skylineX, onHover, onSelect }: BuildingProps) {
   const { footprint: w, height, district, roofStyle, position, project } = def
-  const liftRef = useRef<Group>(null)
-  const labelRef = useRef<Group>(null)
+  const outerRef  = useRef<Group>(null)
+  const liftRef   = useRef<Group>(null)
+  const labelRef  = useRef<Group>(null)
   const gl = useThree((s) => s.gl)
+
+  // Pre-computed target positions — avoids per-frame allocations.
+  const basePos    = useMemo(() => new Vector3(position[0], 0, position[2]), [position])
+  const skylinePos = useMemo(() => new Vector3(skylineX, 0, 0), [skylineX])
+
+  // Seed the group at the correct city position before first paint.
+  useLayoutEffect(() => {
+    outerRef.current?.position.copy(basePos)
+  }, [basePos])
 
   const baseEmissive = district === 'glass' ? 0.14 : 0.05
   const baseColor = useMemo(() => new Color(bodyColor(district)), [district])
@@ -137,8 +148,17 @@ export function Building({ def, hovered, appearance, showLabel, view, onHover, o
   const tagMatches = appearance.activeTag !== null && project.tags.includes(appearance.activeTag)
 
   useFrame((_, dt) => {
+    // Slide buildings into skyline formation or back to city position.
+    if (outerRef.current) {
+      easing.damp3(
+        outerRef.current.position,
+        view === 'skyline' ? skylinePos : basePos,
+        0.2,
+        dt,
+      )
+    }
+
     let target = baseColor
-    // Hover no longer lifts the tower — it glows instead.
     let em = hovered ? baseEmissive + 0.5 : baseEmissive
     let liftBonus = 0
     if (appearance.mode === 'layer' && layerCol) {
@@ -150,10 +170,10 @@ export function Building({ def, hovered, appearance, showLabel, view, onHover, o
         em = 0
       }
     }
-    // liftBonus is the tag-match emphasis (a matching tower rises); hover doesn't.
     if (liftRef.current) easing.damp(liftRef.current.position, 'y', liftBonus, 0.12, dt)
-    // Cancel the world's iso y-flatten on the label so the wordmark doesn't squash.
-    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', view === 'iso' ? 1 / ISO_FLATTEN : 1, 0.22, dt)
+    // Cancel iso y-flatten on the label; in skyline, labels stay upright too.
+    const labelScale = view === 'iso' ? 1 / ISO_FLATTEN : 1
+    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', labelScale, 0.22, dt)
     easing.dampC(body.color, target, 0.18, dt)
     easing.damp(body, 'emissiveIntensity', em, 0.15, dt)
     easing.damp(hoverGlow, 'emissiveIntensity', hovered ? 1.6 : 0, 0.14, dt)
@@ -162,7 +182,7 @@ export function Building({ def, hovered, appearance, showLabel, view, onHover, o
 
   return (
     <group
-      position={position}
+      ref={outerRef}
       onPointerOver={(e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation()
         onHover(project.id)

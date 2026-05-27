@@ -332,6 +332,24 @@ function buildProps(): PropDef[] {
 
 export const PROPS: PropDef[] = buildProps()
 
+// --- Skyline view: buildings packed into a single neat horizontal row ---------
+// Sorted left-to-right by natural world-X so the simple←→complex axis is
+// preserved in the silhouette. All buildings move to Z = 0 so the camera
+// can read the full skyline head-on, Marine-Drive style.
+function buildSkylinePositions(): Map<string, number> {
+  const sorted = [...BUILDINGS].sort((a, b) => a.position[0] - b.position[0])
+  const GAP = 2.5
+  const totalW = sorted.reduce((s, b) => s + b.footprint + GAP, -GAP)
+  let curX = -totalW / 2
+  const out = new Map<string, number>()
+  for (const b of sorted) {
+    out.set(b.project.id, curX + b.footprint / 2)
+    curX += b.footprint + GAP
+  }
+  return out
+}
+export const SKYLINE_POSITIONS = buildSkylinePositions()
+
 // --- Camera pan bounds -------------------------------------------------------
 function computeBounds() {
   const xs: number[] = []

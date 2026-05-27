@@ -81,7 +81,7 @@ export interface Appearance {
   layer: MapLayer | null
 }
 
-export type ViewMode = '3d' | 'iso'
+export type ViewMode = '3d' | 'iso' | 'skyline'
 
 export interface LayerState {
   showLabels: boolean

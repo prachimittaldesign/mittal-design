@@ -14,7 +14,7 @@ import { Mountains } from './Mountains'
 import { Pond } from './Pond'
 import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
-import { BUILDINGS, LANDMARK_DEFS, ISO_FLATTEN } from './lib/cityModel'
+import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS, ISO_FLATTEN } from './lib/cityModel'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
 interface CityWorldProps {
@@ -105,17 +105,18 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         {view === '3d' && <ClockTower />}
         {view === 'iso' && <AvenueLabels />}
         {BUILDINGS.map((def) => (
-        <Building
-          key={def.project.id}
-          def={def}
-          hovered={hovered === def.project.id}
-          appearance={appearance}
-          showLabel={showLabel}
-          view={view}
-          onHover={setHovered}
-          onSelect={handleSelect}
-        />
-      ))}
+          <Building
+            key={def.project.id}
+            def={def}
+            hovered={hovered === def.project.id}
+            appearance={appearance}
+            showLabel={showLabel}
+            view={view}
+            skylineX={SKYLINE_POSITIONS.get(def.project.id) ?? 0}
+            onHover={setHovered}
+            onSelect={handleSelect}
+          />
+        ))}
       {layers.showLandmarks &&
         LANDMARK_DEFS.map((def) => (
           <Landmark

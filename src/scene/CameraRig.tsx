@@ -9,10 +9,13 @@ import type { CameraCmd, ViewMode } from '../types'
 export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 92, 118]
 export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 
-// Camera offset (from the pan target) per view mode. iso = locked 3/4 angle.
+// Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
-  '3d': new Vector3(0, 92, 118),
-  iso: new Vector3(82, 104, 82),
+  '3d':      new Vector3(0,  92, 118),
+  iso:       new Vector3(82, 104, 82),
+  // Skyline: far back on Z, low-ish Y — like standing at the edge of
+  // Marine Drive looking at the wall of buildings.
+  skyline:   new Vector3(0,  22, 155),
 }
 const ORIGIN: [number, number, number] = [0, 0, 0]
 const { minX, maxX, minZ, maxZ } = CITY_BOUNDS
@@ -92,10 +95,15 @@ export function CameraRig({
       }
     }
 
-    // 2D/3D view change — ease to the matching vantage.
+    // View change — ease to the matching vantage.
     if (view !== lastView.current) {
       lastView.current = view
       viewing.current = true
+      // Skyline: reset pan target to origin so all buildings are in frame.
+      if (view === 'skyline') {
+        c.target.set(0, 0, 0)
+        c.update()
+      }
       viewPos.current.copy(c.target).add(VIEW_OFFSET[view])
     }
 
@@ -161,12 +169,14 @@ export function CameraRig({
       makeDefault
       enableDamping
       dampingFactor={0.08}
-      screenSpacePanning={false}
-      enableRotate={view !== 'iso'}
-      minDistance={45}
-      maxDistance={230}
-      minPolarAngle={0.32}
-      maxPolarAngle={1.15}
+      // Skyline: screen-space pan lets the user slide left/right along the
+      // row; orbit is disabled so the cinematic front-facing angle is locked.
+      screenSpacePanning={view === 'skyline'}
+      enableRotate={view === '3d'}
+      minDistance={view === 'skyline' ? 60 : 45}
+      maxDistance={view === 'skyline' ? 220 : 230}
+      minPolarAngle={view === 'skyline' ? 1.18 : 0.32}
+      maxPolarAngle={view === 'skyline' ? 1.45 : 1.15}
     />
   )
 }

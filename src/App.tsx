@@ -52,7 +52,7 @@ export default function App() {
       <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
       <MapControlsHud
         view={view}
-        onToggleView={() => setView((v) => (v === '3d' ? 'iso' : '3d'))}
+        onSetView={setView}
         onCmd={(type) => setCameraCmd({ type, nonce: performance.now() })}
       />
       <MusicPlayer />
