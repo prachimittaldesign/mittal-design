@@ -1,5 +1,5 @@
 // The "Prachi [Mittal]" lockup — boxed surname à la Airbnb's 2021 release.
-// Animates in centred, then docks to the top-left corner.
+// Animates in centred, then docks to the top-right corner (Maps account slot).
 export function Hero({ docked }: { docked: boolean }) {
   return (
     <div
@@ -7,7 +7,7 @@ export function Hero({ docked }: { docked: boolean }) {
         'absolute z-20 pointer-events-none',
         'transition-all duration-[950ms] ease-[cubic-bezier(.6,.05,.2,1)]',
         docked
-          ? 'top-7 left-9 scale-[0.52] origin-top-left'
+          ? 'top-4 right-4 scale-[0.46] origin-top-right'
           : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
       ].join(' ')}
     >

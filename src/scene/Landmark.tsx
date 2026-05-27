@@ -12,11 +12,12 @@ const CIVIC_GREY = '#bcb6a8'
 interface LandmarkProps {
   def: LandmarkDef
   hovered: boolean
+  showLabel: boolean
   onHover: (id: string | null) => void
   onSelect: (landmark: LandmarkData, object: Object3D) => void
 }
 
-export function Landmark({ def, hovered, onHover, onSelect }: LandmarkProps) {
+export function Landmark({ def, hovered, showLabel, onHover, onSelect }: LandmarkProps) {
   const { landmark, footprint: w } = def
   const liftRef = useRef<Group>(null)
   const gl = useThree((s) => s.gl)
@@ -63,7 +64,7 @@ export function Landmark({ def, hovered, onHover, onSelect }: LandmarkProps) {
           <meshStandardMaterial color="#9a9488" roughness={0.95} />
         </mesh>
         <Silhouette kind={landmark.kind} w={w} grey={grey} accent={landmark.accent} />
-        <PlaceSign label={landmark.label} accent={landmark.accent} y={signY} w={w} />
+        {showLabel && <PlaceSign label={landmark.label} accent={landmark.accent} y={signY} w={w} />}
       </group>
     </group>
   )

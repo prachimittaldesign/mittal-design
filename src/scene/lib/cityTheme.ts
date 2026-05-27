@@ -37,6 +37,11 @@ export function districtTint(q: Quadrant): string {
   return BIOME[q].fill
 }
 
+// Scenery buildings — plain desaturated greys, flatter/darker than the project
+// towers so the labelled towers still pop. + a dim grey for tag-filtered dimming.
+export const SCENERY_BODY = ['#b9b3a7', '#c2bcb0', '#aea899', '#c7c0b2', '#b3ad9f']
+export const DIM_GREY = '#b4afa6'
+
 // Decorative fabric — clearly "nature/minor", never grey like a project.
 export const FOLIAGE = ['#7faa5e', '#8cb86a', '#6f9d54']
 export const TRUNK = '#8a6b4a'

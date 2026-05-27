@@ -5,9 +5,9 @@ interface SearchExploreProps {
   onFocus: (place: Place) => void
 }
 
-// A Google-Maps-style search pill, top-center. Focusing it (empty) reveals
-// curated "explore" suggestions; typing filters all places. Selecting one flies
-// the camera there.
+// A Google-Maps-style search box, top-left. Focusing it (empty) reveals
+// recommended places; typing filters all places. Selecting one flies the
+// camera there.
 export function SearchExplore({ onFocus }: SearchExploreProps) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -27,7 +27,7 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
   }
 
   return (
-    <div className="absolute left-1/2 top-6 z-30 w-[min(440px,86vw)] -translate-x-1/2">
+    <div className="absolute left-4 top-4 z-30 w-[min(360px,90vw)]">
       <div className="flex items-center gap-[10px] rounded-full border border-black/10 bg-white/85 px-[18px] py-[11px] shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-md">
         <SearchIcon />
         <input
@@ -44,7 +44,7 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
         <div className="mt-2 overflow-hidden rounded-[18px] border border-black/10 bg-white/95 shadow-[0_10px_34px_rgba(0,0,0,0.16)] backdrop-blur-md">
           {!query.trim() && (
             <div className="px-[18px] pb-1 pt-3 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-ink-soft/70">
-              Explore
+              Recommended
             </div>
           )}
           {results.map((p) => (
@@ -55,7 +55,7 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
               className="flex w-full items-center gap-3 px-[18px] py-[10px] text-left transition-colors hover:bg-black/[0.045]"
             >
               <span
-                className="h-[10px] w-[10px] flex-shrink-0 rounded-full"
+                className={`h-[10px] w-[10px] flex-shrink-0 ${p.kind === 'landmark' ? 'rounded-full' : 'rounded-[3px]'}`}
                 style={{ background: p.accent }}
               />
               <span className="min-w-0 flex-1">

@@ -4,13 +4,16 @@ import { Box3, Camera, Vector3, type Object3D } from 'three'
 import { Ground } from './Ground'
 import { Roads } from './Roads'
 import { Props } from './Props'
+import { CityFill } from './CityFill'
 import { Building } from './Building'
 import { Landmark } from './Landmark'
 import { StreetSigns } from './StreetSigns'
 import { BUILDINGS, LANDMARK_DEFS } from './lib/cityModel'
-import type { Project, Landmark as LandmarkData } from '../types'
+import type { Appearance, LayerState, Project, Landmark as LandmarkData } from '../types'
 
 interface CityWorldProps {
+  appearance: Appearance
+  layers: LayerState
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: LandmarkData, rect: DOMRect) => void
 }
@@ -51,7 +54,7 @@ function projectRect(object: Object3D, camera: Camera, canvas: HTMLCanvasElement
   return new DOMRect(minX, minY, Math.max(8, maxX - minX), Math.max(8, maxY - minY))
 }
 
-export function CityWorld({ onSelect, onSelectLandmark }: CityWorldProps) {
+export function CityWorld({ appearance, layers, onSelect, onSelectLandmark }: CityWorldProps) {
   const [hovered, setHovered] = useState<string | null>(null)
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
@@ -75,25 +78,30 @@ export function CityWorld({ onSelect, onSelectLandmark }: CityWorldProps) {
       <Ground />
       <Roads />
       <Props />
+      {layers.showScenery && <CityFill />}
       <StreetSigns />
       {BUILDINGS.map((def) => (
         <Building
           key={def.project.id}
           def={def}
           hovered={hovered === def.project.id}
+          appearance={appearance}
+          showLabel={layers.showLabels}
           onHover={setHovered}
           onSelect={handleSelect}
         />
       ))}
-      {LANDMARK_DEFS.map((def) => (
-        <Landmark
-          key={def.landmark.id}
-          def={def}
-          hovered={hovered === def.landmark.id}
-          onHover={setHovered}
-          onSelect={handleSelectLandmark}
-        />
-      ))}
+      {layers.showLandmarks &&
+        LANDMARK_DEFS.map((def) => (
+          <Landmark
+            key={def.landmark.id}
+            def={def}
+            hovered={hovered === def.landmark.id}
+            showLabel={layers.showLabels}
+            onHover={setHovered}
+            onSelect={handleSelectLandmark}
+          />
+        ))}
     </group>
   )
 }

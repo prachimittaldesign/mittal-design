@@ -6,15 +6,18 @@ import { CityWorld } from './CityWorld'
 import { Hero } from '../components/Hero'
 import { AboutPanel } from '../components/AboutPanel'
 import { SKY } from './lib/cityTheme'
-import type { Project, Landmark } from '../types'
+import type { Appearance, CameraCmd, LayerState, Project, Landmark } from '../types'
 
 interface SceneProps {
+  appearance: Appearance
+  layers: LayerState
+  focus: FocusTarget | null
+  cameraCmd: CameraCmd | null
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: Landmark, rect: DOMRect) => void
-  focus: FocusTarget | null
 }
 
-export function Scene({ onSelect, onSelectLandmark, focus }: SceneProps) {
+export function Scene({ appearance, layers, focus, cameraCmd, onSelect, onSelectLandmark }: SceneProps) {
   const [docked, setDocked] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setDocked(true), 2400)
@@ -30,29 +33,34 @@ export function Scene({ onSelect, onSelectLandmark, focus }: SceneProps) {
         camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
       >
         <color attach="background" args={[SKY]} />
-        <fog attach="fog" args={[SKY, 180, 420]} />
+        <fog attach="fog" args={[SKY, 200, 460]} />
 
         <hemisphereLight args={[SKY, '#cdbfa6', 0.85]} />
         <ambientLight intensity={0.35} />
         <directionalLight
-          position={[60, 95, 42]}
+          position={[70, 110, 50]}
           intensity={1.15}
           castShadow
           shadow-mapSize={[2048, 2048]}
           shadow-camera-near={10}
-          shadow-camera-far={320}
-          shadow-camera-left={-100}
-          shadow-camera-right={100}
-          shadow-camera-top={100}
-          shadow-camera-bottom={-100}
+          shadow-camera-far={360}
+          shadow-camera-left={-110}
+          shadow-camera-right={110}
+          shadow-camera-top={110}
+          shadow-camera-bottom={-110}
           shadow-bias={-0.0004}
         />
 
         <Suspense fallback={null}>
-          <CityWorld onSelect={onSelect} onSelectLandmark={onSelectLandmark} />
+          <CityWorld
+            appearance={appearance}
+            layers={layers}
+            onSelect={onSelect}
+            onSelectLandmark={onSelectLandmark}
+          />
         </Suspense>
 
-        <CameraRig focus={focus} />
+        <CameraRig focus={focus} cmd={cameraCmd} />
       </Canvas>
 
       <Loader />
@@ -67,7 +75,7 @@ export function Scene({ onSelect, onSelectLandmark, focus }: SceneProps) {
 
 function Hint() {
   return (
-    <div className="pointer-events-none absolute bottom-6 left-7 z-[15] flex items-center gap-[7px] font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft opacity-50">
+    <div className="pointer-events-none absolute bottom-5 left-1/2 z-[15] flex -translate-x-1/2 items-center gap-[7px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft opacity-50">
       <span
         className="h-[5px] w-[5px] rounded-full bg-ink-soft"
         style={{ animation: 'pulseDot 1.8s ease-in-out infinite' }}

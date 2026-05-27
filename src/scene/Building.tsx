@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { Group, MeshStandardMaterial, type Object3D } from 'three'
+import { Color, Group, MeshStandardMaterial, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
-import { bodyColor, roofColor } from './lib/cityTheme'
+import { bodyColor, roofColor, DIM_GREY } from './lib/cityTheme'
 import type { BuildingDef } from './lib/cityModel'
-import type { Project, RoofStyle } from '../types'
+import type { Appearance, Project, RoofStyle } from '../types'
+
+const DIM = new Color(DIM_GREY)
 
 interface BuildingProps {
   def: BuildingDef
   hovered: boolean
+  appearance: Appearance
+  showLabel: boolean
   onHover: (id: string | null) => void
   onSelect: (project: Project, object: Object3D) => void
 }
@@ -36,33 +40,39 @@ function massing(w: number, height: number, roof: RoofStyle): Tier[] {
   return [{ size: [w, height, w], y: height / 2 }]
 }
 
-export function Building({ def, hovered, onHover, onSelect }: BuildingProps) {
+export function Building({ def, hovered, appearance, showLabel, onHover, onSelect }: BuildingProps) {
   const { footprint: w, height, district, roofStyle, position, project } = def
   const liftRef = useRef<Group>(null)
   const gl = useThree((s) => s.gl)
 
   const baseEmissive = district === 'glass' ? 0.14 : 0.05
+  const baseColor = useMemo(() => new Color(bodyColor(district)), [district])
   const body = useMemo(() => {
-    const m = new MeshStandardMaterial({
+    return new MeshStandardMaterial({
       color: bodyColor(district),
       roughness: district === 'glass' ? 0.42 : 0.88,
       metalness: district === 'glass' ? 0.18 : 0.0,
       emissive: district === 'glass' ? '#2b3742' : '#3a2f1e',
       emissiveIntensity: baseEmissive,
     })
-    return m
   }, [district, baseEmissive])
   useEffect(() => () => body.dispose(), [body])
 
   const tiers = useMemo(() => massing(w, height, roofStyle), [w, height, roofStyle])
   const topWidth = tiers[tiers.length - 1].size[0]
   const roofH = w * 0.5
-  const signY =
-    roofStyle === 'pitched' ? height + roofH + 2.0 : height + 3.0
+  const signY = roofStyle === 'pitched' ? height + roofH + 2.0 : height + 3.0
+
+  const matches =
+    appearance.mode !== 'tag' ||
+    (appearance.activeTag !== null && project.tags.includes(appearance.activeTag))
 
   useFrame((_, dt) => {
-    if (liftRef.current) easing.damp(liftRef.current.position, 'y', hovered ? 1.8 : 0, 0.12, dt)
-    easing.damp(body, 'emissiveIntensity', hovered ? baseEmissive + 0.32 : baseEmissive, 0.12, dt)
+    const lift = (hovered ? 1.8 : 0) + (matches && appearance.mode === 'tag' ? 0.8 : 0)
+    if (liftRef.current) easing.damp(liftRef.current.position, 'y', lift, 0.12, dt)
+    easing.dampC(body.color, matches ? baseColor : DIM, 0.18, dt)
+    const em = !matches ? 0 : hovered ? baseEmissive + 0.32 : baseEmissive
+    easing.damp(body, 'emissiveIntensity', em, 0.15, dt)
   })
 
   return (
@@ -117,7 +127,7 @@ export function Building({ def, hovered, onHover, onSelect }: BuildingProps) {
           </>
         )}
 
-        <Label project={project} y={signY} footprint={w} />
+        {showLabel && <Label project={project} y={signY} footprint={w} />}
       </group>
     </group>
   )

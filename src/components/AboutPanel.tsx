@@ -7,7 +7,7 @@ const LINKS = [
 
 export function AboutPanel() {
   return (
-    <div className="absolute bottom-6 right-7 z-[15] w-[268px] rounded-[14px] border border-black/[0.07] bg-white/70 p-[16px_18px] text-[12px] text-ink backdrop-blur-[12px]">
+    <div className="absolute bottom-[84px] left-4 z-[15] w-[260px] rounded-[14px] border border-black/[0.07] bg-white/70 p-[16px_18px] text-[12px] text-ink backdrop-blur-[12px]">
       <h4 className="mb-[7px] font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-soft">
         About
       </h4>

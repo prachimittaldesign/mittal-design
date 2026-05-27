@@ -39,3 +39,57 @@ export function resolveRoofStyle(height: number, explicit?: RoofStyle): RoofStyl
   if (explicit) return explicit
   return height > 26 ? 'setback' : 'flat'
 }
+
+// --- Organic-road geometry helpers (pure) ------------------------------------
+export interface Pt {
+  x: number
+  z: number
+}
+
+export function polar(cx: number, cz: number, r: number, theta: number): Pt {
+  return { x: cx + Math.cos(theta) * r, z: cz + Math.sin(theta) * r }
+}
+
+// Distance from point (px,pz) to segment (a→b). Used to keep roads clear of
+// the fixed project/landmark plots.
+export function pointToSegDist(
+  px: number,
+  pz: number,
+  ax: number,
+  az: number,
+  bx: number,
+  bz: number,
+): number {
+  const dx = bx - ax
+  const dz = bz - az
+  const len2 = dx * dx + dz * dz || 1
+  let t = ((px - ax) * dx + (pz - az) * dz) / len2
+  t = Math.max(0, Math.min(1, t))
+  return Math.hypot(px - (ax + dx * t), pz - (az + dz * t))
+}
+
+function catmull(p0: Pt, p1: Pt, p2: Pt, p3: Pt, t: number): Pt {
+  const t2 = t * t
+  const t3 = t2 * t
+  const f = (a: number, b: number, c: number, d: number) =>
+    0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3)
+  return { x: f(p0.x, p1.x, p2.x, p3.x), z: f(p0.z, p1.z, p2.z, p3.z) }
+}
+
+// Sample a (closed) CatmullRom spline through control points → smooth polyline.
+export function sampleCatmullRom(ctrl: Pt[], segmentsPerSpan: number, closed: boolean): Pt[] {
+  const n = ctrl.length
+  const out: Pt[] = []
+  const spans = closed ? n : n - 1
+  for (let i = 0; i < spans; i++) {
+    const p0 = ctrl[(i - 1 + n) % n]
+    const p1 = ctrl[i % n]
+    const p2 = ctrl[(i + 1) % n]
+    const p3 = ctrl[(i + 2) % n]
+    for (let s = 0; s < segmentsPerSpan; s++) {
+      out.push(catmull(p0, p1, p2, p3, s / segmentsPerSpan))
+    }
+  }
+  if (!closed) out.push(ctrl[n - 1])
+  return out
+}

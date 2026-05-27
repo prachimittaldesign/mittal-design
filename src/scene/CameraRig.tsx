@@ -4,6 +4,7 @@ import { MapControls } from '@react-three/drei'
 import { Vector3 } from 'three'
 import { easing } from 'maath'
 import { CITY_BOUNDS } from './lib/cityModel'
+import type { CameraCmd } from '../types'
 
 export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 92, 118]
 export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
@@ -21,7 +22,7 @@ export interface FocusTarget {
   nonce: number
 }
 
-export function CameraRig({ focus }: { focus: FocusTarget | null }) {
+export function CameraRig({ focus, cmd }: { focus: FocusTarget | null; cmd: CameraCmd | null }) {
   const ref = useRef<ElementRef<typeof MapControls>>(null)
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
@@ -30,6 +31,9 @@ export function CameraRig({ focus }: { focus: FocusTarget | null }) {
   const flyTarget = useRef(new Vector3())
   const flyPos = useRef(new Vector3())
   const lastNonce = useRef(0)
+  const zooming = useRef(false)
+  const zoomTarget = useRef(0)
+  const lastCmd = useRef(0)
 
   useEffect(() => {
     const el = gl.domElement
@@ -57,12 +61,40 @@ export function CameraRig({ focus }: { focus: FocusTarget | null }) {
       c.enabled = false
     }
 
+    // Toolbar zoom / recenter (DOM buttons).
+    if (cmd && cmd.nonce !== lastCmd.current) {
+      lastCmd.current = cmd.nonce
+      if (cmd.type === 'recenter') {
+        recentering.current = true
+        c.enabled = false
+      } else {
+        const cur = camera.position.distanceTo(c.target)
+        zoomTarget.current = Math.min(230, Math.max(45, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
+        zooming.current = true
+        c.enabled = false
+      }
+    }
+
     if (flying.current) {
       easing.damp3(camera.position, flyPos.current, 0.3, dt)
       easing.damp3(c.target, flyTarget.current, 0.3, dt)
       c.update()
       if (camera.position.distanceTo(flyPos.current) < 0.8) {
         flying.current = false
+        c.enabled = true
+      }
+      return
+    }
+
+    if (zooming.current) {
+      const dir = camera.position.clone().sub(c.target)
+      const dist = { d: dir.length() }
+      easing.damp(dist, 'd', zoomTarget.current, 0.16, dt)
+      dir.setLength(dist.d)
+      camera.position.copy(c.target).add(dir)
+      c.update()
+      if (Math.abs(dist.d - zoomTarget.current) < 0.4) {
+        zooming.current = false
         c.enabled = true
       }
       return

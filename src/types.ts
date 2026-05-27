@@ -65,3 +65,18 @@ export interface Landmark {
   accent: string
   items: LandmarkItem[]
 }
+
+// --- Google-Maps-style HUD state --------------------------------------------
+/** How project buildings are coloured. 'tag' highlights matches, dims the rest. */
+export interface Appearance {
+  mode: 'default' | 'tag'
+  activeTag: string | null
+}
+
+export interface LayerState {
+  showLabels: boolean
+  showScenery: boolean
+  showLandmarks: boolean
+}
+
+export type CameraCmd = { type: 'zoomIn' | 'zoomOut' | 'recenter'; nonce: number }
