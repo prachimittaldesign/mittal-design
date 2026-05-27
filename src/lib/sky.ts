@@ -50,15 +50,15 @@ interface Key {
 // Keyframes across a 24h cycle (wraps at 24→0). Warm "paper" daytime that sinks
 // into a cool deep-blue night, with peach dawn / amber dusk in between.
 const KEYS: Key[] = [
-  { h: 0, bg: C('#0e131d'), hs: C('#2a3446'), hg: C('#13161f'), hi: 0.36, am: 0.16, di: 0.22, dc: C('#a9bcd9') },
-  { h: 5, bg: C('#1b2331'), hs: C('#3b4456'), hg: C('#222633'), hi: 0.42, am: 0.2, di: 0.28, dc: C('#b9c6db') },
+  { h: 0, bg: C('#1a2436'), hs: C('#3a4763'), hg: C('#1e2735'), hi: 0.58, am: 0.32, di: 0.45, dc: C('#b7c8e4') },
+  { h: 5, bg: C('#232d3f'), hs: C('#48526a'), hg: C('#2a2f3e'), hi: 0.62, am: 0.34, di: 0.5, dc: C('#c3cfe2') },
   { h: 6.8, bg: C('#e6c2b2'), hs: C('#f0ccb8'), hg: C('#ad9784'), hi: 0.6, am: 0.3, di: 0.62, dc: C('#ffcf9c') },
   { h: 9, bg: C('#f7efe2'), hs: C('#fbf7ee'), hg: C('#cdbfa6'), hi: 0.82, am: 0.34, di: 1.05, dc: C('#fff3df') },
   { h: 13, bg: C('#fbf7ee'), hs: C('#fbf7ee'), hg: C('#cdbfa6'), hi: 0.88, am: 0.36, di: 1.22, dc: C('#fff6e6') },
   { h: 16.5, bg: C('#f6ecdb'), hs: C('#fbf2e2'), hg: C('#c9ba9f'), hi: 0.82, am: 0.34, di: 1.05, dc: C('#ffe9cb') },
   { h: 18.3, bg: C('#f0c79e'), hs: C('#f6cda2'), hg: C('#b39577'), hi: 0.62, am: 0.3, di: 0.82, dc: C('#ffb877') },
   { h: 19.6, bg: C('#c79aa3'), hs: C('#d9a9a8'), hg: C('#8f7785'), hi: 0.48, am: 0.26, di: 0.45, dc: C('#e8967a') },
-  { h: 21, bg: C('#1c2433'), hs: C('#33405a'), hg: C('#1c2330'), hi: 0.38, am: 0.18, di: 0.24, dc: C('#aebfd6') },
+  { h: 21, bg: C('#222d40'), hs: C('#42506e'), hg: C('#252d3c'), hi: 0.6, am: 0.33, di: 0.46, dc: C('#bccbe2') },
 ]
 
 export interface SkyProfile {
