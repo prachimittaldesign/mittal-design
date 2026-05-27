@@ -8,7 +8,6 @@ import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
-import { VideoBackground } from '../components/VideoBackground'
 import { useHyderabad } from '../lib/useHyderabad'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
@@ -70,11 +69,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-paper animate-[worldFadeIn_900ms_100ms_both]">
-      {/* Cinematic video ground layer — blends behind the 3D city */}
-      <VideoBackground />
-
-      {/* Canvas sits above the video overlay; HUD elements sit above both */}
-      <div className="absolute inset-0 z-[2]">
+      <div className="absolute inset-0">
         <Canvas
           className="scene-canvas"
           shadows
@@ -109,7 +104,6 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           </EffectComposer>
         </Canvas>
       </div>
-
       <Loader />
 
       {/* DOM HUD over the canvas */}

@@ -5,8 +5,8 @@ import type { District } from './project3d'
 // Atmosphere — SKY stays in the warm paper family so the DayNight system can
 // ease the 3D background/fog from this daytime base toward dusk/night.
 export const SKY = PAPER
-export const GROUND = '#4a7a3f'   // rich grass green
-export const PLAZA = '#3d6635'    // deeper green plaza
+export const GROUND = '#1e4d12'   // deep soil-green — base layer
+export const PLAZA = '#2a5a1a'    // moss-green plaza
 export const ROAD = '#d3cbb9'
 export const ROAD_EDGE = '#bdb4a2'
 
