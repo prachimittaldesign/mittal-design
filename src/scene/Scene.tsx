@@ -9,6 +9,7 @@ import { DayNight } from './DayNight'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
 import { useHyderabad } from '../lib/useHyderabad'
+import { useIsNight } from '../lib/useIsNight'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
 interface SceneProps {
@@ -115,10 +116,13 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 }
 
 function Hint() {
+  const night = useIsNight()
   return (
-    <div className="pointer-events-none absolute bottom-5 left-1/2 z-[15] hidden -translate-x-1/2 items-center gap-[7px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft opacity-50 sm:flex">
+    <div
+      className={`pointer-events-none absolute bottom-5 left-1/2 z-[15] hidden -translate-x-1/2 items-center gap-[7px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.18em] opacity-60 transition-colors duration-700 sm:flex ${night ? 'text-paper/80' : 'text-ink-soft'}`}
+    >
       <span
-        className="h-[5px] w-[5px] rounded-full bg-ink-soft"
+        className={`h-[5px] w-[5px] rounded-full transition-colors duration-700 ${night ? 'bg-paper/80' : 'bg-ink-soft'}`}
         style={{ animation: 'pulseDot 1.8s ease-in-out infinite' }}
       />
       Drag to pan · Scroll to zoom · Right-drag to orbit · Click a building or landmark

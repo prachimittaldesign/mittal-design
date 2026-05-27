@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useIsMobile } from '../lib/useIsMobile'
+import { useIsNight } from '../lib/useIsNight'
 import { getHyderabadTime } from '../lib/sky'
 
 const LINKS = [
@@ -35,9 +36,15 @@ function greeting(): string {
 // lockup on desktop. The docked brand is the entry point for the About menu.
 export function Hero({ docked }: { docked: boolean }) {
   const isMobile = useIsMobile()
+  const night = useIsNight()
   const [open, setOpen] = useState(false)
   const toggle = () => setOpen((o) => !o)
   const lockupTrigger = docked && !isMobile
+
+  // Lockup sits directly on the canvas, so its colours must flip at night.
+  const wordColor = night ? 'text-paper' : 'text-ink'
+  const boxColor = night ? 'border-paper text-paper' : 'border-ink text-ink'
+  const subColor = night ? 'text-paper/75' : 'text-ink-soft'
 
   return (
     <>
@@ -58,14 +65,14 @@ export function Hero({ docked }: { docked: boolean }) {
         aria-label={lockupTrigger ? 'About Prachi Mittal' : undefined}
       >
         <div className="flex items-center gap-4">
-          <div className="text-[clamp(30px,9vw,90px)] font-extrabold tracking-[-0.04em] leading-[0.9] text-ink">
+          <div className={`text-[clamp(30px,9vw,90px)] font-extrabold tracking-[-0.04em] leading-[0.9] transition-colors duration-700 ${wordColor}`}>
             Prachi
           </div>
-          <div className="rounded-[clamp(10px,2vw,20px)] border-2 border-ink px-[clamp(10px,2.2vw,22px)] pt-[clamp(3px,0.6vw,6px)] pb-[clamp(4px,0.8vw,8px)] text-[clamp(27px,8.2vw,82px)] font-extrabold leading-none tracking-[-0.03em] text-ink sm:border-4">
+          <div className={`rounded-[clamp(10px,2vw,20px)] border-2 px-[clamp(10px,2.2vw,22px)] pt-[clamp(3px,0.6vw,6px)] pb-[clamp(4px,0.8vw,8px)] text-[clamp(27px,8.2vw,82px)] font-extrabold leading-none tracking-[-0.03em] transition-colors duration-700 sm:border-4 ${boxColor}`}>
             Mittal
           </div>
         </div>
-        <div className="mt-[10px] text-center text-[clamp(11px,2.2vw,21px)] font-medium tracking-[0.02em] text-ink-soft">
+        <div className={`mt-[10px] text-center text-[clamp(11px,2.2vw,21px)] font-medium tracking-[0.02em] transition-colors duration-700 ${subColor}`}>
           Product Designer · Architect
         </div>
       </div>
