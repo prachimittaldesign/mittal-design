@@ -10,7 +10,7 @@ import { Building } from './Building'
 import { Landmark } from './Landmark'
 import { StreetSigns, AvenueLabels, GatewayLabels } from './StreetSigns'
 import { Mountains } from './Mountains'
-import { Waterfall } from './Waterfall'
+import { Pond } from './Pond'
 import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
 import { BUILDINGS, LANDMARK_DEFS, ISO_FLATTEN } from './lib/cityModel'
@@ -98,7 +98,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         <Mountains />
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}
-        {view === '3d' && <Waterfall />}
+        {view === '3d' && <Pond />}
         {view === '3d' && <Birds />}
         {view === '3d' && <ClockTower />}
         {view === 'iso' && <AvenueLabels />}

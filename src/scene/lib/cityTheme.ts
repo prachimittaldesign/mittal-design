@@ -69,7 +69,5 @@ export const ROCK = '#b7b0a2'
 export const HOUSE = ['#e4cdd0', '#e9d6b8', '#dcd2c4'] // warm low houses
 export const CAR = ['#c96f5a', '#5a86c9', '#e0b65a', '#6fae8a', '#cdcdd2']
 
-// Distant terrain ringing the city — cool grey-green rock that fades into fog.
-export const MOUNTAIN = ['#9aa39a', '#8f988e', '#a6ab9e', '#949c93', '#aab0a3']
+// Distant terrain ringing the city — snowcap for the mesh peaks.
 export const MOUNTAIN_SNOW = '#e9eadf' // soft snowcap
-export const WATER = '#9cc6e4' // stylised waterfall + pool

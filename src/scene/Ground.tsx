@@ -4,6 +4,7 @@ import type { Quadrant } from '../types'
 import { GROUND, PLAZA, ROAD, districtTint } from './lib/cityTheme'
 import { CITY_BOUNDS, CITY_RADIUS } from './lib/cityModel'
 import { LOT } from './lib/project3d'
+import { POND_CENTER, POND_CLEAR } from './Pond'
 
 const { minX, maxX, minZ, maxZ } = CITY_BOUNDS
 
@@ -49,6 +50,9 @@ function GrassTufts() {
       const x     = Math.cos(angle) * r
       const z     = Math.sin(angle) * r
       if (x * x + z * z < PLAZA_CLEAR * PLAZA_CLEAR) continue
+      const pdx = x - POND_CENTER[0]
+      const pdz = z - POND_CENTER[1]
+      if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
 
       // Short and soft — gentle bumps of turf, not tall spikes.
       const h = 0.28 + Math.random() * 0.55
@@ -101,6 +105,9 @@ function Wildflowers() {
       const x     = Math.cos(angle) * r
       const z     = Math.sin(angle) * r
       if (x * x + z * z < PLAZA_CLEAR * PLAZA_CLEAR) continue
+      const pdx = x - POND_CENTER[0]
+      const pdz = z - POND_CENTER[1]
+      if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
 
       dummy.position.set(x, 0.5, z)
       dummy.rotation.set(0, Math.random() * Math.PI * 2, 0)
