@@ -8,6 +8,7 @@ import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
+import { VideoBackground } from '../components/VideoBackground'
 import { useHyderabad } from '../lib/useHyderabad'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
@@ -69,39 +70,45 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-paper animate-[worldFadeIn_900ms_100ms_both]">
-      <Canvas
-        className="scene-canvas"
-        shadows
-        dpr={[1, 2]}
-        camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
-      >
-        {/* Lights, sky, and fog ease with Hyderabad time-of-day + weather. */}
-        <DayNight weather={weather} view={view} />
+      {/* Cinematic video ground layer — blends behind the 3D city */}
+      <VideoBackground />
 
-        <Suspense fallback={null}>
-          <CityWorld
-            appearance={appearance}
-            layers={layers}
-            view={view}
-            onSelect={onSelect}
-            onSelectLandmark={onSelectLandmark}
-          />
-          <AmbientParticles />
-        </Suspense>
+      {/* Canvas sits above the video overlay; HUD elements sit above both */}
+      <div className="absolute inset-0 z-[2]">
+        <Canvas
+          className="scene-canvas"
+          shadows
+          dpr={[1, 2]}
+          camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
+        >
+          {/* Lights, sky, and fog ease with Hyderabad time-of-day + weather. */}
+          <DayNight weather={weather} view={view} />
 
-        <CameraRig focus={focus} cmd={cameraCmd} view={view} />
+          <Suspense fallback={null}>
+            <CityWorld
+              appearance={appearance}
+              layers={layers}
+              view={view}
+              onSelect={onSelect}
+              onSelectLandmark={onSelectLandmark}
+            />
+            <AmbientParticles />
+          </Suspense>
 
-        {/* Bloom — only the brightest pixels (lit windows, accents, monument
-            tip) bloom, so it stays subtle by day and glows after dark. */}
-        <EffectComposer>
-          <Bloom
-            mipmapBlur
-            luminanceThreshold={0.9}
-            luminanceSmoothing={0.85}
-            intensity={0.55}
-          />
-        </EffectComposer>
-      </Canvas>
+          <CameraRig focus={focus} cmd={cameraCmd} view={view} />
+
+          {/* Bloom — only the brightest pixels (lit windows, accents, monument
+              tip) bloom, so it stays subtle by day and glows after dark. */}
+          <EffectComposer>
+            <Bloom
+              mipmapBlur
+              luminanceThreshold={0.9}
+              luminanceSmoothing={0.85}
+              intensity={0.55}
+            />
+          </EffectComposer>
+        </Canvas>
+      </div>
 
       <Loader />
 

@@ -25,13 +25,19 @@ export function Ground() {
 
   return (
     <group>
-      {/* Base ground — warm amber earth */}
+      {/* Base ground — lush grass green */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[span, span]} />
-        <meshStandardMaterial color={GROUND} roughness={0.95} metalness={0.0} />
+        <meshStandardMaterial color={GROUND} roughness={0.92} metalness={0.0} />
       </mesh>
 
-      {/* District tints — much more saturated (0.28 opacity vs 0.12 before) */}
+      {/* Grass blade texture via slight noise — a second slightly lighter green layer */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+        <planeGeometry args={[span * 0.9, span * 0.9]} />
+        <meshStandardMaterial color="#567f49" roughness={0.95} metalness={0.0} />
+      </mesh>
+
+      {/* District tints — softened over the green base */}
       {QUADS.map((qd) => (
         <mesh
           key={qd.q}
@@ -42,20 +48,20 @@ export function Ground() {
           <meshBasicMaterial
             color={districtTint(qd.q)}
             transparent
-            opacity={0.2}
+            opacity={0.12}
             depthWrite={false}
           />
         </mesh>
       ))}
 
-      {/* Subtle grid overlay — gives depth and scale reference */}
+      {/* Subtle dark-green grid — gives depth and scale, stays earthy */}
       <gridHelper
-        args={[span, Math.round(span / 8), '#a07840', '#a07840']}
+        args={[span, Math.round(span / 8), '#2e5a24', '#2e5a24']}
         position={[0, 0.06, 0]}
         rotation={[0, 0, 0]}
       />
 
-      {/* Central plaza — warm terracotta circle */}
+      {/* Central plaza — deep moss-green circle */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
         <circleGeometry args={[LOT * 1.1, 64]} />
         <meshStandardMaterial color={PLAZA} roughness={0.9} />
