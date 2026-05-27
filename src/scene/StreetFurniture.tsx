@@ -13,7 +13,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
 import { ROAD_SEGS } from './lib/cityModel'
-import { FOLIAGE, TRUNK } from './lib/cityTheme'
+import { TRUNK } from './lib/cityTheme'
 import { POND_CENTER, POND_CLEAR } from './Pond'
 
 // ─── Seeded RNG ───────────────────────────────────────────────────────────────
@@ -77,10 +77,14 @@ function roadSidePoints(step: number, off: number, bothSides = true): RoadPoint[
 }
 
 // ─── Road-lining trees ───────────────────────────────────────────────────────
-// These are the most impactful visual element in the reference: round green
-// canopies every ~14 u along every footpath, creating the tree-lined boulevard look.
+// Formal avenue planting: one species, uniform size and spacing, every ~13 u on
+// both sides of every road. A single cohesive green (with a barely-there ± tint)
+// so the rows read as deliberately planted — not the patchy light/dark mix of a
+// wild park. This is the dominant "planned city" cue.
+const AVENUE_GREEN = new Color('#4f8a3a')
+
 function RoadTrees() {
-  const pts = useMemo(() => roadSidePoints(14, 2.4, true), [])
+  const pts = useMemo(() => roadSidePoints(13, 2.4, true), [])
   const rand = useMemo(() => mulberry32(8811), [])
 
   const canopyRef = useRef<InstancedMesh>(null)
@@ -94,7 +98,8 @@ function RoadTrees() {
     const color = new Color()
 
     pts.forEach((p, i) => {
-      const scale = 0.72 + rand() * 0.36
+      // Uniform size — slight scale jitter only, no colour lottery.
+      const scale = 0.82 + rand() * 0.12
       const h = 3.0 * scale
 
       // canopy
@@ -103,7 +108,8 @@ function RoadTrees() {
       dummy.scale.setScalar(scale)
       dummy.updateMatrix()
       cm.setMatrixAt(i, dummy.matrix)
-      color.set(FOLIAGE[Math.floor(rand() * FOLIAGE.length)])
+      // Cohesive green with a ±4% brightness whisper so they aren't dead-flat.
+      color.copy(AVENUE_GREEN).multiplyScalar(0.96 + rand() * 0.08)
       cm.setColorAt(i, color)
 
       // trunk
@@ -125,7 +131,7 @@ function RoadTrees() {
     <group>
       <instancedMesh ref={canopyRef} args={[undefined, undefined, pts.length]} castShadow>
         <sphereGeometry args={[1.55, 8, 7]} />
-        <meshStandardMaterial roughness={0.9} metalness={0} vertexColors />
+        <meshStandardMaterial roughness={0.92} metalness={0} vertexColors />
       </instancedMesh>
       <instancedMesh ref={trunkRef} args={[undefined, undefined, pts.length]}>
         <cylinderGeometry args={[0.16, 0.22, 3.0, 6]} />
