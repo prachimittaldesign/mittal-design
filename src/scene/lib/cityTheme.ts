@@ -5,21 +5,22 @@ import type { District } from './project3d'
 // Atmosphere — SKY stays in the warm paper family so the DayNight system can
 // ease the 3D background/fog from this daytime base toward dusk/night.
 export const SKY = PAPER
-export const GROUND = '#1e4d12'   // deep soil-green — base layer
-export const PLAZA = '#2a5a1a'    // moss-green plaza
+export const GROUND = '#4a5736'   // muted sage-green meadow base
+export const PLAZA = '#3f4a30'    // calm moss circle
 export const ROAD = '#d3cbb9'
 export const ROAD_EDGE = '#bdb4a2'
 
-// Project buildings — richer, more saturated identities than the old greys so
-// the city reads vivid in daylight and the windows pop after dark.
+// Project buildings — muted, sophisticated identities. Desaturated slate-blue
+// and soft clay so the city reads calm and cohesive (not toy-bright), while the
+// emissive windows still pop after dark.
 export const BODY = {
-  glass: '#3f6f9e', // deep ocean-blue — enterprise glass towers
-  warm: '#c98a5e', // warm terracotta-tan — consumer buildings
+  glass: '#5b7488', // muted slate-blue — enterprise glass towers
+  warm: '#bb957a', // soft clay-tan — consumer buildings
 } as const
 
 export const ROOF = {
-  glass: '#2f5478',
-  warm: '#a86f44',
+  glass: '#47596a',
+  warm: '#9c7a5e',
 } as const
 
 // Emissive window glow — windows light up warm/cool and bloom after dark.
