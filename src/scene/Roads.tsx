@@ -1,9 +1,31 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { InstancedMesh, MeshStandardMaterial, Object3D } from 'three'
 import { ROAD } from './lib/cityTheme'
-import { ROAD_SEGS, GATEWAY_SEGS, CONNECTOR_SEGS } from './lib/cityModel'
+import { ROAD_SEGS, GATEWAY_SEGS, CONNECTOR_SEGS, type RoadSeg } from './lib/cityModel'
 
-const ALL_SEGS = [...ROAD_SEGS, ...GATEWAY_SEGS, ...CONNECTOR_SEGS]
+// City roads + connector driveways — no gateway segments here; those fade separately.
+const ALL_SEGS = [...ROAD_SEGS, ...CONNECTOR_SEGS]
+
+// Split each gateway into N steps with linearly decreasing opacity so the road
+// dissolves naturally into the fog at the horizon.
+const FADE_STEPS = 7
+interface FadeSeg extends RoadSeg { opacity: number }
+const GATEWAY_FADE: FadeSeg[] = GATEWAY_SEGS.flatMap((gw) => {
+  const dx = gw.bx - gw.ax
+  const dz = gw.bz - gw.az
+  return Array.from({ length: FADE_STEPS }, (_, i) => {
+    const t0 = i / FADE_STEPS
+    const t1 = (i + 1) / FADE_STEPS
+    // Opacity drops from ~0.95 at the city edge to ~0.04 at the furthest reach.
+    const opacity = Math.max(0.04, 0.95 - (t0 + t1) * 0.5 * 1.0)
+    return {
+      ax: gw.ax + dx * t0, az: gw.az + dz * t0,
+      bx: gw.ax + dx * t1, bz: gw.az + dz * t1,
+      width: gw.width,
+      opacity,
+    }
+  })
+})
 const PATH_W = 1.3 // sidewalk width revealed on each side of the road
 const PAVE = '#cbc2af' // warm sidewalk paving
 
@@ -131,6 +153,36 @@ export function Roads() {
       <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadMat} renderOrder={ORDER_ROAD} receiveShadow>
         <circleGeometry args={[1, 20]} />
       </instancedMesh>
+
+      {/* ── Gateway avenues: fade to horizon ──
+          Rendered as individual transparent segments so the road dissolves
+          organically into the fog — no hard edge at the city boundary. */}
+      {GATEWAY_FADE.map((s, i) => {
+        const dx = s.bx - s.ax
+        const dz = s.bz - s.az
+        const len = Math.hypot(dx, dz)
+        const angle = Math.atan2(-dz, dx)
+        return (
+          <group key={`gw-${i}`}>
+            <mesh
+              position={[(s.ax + s.bx) / 2, 0.02, (s.az + s.bz) / 2]}
+              rotation={[0, angle, 0]}
+              renderOrder={ORDER_PAVE}
+            >
+              <boxGeometry args={[len + s.width + PATH_W * 2, 0.04, s.width + PATH_W * 2]} />
+              <meshStandardMaterial color={PAVE} roughness={0.98} transparent opacity={s.opacity} depthWrite={false} />
+            </mesh>
+            <mesh
+              position={[(s.ax + s.bx) / 2, 0.05, (s.az + s.bz) / 2]}
+              rotation={[0, angle, 0]}
+              renderOrder={ORDER_ROAD}
+            >
+              <boxGeometry args={[len + s.width, 0.06, s.width]} />
+              <meshStandardMaterial color={ROAD} roughness={1} transparent opacity={s.opacity} depthWrite={false} />
+            </mesh>
+          </group>
+        )
+      })}
     </group>
   )
 }

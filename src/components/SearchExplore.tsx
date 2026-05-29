@@ -28,7 +28,7 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
 
   return (
     <div className="absolute left-3 right-[60px] top-[calc(0.75rem+env(safe-area-inset-top))] z-30 w-auto sm:left-4 sm:right-auto sm:top-4 sm:w-[min(360px,90vw)]">
-      <div className="hud flex items-center gap-[10px] rounded-full border px-[18px] py-[11px] shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-md">
+      <div className="hud flex items-center gap-[10px] rounded-full border px-[18px] py-[8px] sm:py-[11px] shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-md">
         <SearchIcon />
         <input
           value={query}

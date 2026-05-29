@@ -9,9 +9,26 @@ import type { Appearance, Project, RoofStyle, ViewMode } from '../types'
 
 const DIM = new Color(DIM_GREY)
 
-// A band of glowing emissive window panels wrapped around all four faces.
-// toneMapped:false keeps them bright so the Bloom pass makes them glow after dark.
-function WindowStrip({ w, y, district }: { w: number; y: number; district: 'glass' | 'warm' }) {
+// Stable deterministic hash from a project ID → non-negative integer.
+// Used to pick architectural shapes so each building has a consistent form.
+function idHash(id: string): number {
+  let h = 0
+  for (const c of id) h = (Math.imul(h, 31) + c.charCodeAt(0)) | 0
+  return h >>> 0
+}
+
+type Shape = 'box' | 'setback' | 'slab' | 'tapered'
+
+function pickShape(id: string, district: 'glass' | 'warm', height: number): Shape {
+  if (district !== 'glass') return 'box'
+  const h = idHash(id)
+  if (height > 30) return (['setback', 'slab', 'tapered', 'slab', 'setback', 'tapered'] as Shape[])[h % 6]
+  if (height > 18) return (['setback', 'slab', 'box'] as Shape[])[h % 3]
+  return 'box'
+}
+
+// Glowing window bands on all four faces, respecting rectangular footprints.
+function WindowStrip({ w, d, y, district }: { w: number; d: number; y: number; district: 'glass' | 'warm' }) {
   const wColor = district === 'glass' ? GLASS_WINDOW : WARM_WINDOW
   const mat = useMemo(
     () =>
@@ -30,22 +47,73 @@ function WindowStrip({ w, y, district }: { w: number; y: number; district: 'glas
   const stripH = 0.4
   const inset = 0.04
   const fw = w * 0.84
+  const fd = d * 0.84
   return (
     <>
-      <mesh position={[0, y, w * 0.5 + inset]} material={mat}>
+      <mesh position={[0, y, d * 0.5 + inset]} material={mat}>
         <planeGeometry args={[fw, stripH]} />
       </mesh>
-      <mesh position={[0, y, -(w * 0.5 + inset)]} rotation={[0, Math.PI, 0]} material={mat}>
+      <mesh position={[0, y, -(d * 0.5 + inset)]} rotation={[0, Math.PI, 0]} material={mat}>
         <planeGeometry args={[fw, stripH]} />
       </mesh>
       <mesh position={[w * 0.5 + inset, y, 0]} rotation={[0, -Math.PI / 2, 0]} material={mat}>
-        <planeGeometry args={[fw, stripH]} />
+        <planeGeometry args={[fd, stripH]} />
       </mesh>
       <mesh position={[-(w * 0.5 + inset), y, 0]} rotation={[0, Math.PI / 2, 0]} material={mat}>
-        <planeGeometry args={[fw, stripH]} />
+        <planeGeometry args={[fd, stripH]} />
       </mesh>
     </>
   )
+}
+
+interface Tier {
+  size: [number, number, number]
+  y: number
+}
+
+function massing(w: number, height: number, roofStyle: RoofStyle, shape: Shape): Tier[] {
+  if (roofStyle === 'pitched') return [{ size: [w, height, w], y: height / 2 }]
+
+  switch (shape) {
+    case 'slab': {
+      // Wide curtain-wall slab — rectangular (2:1) footprint reads as a modern glass plate.
+      const wd = w * 1.65
+      const dp = w * 0.56
+      const h1 = height * 0.88
+      const h2 = height * 0.12
+      return [
+        { size: [wd, h1, dp], y: h1 / 2 },
+        { size: [wd * 0.82, h2, dp * 0.82], y: h1 + h2 / 2 },
+      ]
+    }
+    case 'tapered': {
+      // Art-Deco 4-step taper — narrows toward the sky, like a crystal needle.
+      const hF = [0.38, 0.28, 0.20, 0.14]
+      const wF = [1.00, 0.80, 0.63, 0.48]
+      const tiers: Tier[] = []
+      let y = 0
+      hF.forEach((hf, i) => {
+        const h = height * hf
+        const sw = w * wF[i]
+        tiers.push({ size: [sw, h, sw], y: y + h / 2 })
+        y += h
+      })
+      return tiers
+    }
+    case 'setback': {
+      // Classic 3-tier stepped setback — Chrysler-style silhouette.
+      const h1 = height * 0.60
+      const h2 = height * 0.26
+      const h3 = height * 0.14
+      return [
+        { size: [w, h1, w], y: h1 / 2 },
+        { size: [w * 0.72, h2, w * 0.72], y: h1 + h2 / 2 },
+        { size: [w * 0.46, h3, w * 0.46], y: h1 + h2 + h3 / 2 },
+      ]
+    }
+    default:
+      return [{ size: [w, height, w], y: height / 2 }]
+  }
 }
 
 interface BuildingProps {
@@ -54,31 +122,9 @@ interface BuildingProps {
   appearance: Appearance
   showLabel: boolean
   view: ViewMode
-  skylineX: number   // target X position when view === 'skyline'
+  skylineX: number
   onHover: (id: string | null) => void
   onSelect: (project: Project, object: Object3D) => void
-}
-
-interface Tier {
-  size: [number, number, number]
-  y: number
-}
-
-function massing(w: number, height: number, roof: RoofStyle): Tier[] {
-  if (roof === 'setback') {
-    const h1 = height * 0.6
-    const h2 = height * 0.28
-    const h3 = height * 0.12
-    const w2 = w * 0.72
-    const w3 = w * 0.48
-    return [
-      { size: [w, h1, w], y: h1 / 2 },
-      { size: [w2, h2, w2], y: h1 + h2 / 2 },
-      { size: [w3, h3, w3], y: h1 + h2 + h3 / 2 },
-    ]
-  }
-  // flat + pitched share a single box body
-  return [{ size: [w, height, w], y: height / 2 }]
 }
 
 export function Building({ def, hovered, appearance, showLabel, view, skylineX, onHover, onSelect }: BuildingProps) {
@@ -88,29 +134,43 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const labelRef  = useRef<Group>(null)
   const gl = useThree((s) => s.gl)
 
-  // Pre-computed target positions — avoids per-frame allocations.
   const basePos    = useMemo(() => new Vector3(position[0], 0, position[2]), [position])
   const skylinePos = useMemo(() => new Vector3(skylineX, 0, 0), [skylineX])
 
-  // Seed the group at the correct city position before first paint.
   useLayoutEffect(() => {
     outerRef.current?.position.copy(basePos)
   }, [basePos])
 
+  const shape = useMemo(() => pickShape(project.id, district, height), [project.id, district, height])
+  const tiers = useMemo(() => massing(w, height, roofStyle, shape), [w, height, roofStyle, shape])
+
+  // Base footprint dimensions (may be rectangular for slabs).
+  const baseW = tiers[0].size[0]
+  const baseD = tiers[0].size[2]
+  const topTier = tiers[tiers.length - 1]
+  const topW = topTier.size[0]
+  const topD = topTier.size[2]
+
+  // Push label high enough to clear any crown/spire detail.
+  const crownH = shape === 'tapered' ? w * 0.40 : shape === 'setback' && height > 28 ? height * 0.20 : 0
+  const roofH  = w * 0.5
+  const signY  = roofStyle === 'pitched' ? height + roofH + 2.0 : height + crownH + 3.0
+
   const baseEmissive = district === 'glass' ? 0.14 : 0.05
   const baseColor = useMemo(() => new Color(bodyColor(district)), [district])
-  const body = useMemo(() => {
-    return new MeshStandardMaterial({
-      color: bodyColor(district),
-      roughness: district === 'glass' ? 0.42 : 0.88,
-      metalness: district === 'glass' ? 0.18 : 0.0,
-      emissive: district === 'glass' ? '#2b3742' : '#3a2f1e',
-      emissiveIntensity: baseEmissive,
-    })
-  }, [district, baseEmissive])
+  const body = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: bodyColor(district),
+        roughness: district === 'glass' ? 0.42 : 0.88,
+        metalness: district === 'glass' ? 0.18 : 0.0,
+        emissive: district === 'glass' ? '#2b3742' : '#3a2f1e',
+        emissiveIntensity: baseEmissive,
+      }),
+    [district, baseEmissive],
+  )
   useEffect(() => () => body.dispose(), [body])
 
-  // A coloured halo shell that fades in on hover for an extra glow cue.
   const hoverGlow = useMemo(
     () =>
       new MeshStandardMaterial({
@@ -126,17 +186,11 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   )
   useEffect(() => () => hoverGlow.dispose(), [hoverGlow])
 
-  // Lit window floors, spaced up the tower height.
   const windowFloors = useMemo(() => {
     const floors: number[] = []
     for (let y = 2.5; y < height - 1; y += 3.5) floors.push(y)
     return floors
   }, [height])
-
-  const tiers = useMemo(() => massing(w, height, roofStyle), [w, height, roofStyle])
-  const topWidth = tiers[tiers.length - 1].size[0]
-  const roofH = w * 0.5
-  const signY = roofStyle === 'pitched' ? height + roofH + 2.0 : height + 3.0
 
   const layerCol = useMemo(
     () =>
@@ -148,14 +202,8 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const tagMatches = appearance.activeTag !== null && project.tags.includes(appearance.activeTag)
 
   useFrame((_, dt) => {
-    // Slide buildings into skyline formation or back to city position.
     if (outerRef.current) {
-      easing.damp3(
-        outerRef.current.position,
-        view === 'skyline' ? skylinePos : basePos,
-        0.2,
-        dt,
-      )
+      easing.damp3(outerRef.current.position, view === 'skyline' ? skylinePos : basePos, 0.2, dt)
     }
 
     let target = baseColor
@@ -171,7 +219,6 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }
     }
     if (liftRef.current) easing.damp(liftRef.current.position, 'y', liftBonus, 0.12, dt)
-    // Cancel iso y-flatten on the label; in skyline, labels stay upright too.
     const labelScale = view === 'iso' ? 1 / ISO_FLATTEN : 1
     if (labelRef.current) easing.damp(labelRef.current.scale, 'y', labelScale, 0.22, dt)
     easing.dampC(body.color, target, 0.18, dt)
@@ -198,47 +245,75 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }}
     >
       <group ref={liftRef}>
-        {/* footing — grounds the tower */}
+        {/* footing — rectangular base matching the tower footprint */}
         <mesh position={[0, 0.3, 0]} receiveShadow>
-          <boxGeometry args={[w * 1.08, 0.6, w * 1.08]} />
+          <boxGeometry args={[baseW * 1.06, 0.6, baseD * 1.06]} />
           <meshStandardMaterial color="#9a9488" roughness={0.95} />
         </mesh>
 
-        {/* massing */}
+        {/* massing tiers */}
         {tiers.map((t, i) => (
           <mesh key={i} position={[0, t.y, 0]} material={body} castShadow receiveShadow>
             <boxGeometry args={t.size} />
           </mesh>
         ))}
 
-        {/* hover halo — a slightly larger shell around the base tier */}
+        {/* hover halo — slightly larger shell around the base tier */}
         <mesh position={[0, tiers[0].y, 0]} material={hoverGlow}>
-          <boxGeometry args={[tiers[0].size[0] * 1.05, tiers[0].size[1] * 1.01, tiers[0].size[2] * 1.05]} />
+          <boxGeometry args={[baseW * 1.05, tiers[0].size[1] * 1.01, baseD * 1.05]} />
         </mesh>
 
-        {/* glowing window bands */}
+        {/* window bands — use actual base footprint dimensions */}
         {windowFloors.map((y, i) => (
-          <WindowStrip key={i} w={tiers[0].size[0]} y={y} district={district} />
+          <WindowStrip key={i} w={baseW} d={baseD} y={y} district={district} />
         ))}
 
-        {/* roofline */}
+        {/* ── Roofline ── */}
         {roofStyle === 'pitched' ? (
           <mesh position={[0, height + roofH / 2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[w * 0.74, roofH, 4]} />
             <meshStandardMaterial color={roofColor('warm')} roughness={0.9} />
           </mesh>
+        ) : shape === 'tapered' ? (
+          // Diamond pyramid cap — signature Art-Deco top.
+          <mesh position={[0, height, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+            <coneGeometry args={[topW * 0.62, w * 0.40, 4]} />
+            <meshStandardMaterial color={roofColor(district)} roughness={0.62} metalness={0.14} />
+          </mesh>
         ) : (
           <>
+            {/* Flat parapet slab matching the top tier footprint */}
             <mesh position={[0, height + 0.25, 0]} castShadow>
-              <boxGeometry args={[topWidth * 1.06, 0.5, topWidth * 1.06]} />
+              <boxGeometry args={[topW * 1.06, 0.5, topD * 1.06]} />
               <meshStandardMaterial color={roofColor(district)} roughness={0.8} />
             </mesh>
-            {district === 'glass' && height > 20 && (
-              <mesh position={[topWidth * 0.18, height + 1.3, -topWidth * 0.12]} castShadow>
-                <boxGeometry args={[topWidth * 0.4, 1.6, topWidth * 0.4]} />
+            {/* Mechanical penthouse detail — only on regular-footprint glass towers */}
+            {district === 'glass' && height > 20 && shape !== 'slab' && (
+              <mesh position={[topW * 0.18, height + 1.3, -topD * 0.12]} castShadow>
+                <boxGeometry args={[topW * 0.4, 1.6, topW * 0.4]} />
                 <meshStandardMaterial color="#8a939c" roughness={0.7} />
               </mesh>
             )}
+          </>
+        )}
+
+        {/* Setback antenna — slim spire above tall stepped towers */}
+        {shape === 'setback' && height > 28 && (
+          <mesh position={[0, height + height * 0.07, 0]} castShadow>
+            <cylinderGeometry args={[0.06, 0.18, height * 0.18, 6]} />
+            <meshStandardMaterial color="#8a939c" roughness={0.55} metalness={0.45} />
+          </mesh>
+        )}
+
+        {/* Slab end-wall fins — thin dark plates on the narrow ends, deepening the shadow */}
+        {shape === 'slab' && district === 'glass' && height > 20 && (
+          <>
+            {([-1, 1] as const).map((side) => (
+              <mesh key={side} position={[baseW * 0.5 * side, tiers[0].size[1] * 0.5, 0]} castShadow>
+                <boxGeometry args={[0.28, tiers[0].size[1] * 0.98, baseD * 1.1]} />
+                <meshStandardMaterial color={roofColor(district)} roughness={0.55} metalness={0.25} />
+              </mesh>
+            ))}
           </>
         )}
 

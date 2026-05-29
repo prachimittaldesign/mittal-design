@@ -1,13 +1,16 @@
 export interface Track {
-  /** File served from public/music/ — referenced as /music/<file>. */
+  /** File served from public/music/ — add the audio file then list it here. */
   file: string
   title: string
   artist: string
 }
 
-// Prachi's playlist. Drop audio files into public/music/ and list them here;
-// each plays in order (the player advances on track end). The entry below is a
-// placeholder demo tone — replace it with the real tracks + song/artist labels.
+// Drop real audio files into public/music/ and update each entry.
+// All currently point to the demo placeholder — replace `file` values one by one.
 export const PLAYLIST: Track[] = [
-  { file: 'demo-loop.wav', title: 'Ambient Sketch', artist: 'Demo track — replace in src/data/music.ts' },
+  { file: 'demo-loop.wav', title: 'Ambient Sketch',   artist: 'City Sessions' },
+  { file: 'demo-loop.wav', title: 'Blueprint Haze',   artist: 'City Sessions' },
+  { file: 'demo-loop.wav', title: 'Signal Bloom',     artist: 'City Sessions' },
+  { file: 'demo-loop.wav', title: 'Quarter Glass',    artist: 'City Sessions' },
+  { file: 'demo-loop.wav', title: 'Late Horizon',     artist: 'City Sessions' },
 ]

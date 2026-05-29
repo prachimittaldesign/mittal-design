@@ -86,18 +86,18 @@ export function GatewayLabels() {
   return (
     <group>
       {GATEWAYS.map((g) => (
-        <Billboard key={g.id} position={[0, 14, g.z]}>
+        <Billboard key={g.id} position={[0, 7, g.z]}>
           <Text
             font={interSemi}
-            fontSize={11}
+            fontSize={4.5}
             anchorX="center"
             anchorY="middle"
-            letterSpacing={0.02}
-            color={INK}
-            outlineWidth={0.3}
-            outlineColor={PAPER}
+            letterSpacing={0.18}
+            color={POST}
+            fillOpacity={0.55}
+            outlineWidth={0}
           >
-            {g.label}
+            {g.label.toUpperCase()}
           </Text>
         </Billboard>
       ))}
