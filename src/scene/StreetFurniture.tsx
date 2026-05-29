@@ -131,7 +131,7 @@ function RoadTrees() {
     <group>
       <instancedMesh ref={canopyRef} args={[undefined, undefined, pts.length]} castShadow>
         <sphereGeometry args={[1.55, 8, 7]} />
-        <meshStandardMaterial roughness={0.92} metalness={0} vertexColors />
+        <meshStandardMaterial roughness={0.85} metalness={0} emissive="#1a3d10" emissiveIntensity={0.12} />
       </instancedMesh>
       <instancedMesh ref={trunkRef} args={[undefined, undefined, pts.length]}>
         <cylinderGeometry args={[0.16, 0.22, 3.0, 6]} />
@@ -309,12 +309,12 @@ function Kiosks() {
       {/* Body */}
       <instancedMesh ref={bodyRef} args={[undefined, undefined, kiosks.length]} castShadow>
         <boxGeometry args={[2.2, 2.2, 2.2]} />
-        <meshStandardMaterial roughness={0.85} vertexColors />
+        <meshStandardMaterial roughness={0.85} />
       </instancedMesh>
       {/* Canopy / roof */}
       <instancedMesh ref={roofRef} args={[undefined, undefined, kiosks.length]} castShadow>
         <coneGeometry args={[1.8, 1.0, 4]} />
-        <meshStandardMaterial roughness={0.8} vertexColors />
+        <meshStandardMaterial roughness={0.8} />
       </instancedMesh>
     </group>
   )

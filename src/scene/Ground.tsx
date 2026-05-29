@@ -78,7 +78,7 @@ function GrassTufts() {
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, TUFT_COUNT]} castShadow receiveShadow>
       <coneGeometry args={[0.7, 1, 6]} />
-      <meshStandardMaterial roughness={0.95} metalness={0} vertexColors flatShading />
+      <meshStandardMaterial roughness={0.95} metalness={0} flatShading />
     </instancedMesh>
   )
 }
@@ -127,7 +127,7 @@ function Wildflowers() {
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, FLOWER_COUNT]}>
       <sphereGeometry args={[1, 6, 6]} />
-      <meshStandardMaterial roughness={0.7} metalness={0} vertexColors />
+      <meshStandardMaterial roughness={0.7} metalness={0} />
     </instancedMesh>
   )
 }

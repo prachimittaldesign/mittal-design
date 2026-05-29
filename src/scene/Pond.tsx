@@ -77,7 +77,7 @@ function Reeds() {
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, COUNT]} castShadow>
       <coneGeometry args={[0.13, 1, 4]} />
-      <meshStandardMaterial roughness={0.9} metalness={0} vertexColors flatShading />
+      <meshStandardMaterial roughness={0.9} metalness={0} flatShading />
     </instancedMesh>
   )
 }
