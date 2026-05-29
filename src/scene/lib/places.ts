@@ -35,8 +35,9 @@ export const PLACES: Place[] = [
   }),
 ]
 
-// A short curated set shown when the search box is focused but empty.
-const RECOMMENDED_IDS = ['izak', 'voteiq', 'cinema', 'arch', 'library']
+// A short curated set shown when the search box is focused but empty. The three
+// featured hero case studies lead, so they're the first thing a visitor sees.
+const RECOMMENDED_IDS = ['snaplogic', 'paas', 'revee', 'arch', 'cinema']
 export const RECOMMENDED: Place[] = RECOMMENDED_IDS.map((id) =>
   PLACES.find((p) => p.id === id),
 ).filter((p): p is Place => Boolean(p))

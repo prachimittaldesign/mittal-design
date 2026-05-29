@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { Color, Group, MeshStandardMaterial, Vector3, type Object3D } from 'three'
+import { Billboard } from '@react-three/drei'
+import { Color, ExtrudeGeometry, Group, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
 import { bodyColor, roofColor, DIM_GREY, layerColor, GLASS_WINDOW, WARM_WINDOW } from './lib/cityTheme'
@@ -63,6 +64,65 @@ function WindowStrip({ w, d, y, district }: { w: number; d: number; y: number; d
         <planeGeometry args={[fd, stripH]} />
       </mesh>
     </>
+  )
+}
+
+// ── Floating "enter me first" star for featured hero projects ──
+function makeStarGeo(): ExtrudeGeometry {
+  const shape = new ThreeShape()
+  const spikes = 5
+  const outer = 1
+  const inner = 0.46
+  for (let i = 0; i < spikes * 2; i++) {
+    const r = i % 2 === 0 ? outer : inner
+    const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2
+    const x = Math.cos(a) * r
+    const y = Math.sin(a) * r
+    if (i === 0) shape.moveTo(x, y)
+    else shape.lineTo(x, y)
+  }
+  shape.closePath()
+  return new ExtrudeGeometry(shape, {
+    depth: 0.32,
+    bevelEnabled: true,
+    bevelThickness: 0.1,
+    bevelSize: 0.1,
+    bevelSegments: 2,
+  })
+}
+
+function StarMarker({ y }: { y: number }) {
+  const ref = useRef<Group>(null)
+  const geo = useMemo(makeStarGeo, [])
+  const mat = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: '#ffcf4d',
+        emissive: '#ffb300',
+        emissiveIntensity: 1.7,
+        metalness: 0.5,
+        roughness: 0.28,
+        toneMapped: false,
+      }),
+    [],
+  )
+  useEffect(() => () => { geo.dispose(); mat.dispose() }, [geo, mat])
+
+  useFrame((state) => {
+    const g = ref.current
+    if (!g) return
+    const t = state.clock.elapsedTime
+    g.position.y = y + Math.sin(t * 1.6) * 0.5 // gentle bob
+    g.scale.setScalar(1.55 * (1 + Math.sin(t * 2.2) * 0.06)) // soft pulse
+  })
+
+  return (
+    <group ref={ref} position={[0, y, 0]}>
+      {/* Billboard keeps the 5-point silhouette facing the camera from any angle */}
+      <Billboard>
+        <mesh geometry={geo} material={mat} />
+      </Billboard>
+    </group>
   )
 }
 
@@ -325,6 +385,10 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
           </group>
         )}
       </group>
+
+      {/* Floating star marks the featured hero projects — "enter these first".
+          3D view only; the iso flatten would squash it. */}
+      {project.featured && view === '3d' && <StarMarker y={signY + (showLabel ? 4.5 : 2.5)} />}
     </group>
   )
 }

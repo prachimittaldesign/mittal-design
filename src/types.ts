@@ -22,6 +22,28 @@ export type RoofStyle = 'flat' | 'setback' | 'pitched'
 
 export type Ownership = 'solo' | 'lead' | 'collab' | 'support'
 
+// --- Rich case study (for the featured hero projects) ------------------------
+export interface CaseHighlight {
+  title: string
+  body: string
+}
+export interface CaseStudy {
+  role: string
+  timeline: string
+  platform: string
+  /** Short status/context badge, e.g. "Live in production" or "CES 2024". */
+  context?: string
+  /** One punchy positioning line shown as the lead paragraph. */
+  summary: string
+  problem: string
+  /** Scannable key decisions / contributions. */
+  approach: CaseHighlight[]
+  /** Outcome bullets. */
+  impact: string[]
+  /** Hero stat callout. */
+  metric?: { value: string; label: string }
+}
+
 export interface Project {
   id: string
   gx: number
@@ -41,6 +63,9 @@ export interface Project {
   /** Map-layer metrics. effort 1 (light) .. 5 (heavy); ownership of the work. */
   effort?: number
   ownership?: Ownership
+  /** Hero projects get a floating star marker + a full case-study overlay. */
+  featured?: boolean
+  caseStudy?: CaseStudy
 }
 
 export interface FillerTile {
