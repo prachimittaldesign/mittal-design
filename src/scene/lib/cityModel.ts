@@ -141,14 +141,14 @@ function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
       const theta = (i / SECTORS) * Math.PI * 2
       ctrl.push(polar(0, 0, R + (rng() - 0.5) * 5, theta))
     }
-    roads.push({ id: `ring-${ri}`, kind: 'ring', width: STREET_W, closed: true, pts: sampleCatmullRom(ctrl, 5, true) })
+    roads.push({ id: `ring-${ri}`, kind: 'ring', width: STREET_W, closed: true, pts: sampleCatmullRom(ctrl, 9, true) })
   })
 
   // Spokes — non-cardinal radials with a gentle lateral bow.
   const spokeAngles = [30, 60, 120, 150, 210, 240, 300, 330].map((d) => (d * Math.PI) / 180)
   spokeAngles.forEach((base, si) => {
     const pts: Pt[] = []
-    const steps = 6
+    const steps = 12
     const bow = (rng() - 0.5) * 0.18
     for (let s = 0; s <= steps; s++) {
       const t = s / steps

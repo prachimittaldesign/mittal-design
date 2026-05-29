@@ -1,29 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
-import type { Quadrant } from '../types'
-import { GROUND, PLAZA, ROAD, districtTint } from './lib/cityTheme'
-import { CITY_BOUNDS, CITY_RADIUS } from './lib/cityModel'
+import { GROUND, PLAZA, ROAD } from './lib/cityTheme'
+import { CITY_RADIUS } from './lib/cityModel'
 import { LOT } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
-
-const { minX, maxX, minZ, maxZ } = CITY_BOUNDS
-
-interface Quad {
-  q: Quadrant
-  cx: number
-  cz: number
-}
-
-// Each tint is a large circle pushed into its quadrant corner so the edge is
-// deep inside fog and never visible. They overlap softly at the centre; at
-// 0.05 opacity each the bleed is imperceptible over the plaza.
-const QUAD_R = CITY_RADIUS * 4
-const QUADS: Quad[] = [
-  { q: 'q1', cx:  maxX * 0.55, cz:  minZ * 0.55 },
-  { q: 'q2', cx:  minX * 0.55, cz:  minZ * 0.55 },
-  { q: 'q3', cx:  minX * 0.55, cz:  maxZ * 0.55 },
-  { q: 'q4', cx:  maxX * 0.55, cz:  maxZ * 0.55 },
-]
 
 // ─── Grass ───────────────────────────────────────────────────────────────────
 // Short, soft, low-saturation tufts laid densely so the field reads as turf
@@ -138,30 +118,13 @@ function Wildflowers() {
 export function Ground() {
   return (
     <group>
-      {/* Soft matte meadow base — large circle so no square corners are ever
-          visible; radius exceeds the far fog distance in every direction. */}
+      {/* Soft matte meadow base — one seamless circle so no square corners or
+          colour seams are ever visible; radius exceeds the far fog distance in
+          every direction, so the field simply dissolves into the horizon. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[CITY_RADIUS * 5, 96]} />
         <meshStandardMaterial color={GROUND} roughness={1} metalness={0.0} />
       </mesh>
-
-      {/* District tints — large circles pushed into each quadrant corner so
-          their edges dissolve inside fog; no rectangular hard edges visible. */}
-      {QUADS.map((qd) => (
-        <mesh
-          key={qd.q}
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[qd.cx, 0.02, qd.cz]}
-        >
-          <circleGeometry args={[QUAD_R, 80]} />
-          <meshBasicMaterial
-            color={districtTint(qd.q)}
-            transparent
-            opacity={0.05}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
 
       {/* Dense, short, muted grass — reads as soft turf, fades into the fog */}
       <GrassTufts />
@@ -171,37 +134,58 @@ export function Ground() {
 
       {/* Central plaza — calm moss circle, clear of grass */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <circleGeometry args={[LOT * 1.1, 64]} />
+        <circleGeometry args={[LOT * 1.1, 96]} />
         <meshStandardMaterial color={PLAZA} roughness={0.95} />
       </mesh>
 
-      {/* Roundabout ring road — circles the monument inside the plaza island.
-          depthWrite:false + renderOrder keeps it in the road layer's paint
-          stack so it never z-fights the carriageway feeding the roundabout. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} renderOrder={2}>
-        <ringGeometry args={[LOT * 0.52, LOT * 0.76, 64]} />
-        <meshBasicMaterial color={ROAD} depthWrite={false} />
+      {/* Roundabout carriageway — a smooth ring of tarmac circling the island.
+          meshStandardMaterial (lit, like every other road) so it shares the
+          night palette instead of glowing harsh white. depthWrite:false +
+          renderOrder keeps it in the road paint stack, so it never z-fights the
+          avenues feeding the circle. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} renderOrder={2} receiveShadow>
+        <ringGeometry args={[LOT * 0.5, LOT * 0.78, 96]} />
+        <meshStandardMaterial color={ROAD} roughness={1} depthWrite={false} />
       </mesh>
 
-      {/* Central obelisk / monument */}
-      {/* Base */}
-      <mesh position={[0, 0.8, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[2.4, 3.0, 1.6, 8]} />
+      {/* Garden island inside the ring — a low planted disc the monument rises
+          from, so it reads as a deliberate roundabout, not tarmac with a spike. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]} receiveShadow>
+        <circleGeometry args={[LOT * 0.5, 64]} />
+        <meshStandardMaterial color="#586b42" roughness={0.95} />
+      </mesh>
+      {/* Stone kerb collar around the island base */}
+      <mesh position={[0, 0.22, 0]} receiveShadow>
+        <cylinderGeometry args={[LOT * 0.5, LOT * 0.52, 0.34, 64]} />
+        <meshStandardMaterial color="#b9ad93" roughness={0.9} />
+      </mesh>
+
+      {/* ── Central obelisk — slender octagonal column so it reads clean from
+            every angle (the old 4-sided cone looked like a spinning propeller
+            when viewed straight down). ── */}
+      {/* Stepped stone base */}
+      <mesh position={[0, 0.7, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[2.0, 2.6, 1.4, 8]} />
         <meshStandardMaterial color="#8a7050" roughness={0.85} metalness={0.05} />
       </mesh>
-      {/* Middle plinth */}
-      <mesh position={[0, 2.2, 0]} castShadow>
-        <boxGeometry args={[2.8, 1.2, 2.8]} />
+      {/* Plinth */}
+      <mesh position={[0, 1.85, 0]} rotation={[0, Math.PI / 8, 0]} castShadow>
+        <cylinderGeometry args={[1.35, 1.55, 1.1, 8]} />
         <meshStandardMaterial color="#7a6040" roughness={0.8} metalness={0.05} />
       </mesh>
-      {/* Spire */}
-      <mesh position={[0, 6.5, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
-        <coneGeometry args={[0.9, 7.8, 4]} />
-        <meshStandardMaterial color="#c8a870" roughness={0.6} metalness={0.15} />
+      {/* Tapered shaft — slim octagon, no propeller silhouette from above */}
+      <mesh position={[0, 6.4, 0]} rotation={[0, Math.PI / 8, 0]} castShadow>
+        <cylinderGeometry args={[0.42, 0.9, 8.0, 8]} />
+        <meshStandardMaterial color="#c8a870" roughness={0.55} metalness={0.18} />
       </mesh>
-      {/* Glowing golden tip — softer than before */}
-      <mesh position={[0, 10.6, 0]}>
-        <sphereGeometry args={[0.32, 12, 12]} />
+      {/* Pyramidion cap */}
+      <mesh position={[0, 10.9, 0]} rotation={[0, Math.PI / 8, 0]} castShadow>
+        <coneGeometry args={[0.5, 1.2, 8]} />
+        <meshStandardMaterial color="#d8bf8a" roughness={0.45} metalness={0.25} />
+      </mesh>
+      {/* Glowing golden tip — soft beacon at the apex */}
+      <mesh position={[0, 11.8, 0]}>
+        <sphereGeometry args={[0.3, 16, 16]} />
         <meshStandardMaterial
           color="#ffcc44"
           emissive="#ffaa00"

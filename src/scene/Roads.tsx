@@ -125,7 +125,7 @@ export function Roads() {
 
       {/* Sidewalk junction pads (pale) — fill the kerb corners at bends. */}
       <instancedMesh ref={pavePadRef} args={[undefined, undefined, junctions.length]} material={paveMat} renderOrder={ORDER_PAVE} receiveShadow>
-        <circleGeometry args={[1, 20]} />
+        <circleGeometry args={[1, 32]} />
       </instancedMesh>
 
       {/* ── Road layer ── dark carriageway on top of the sidewalk slab. */}
@@ -151,7 +151,7 @@ export function Roads() {
       {/* Road junction pads (dark) — fill the carriageway corners so the tarmac
           flows continuously through every turn and crossing. */}
       <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadMat} renderOrder={ORDER_ROAD} receiveShadow>
-        <circleGeometry args={[1, 20]} />
+        <circleGeometry args={[1, 32]} />
       </instancedMesh>
 
       {/* ── Gateway avenues: fade to horizon ──
