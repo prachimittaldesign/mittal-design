@@ -31,6 +31,12 @@ export interface FocusTarget {
   nonce: number
 }
 
+// How much to push the camera back as the viewport gets narrower than this
+// reference (wide-desktop) aspect. A tall phone screen fits far less width at a
+// given distance, so 2D/skyline would clip without this — hence per-view caps.
+const REF_ASPECT = 1.5
+const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 2.45, skyline: 2.7 }
+
 export function CameraRig({
   focus,
   cmd,
@@ -43,6 +49,13 @@ export function CameraRig({
   const ref = useRef<ElementRef<typeof MapControls>>(null)
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
+  const size = useThree((s) => s.size)
+  const aspect = size.width / Math.max(1, size.height)
+
+  // Distance multiplier for the current aspect (1 on desktop, grows on mobile).
+  // Uniform scaling preserves each view's angle while fitting more content.
+  const fit = (v: ViewMode) => clamp(REF_ASPECT / aspect, 1, FIT_CAP[v])
+  const offsetFor = (v: ViewMode) => VIEW_OFFSET[v].clone().multiplyScalar(fit(v))
   const recentering = useRef(false)
   const flying = useRef(false)
   const flyTarget = useRef(new Vector3())
@@ -64,6 +77,17 @@ export function CameraRig({
     el.addEventListener('dblclick', onDouble)
     return () => el.removeEventListener('dblclick', onDouble)
   }, [gl])
+
+  // Frame the city responsively on first paint — on mobile the fixed opening
+  // tuple (from the Canvas) would sit too close and clip the edges.
+  useEffect(() => {
+    const c = ref.current
+    if (!c) return
+    camera.position.copy(offsetFor('3d'))
+    c.target.set(0, 0, 0)
+    c.update()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useFrame((_, dt) => {
     const c = ref.current
@@ -104,7 +128,7 @@ export function CameraRig({
         c.target.set(0, 0, 0)
         c.update()
       }
-      viewPos.current.copy(c.target).add(VIEW_OFFSET[view])
+      viewPos.current.copy(c.target).add(offsetFor(view))
     }
 
     if (flying.current) {
@@ -140,10 +164,12 @@ export function CameraRig({
     }
 
     if (recentering.current) {
-      easing.damp3(camera.position, DEFAULT_CAMERA_POS, 0.28, dt)
+      // Recenter to the current view's vantage (responsive), framed on origin.
+      const rp = offsetFor(view)
+      easing.damp3(camera.position, rp, 0.28, dt)
       easing.damp3(c.target, ORIGIN, 0.28, dt)
       c.update()
-      if (camera.position.distanceTo(DEFAULT_CAMERA_POS) < 0.6) {
+      if (camera.position.distanceTo(rp) < 0.6) {
         recentering.current = false
         c.enabled = true
       }
@@ -174,7 +200,9 @@ export function CameraRig({
       screenSpacePanning={view === 'skyline'}
       enableRotate={view === '3d'}
       minDistance={view === 'skyline' ? 60 : 45}
-      maxDistance={view === 'skyline' ? 220 : 230}
+      // Raise the zoom-out ceiling on narrow screens so the responsive
+      // pulled-back framing isn't clamped back in (which caused the clipping).
+      maxDistance={(view === 'skyline' ? 220 : 230) * fit(view)}
       minPolarAngle={view === 'skyline' ? 1.18 : 0.32}
       maxPolarAngle={view === 'skyline' ? 1.45 : 1.15}
     />
