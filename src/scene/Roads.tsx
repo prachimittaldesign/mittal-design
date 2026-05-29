@@ -33,8 +33,8 @@ const PAVE = '#cbc2af' // warm sidewalk paving
 // so coplanar road/pave slabs can never z-fight each other (they paint in a
 // fixed order instead of competing for the depth buffer). depthTest stays on,
 // so the ground below and buildings in front still occlude correctly.
-const ORDER_PAVE = 1
-const ORDER_ROAD = 2
+const ORDER_PAVE = 3   // was 1
+const ORDER_ROAD = 4   // was 2
 
 // Unique vertices across the network — used to drop "junction pads" that fill
 // the wedge gaps where two angled segments meet, so the network reads as one

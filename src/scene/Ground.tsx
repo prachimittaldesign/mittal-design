@@ -114,6 +114,117 @@ function Wildflowers() {
   )
 }
 
+// ─── Plaza paving — Barcelona-style decorated terrace ─────────────────────────
+// A grand circular terrace with warm sandstone paving, radiating cross strips,
+// diagonal boulevard strips, fountain basins, and concentric ring bands — like
+// Plaça de Catalunya. renderOrder 1-2 keeps it above grass but below roads (3-4).
+const TERRACE_R = 18
+const STRIP_W = 2.8
+
+function PlazaDetail() {
+  const fountainAngles = [22.5, 112.5, 202.5, 292.5].map((d) => (d * Math.PI) / 180)
+
+  return (
+    <group>
+      {/* Outer sandstone terrace — octagonal (8 sides), warm buff stone */}
+      <mesh rotation={[-Math.PI / 2, Math.PI / 8, 0]} position={[0, 0.03, 0]} renderOrder={1}>
+        <circleGeometry args={[TERRACE_R, 8]} />
+        <meshStandardMaterial color="#cfc2a0" roughness={0.95} depthWrite={false} />
+      </mesh>
+
+      {/* Inner terrace — lighter tone, creates depth and framing */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.031, 0]} renderOrder={1}>
+        <circleGeometry args={[TERRACE_R * 0.61, 64]} />
+        <meshStandardMaterial color="#ddd2b2" roughness={0.95} depthWrite={false} />
+      </mesh>
+
+      {/* Outer decorative band — octagonal border detail */}
+      <mesh rotation={[-Math.PI / 2, Math.PI / 8, 0]} position={[0, 0.032, 0]} renderOrder={2}>
+        <ringGeometry args={[TERRACE_R - 2.0, TERRACE_R, 8]} />
+        <meshStandardMaterial color="#b8a878" roughness={0.95} depthWrite={false} />
+      </mesh>
+
+      {/* Mid ring band — transition between inner and outer zones */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.032, 0]} renderOrder={2}>
+        <ringGeometry args={[9.6, 11.2, 64]} />
+        <meshStandardMaterial color="#c4b890" roughness={0.95} depthWrite={false} />
+      </mesh>
+
+      {/* Cardinal paving strips — N/S and E/W cross paths */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.033, 0]} renderOrder={2}>
+        <planeGeometry args={[STRIP_W, TERRACE_R * 2]} />
+        <meshStandardMaterial color="#c8bb98" roughness={0.95} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.033, 0]} renderOrder={2}>
+        <planeGeometry args={[TERRACE_R * 2, STRIP_W]} />
+        <meshStandardMaterial color="#c8bb98" roughness={0.95} depthWrite={false} />
+      </mesh>
+
+      {/* Diagonal paving strips — 45° crossings, slightly narrower */}
+      {[Math.PI / 4, -Math.PI / 4].map((angle, i) => (
+        <mesh key={i} rotation={[-Math.PI / 2, angle, 0]} position={[0, 0.034, 0]} renderOrder={2}>
+          <planeGeometry args={[STRIP_W * 0.72, TERRACE_R * 2]} />
+          <meshStandardMaterial color="#c0b490" roughness={0.95} depthWrite={false} />
+        </mesh>
+      ))}
+
+      {/* Fountain basins — 4 shallow basins sitting between road spokes */}
+      {fountainAngles.map((angle, i) => (
+        <group key={i}>
+          <mesh
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[Math.cos(angle) * 13, 0.034, Math.sin(angle) * 13]}
+            renderOrder={2}
+          >
+            <circleGeometry args={[2.6, 32]} />
+            <meshStandardMaterial color="#7fa0b0" roughness={0.7} depthWrite={false} />
+          </mesh>
+          {/* Stone lip ring around each basin */}
+          <mesh
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[Math.cos(angle) * 13, 0.035, Math.sin(angle) * 13]}
+            renderOrder={2}
+          >
+            <ringGeometry args={[2.5, 2.85, 32]} />
+            <meshStandardMaterial color="#a8987a" roughness={0.9} depthWrite={false} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+// ─── Stone footpath to the pond ───────────────────────────────────────────────
+// A winding garden path connecting the SW diagonal avenue to the pond,
+// so the water feels reachable rather than floating in empty meadow.
+function PondPath() {
+  const segs = [
+    { ax: -41, az: -41, bx: -54, bz: -50 },
+    { ax: -54, az: -50, bx: -65, bz: -57 },
+  ]
+  return (
+    <group>
+      {segs.map((s, i) => {
+        const dx = s.bx - s.ax
+        const dz = s.bz - s.az
+        const len = Math.hypot(dx, dz)
+        const angle = Math.atan2(-dz, dx)
+        return (
+          <mesh key={i} position={[(s.ax + s.bx) / 2, 0.03, (s.az + s.bz) / 2]} rotation={[0, angle, 0]} renderOrder={3}>
+            <boxGeometry args={[len + 2.0, 0.04, 2.4]} />
+            <meshStandardMaterial color="#b8ad8c" roughness={0.95} depthWrite={false} />
+          </mesh>
+        )
+      })}
+      {/* Circular stone landing at the pond's edge — a viewpoint terrace */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-68, 0.04, -60]} renderOrder={3}>
+        <circleGeometry args={[4.5, 24]} />
+        <meshStandardMaterial color="#a8a088" roughness={0.92} depthWrite={false} />
+      </mesh>
+    </group>
+  )
+}
+
 // ─── Ground ──────────────────────────────────────────────────────────────────
 export function Ground() {
   return (
@@ -125,6 +236,12 @@ export function Ground() {
         <circleGeometry args={[CITY_RADIUS * 5, 96]} />
         <meshStandardMaterial color={GROUND} roughness={1} metalness={0.0} />
       </mesh>
+
+      {/* Barcelona-style plaza paving */}
+      <PlazaDetail />
+
+      {/* Stone footpath to pond */}
+      <PondPath />
 
       {/* Dense, short, muted grass — reads as soft turf, fades into the fog */}
       <GrassTufts />
@@ -143,7 +260,7 @@ export function Ground() {
           night palette instead of glowing harsh white. depthWrite:false +
           renderOrder keeps it in the road paint stack, so it never z-fights the
           avenues feeding the circle. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} renderOrder={2} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} renderOrder={4} receiveShadow>
         <ringGeometry args={[LOT * 0.5, LOT * 0.78, 96]} />
         <meshStandardMaterial color={ROAD} roughness={1} depthWrite={false} />
       </mesh>

@@ -116,11 +116,11 @@ export interface Parcel {
 }
 
 const PLAZA_R = 9
-const RING_RADII = [15, 30, 45, 60]
+const RING_RADII = [20, 40, 58]
 const SECTORS = 12
 const OUTER = 64
-const AVENUE_W = 3.6
-const STREET_W = 2.0
+const AVENUE_W = 4.8              // wider grand avenues
+const STREET_W = 3.2              // wider ring roads
 
 function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   const rng = mulberry32(13371)
@@ -144,18 +144,19 @@ function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
     roads.push({ id: `ring-${ri}`, kind: 'ring', width: STREET_W, closed: true, pts: sampleCatmullRom(ctrl, 9, true) })
   })
 
-  // Spokes — non-cardinal radials with a gentle lateral bow.
-  const spokeAngles = [30, 60, 120, 150, 210, 240, 300, 330].map((d) => (d * Math.PI) / 180)
-  spokeAngles.forEach((base, si) => {
+  // Diagonal grand boulevards — four clean 45-degree avenues radiating from
+  // the plaza, like La Diagonal in Barcelona. Perfectly straight (no bow) so
+  // they read as deliberate planned infrastructure.
+  const diagonalAngles = [45, 135, 225, 315].map((d) => (d * Math.PI) / 180)
+  diagonalAngles.forEach((base, si) => {
     const pts: Pt[] = []
     const steps = 12
-    const bow = (rng() - 0.5) * 0.18
     for (let s = 0; s <= steps; s++) {
       const t = s / steps
       const r = PLAZA_R + t * (OUTER - PLAZA_R)
-      pts.push(polar(0, 0, r, base + Math.sin(t * Math.PI) * bow))
+      pts.push(polar(0, 0, r, base))
     }
-    roads.push({ id: `spoke-${si}`, kind: 'spoke', width: STREET_W, closed: false, pts })
+    roads.push({ id: `diag-${si}`, kind: 'spoke', width: AVENUE_W, closed: false, pts })
   })
 
   // Parcels — annular sectors between consecutive rings.
@@ -221,7 +222,7 @@ export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).filter(segClearsAn
 // most plots don't sit on a road. For each plot we drop a short footpath from
 // its edge to the closest point on the nearest road, so nothing reads as
 // "floating" and the network visibly reaches every door.
-const CONNECTOR_W = 1.8
+const CONNECTOR_W = 2.0  // was 1.8
 
 function nearestPointOnSegs(px: number, pz: number, segs: RoadSeg[]): { x: number; z: number; dist: number } {
   let bx = 0
