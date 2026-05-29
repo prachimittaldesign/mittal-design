@@ -173,10 +173,11 @@ export function Ground() {
         <meshStandardMaterial color={PLAZA} roughness={0.95} />
       </mesh>
 
-      {/* Roundabout ring road */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+      {/* Roundabout ring road — sits above the road surface (top face y=0.08)
+          with polygonOffset so it never z-fights with crossing road segments. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.083, 0]}>
         <ringGeometry args={[LOT * 0.52, LOT * 0.76, 64]} />
-        <meshBasicMaterial color={ROAD} />
+        <meshBasicMaterial color={ROAD} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-4} />
       </mesh>
 
       {/* Central obelisk / monument */}

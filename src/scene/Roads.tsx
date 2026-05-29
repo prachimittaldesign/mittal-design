@@ -19,12 +19,24 @@ interface Junction {
 export function Roads() {
   const roadMat = useMemo(() => new MeshStandardMaterial({ color: ROAD, roughness: 1 }), [])
   const paveMat = useMemo(() => new MeshStandardMaterial({ color: PAVE, roughness: 0.98 }), [])
+  // Separate pad materials with polygonOffset so junction circles always win
+  // the depth test over the segment surfaces they sit flush on top of.
+  const roadPadMat = useMemo(
+    () => new MeshStandardMaterial({ color: ROAD, roughness: 1, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
+    [],
+  )
+  const pavePadMat = useMemo(
+    () => new MeshStandardMaterial({ color: PAVE, roughness: 0.98, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
+    [],
+  )
   useEffect(
     () => () => {
       roadMat.dispose()
       paveMat.dispose()
+      roadPadMat.dispose()
+      pavePadMat.dispose()
     },
-    [roadMat, paveMat],
+    [roadMat, paveMat, roadPadMat, pavePadMat],
   )
 
   // Collect junctions (segment endpoints), keeping the widest road at each.
@@ -52,13 +64,16 @@ export function Roads() {
     if (!rp || !pp) return
     const dummy = new Object3D()
     junctions.forEach((j, i) => {
-      // Unit circle has r=1; scale to each junction's road / sidewalk radius.
+      // Place each circle flush on the surface it covers so it masks z-fighting
+      // where crossing segment boxes share the same top-face depth.
+      // Road box: center y=0.05, height=0.06 → top face at y=0.08
+      // Pave box: center y=0.02, height=0.04 → top face at y=0.04
       dummy.rotation.set(-Math.PI / 2, 0, 0)
-      dummy.position.set(j.x, 0.052, j.z)
+      dummy.position.set(j.x, 0.081, j.z)
       dummy.scale.set(j.w / 2, j.w / 2, 1)
       dummy.updateMatrix()
       rp.setMatrixAt(i, dummy.matrix)
-      dummy.position.set(j.x, 0.025, j.z)
+      dummy.position.set(j.x, 0.041, j.z)
       const pr = (j.w + PATH_W * 2) / 2
       dummy.scale.set(pr, pr, 1)
       dummy.updateMatrix()
@@ -94,7 +109,7 @@ export function Roads() {
       })}
 
       {/* Sidewalk junction pads (pale) — fill the kerb corners at bends. */}
-      <instancedMesh ref={pavePadRef} args={[undefined, undefined, junctions.length]} material={paveMat} receiveShadow>
+      <instancedMesh ref={pavePadRef} args={[undefined, undefined, junctions.length]} material={pavePadMat} receiveShadow>
         <circleGeometry args={[1, 20]} />
       </instancedMesh>
 
@@ -119,7 +134,7 @@ export function Roads() {
 
       {/* Road junction pads (dark) — fill the carriageway corners so the tarmac
           flows continuously through every turn and crossing. */}
-      <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadMat} receiveShadow>
+      <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadPadMat} receiveShadow>
         <circleGeometry args={[1, 20]} />
       </instancedMesh>
     </group>
