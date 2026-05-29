@@ -55,11 +55,16 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
         shadow-mapSize={[2048, 2048]}
         shadow-camera-near={10}
         shadow-camera-far={360}
-        shadow-camera-left={-110}
-        shadow-camera-right={110}
-        shadow-camera-top={110}
-        shadow-camera-bottom={-110}
+        shadow-camera-left={-90}
+        shadow-camera-right={90}
+        shadow-camera-top={90}
+        shadow-camera-bottom={-90}
+        // normalBias offsets the shadow lookup along the surface normal — the
+        // correct cure for the diagonal "acne" shimmer the coarse shadow map
+        // was raking across the near-flat ground / pave overlays. Tightening the
+        // frustum to ±90 (the city footprint) also shrinks each shadow texel.
         shadow-bias={-0.0004}
+        shadow-normalBias={0.12}
       />
       {weather?.rain && view === '3d' && <Rain />}
     </>

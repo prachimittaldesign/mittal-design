@@ -76,7 +76,7 @@ function GrassTufts() {
   }, [])
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, TUFT_COUNT]} castShadow receiveShadow>
+    <instancedMesh ref={ref} args={[undefined, undefined, TUFT_COUNT]} receiveShadow>
       <coneGeometry args={[0.7, 1, 6]} />
       <meshStandardMaterial roughness={0.95} metalness={0} flatShading />
     </instancedMesh>
