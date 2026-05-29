@@ -12,15 +12,17 @@ interface Quad {
   q: Quadrant
   cx: number
   cz: number
-  sx: number
-  sz: number
 }
 
+// Each tint is a large circle pushed into its quadrant corner so the edge is
+// deep inside fog and never visible. They overlap softly at the centre; at
+// 0.05 opacity each the bleed is imperceptible over the plaza.
+const QUAD_R = CITY_RADIUS * 4
 const QUADS: Quad[] = [
-  { q: 'q1', cx: maxX / 2, cz: minZ / 2, sx: maxX,  sz: -minZ },
-  { q: 'q2', cx: minX / 2, cz: minZ / 2, sx: -minX, sz: -minZ },
-  { q: 'q3', cx: minX / 2, cz: maxZ / 2, sx: -minX, sz: maxZ  },
-  { q: 'q4', cx: maxX / 2, cz: maxZ / 2, sx: maxX,  sz: maxZ  },
+  { q: 'q1', cx:  maxX * 0.55, cz:  minZ * 0.55 },
+  { q: 'q2', cx:  minX * 0.55, cz:  minZ * 0.55 },
+  { q: 'q3', cx:  minX * 0.55, cz:  maxZ * 0.55 },
+  { q: 'q4', cx:  maxX * 0.55, cz:  maxZ * 0.55 },
 ]
 
 // ─── Grass ───────────────────────────────────────────────────────────────────
@@ -134,24 +136,24 @@ function Wildflowers() {
 
 // ─── Ground ──────────────────────────────────────────────────────────────────
 export function Ground() {
-  const span = CITY_RADIUS * 2.4
-
   return (
     <group>
-      {/* Soft matte meadow base — muted, cohesive green */}
+      {/* Soft matte meadow base — large circle so no square corners are ever
+          visible; radius exceeds the far fog distance in every direction. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <planeGeometry args={[span, span]} />
+        <circleGeometry args={[CITY_RADIUS * 5, 96]} />
         <meshStandardMaterial color={GROUND} roughness={1} metalness={0.0} />
       </mesh>
 
-      {/* District tints — barely there, just a whisper of zone colour */}
+      {/* District tints — large circles pushed into each quadrant corner so
+          their edges dissolve inside fog; no rectangular hard edges visible. */}
       {QUADS.map((qd) => (
         <mesh
           key={qd.q}
           rotation={[-Math.PI / 2, 0, 0]}
           position={[qd.cx, 0.02, qd.cz]}
         >
-          <planeGeometry args={[qd.sx, qd.sz]} />
+          <circleGeometry args={[QUAD_R, 80]} />
           <meshBasicMaterial
             color={districtTint(qd.q)}
             transparent
