@@ -126,9 +126,13 @@ function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   const rng = mulberry32(13371)
   const roads: RoadPath[] = []
 
-  // Avenues — the two straight axes through the roundabout (the named cardinals).
-  roads.push({ id: 'ave-x', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: -OUTER, z: 0 }, { x: OUTER, z: 0 }] })
-  roads.push({ id: 'ave-z', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: 0, z: -OUTER }, { x: 0, z: OUTER }] })
+  // Avenues — the named cardinals. Split around the central roundabout so they
+  // FEED it from four sides instead of crossing straight through the monument
+  // (which left two coplanar road slabs fighting over the plaza centre).
+  roads.push({ id: 'ave-x-w', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: -OUTER, z: 0 }, { x: -PLAZA_R, z: 0 }] })
+  roads.push({ id: 'ave-x-e', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: PLAZA_R, z: 0 }, { x: OUTER, z: 0 }] })
+  roads.push({ id: 'ave-z-n', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: 0, z: -OUTER }, { x: 0, z: -PLAZA_R }] })
+  roads.push({ id: 'ave-z-s', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: 0, z: PLAZA_R }, { x: 0, z: OUTER }] })
 
   // Rings — jittered closed loops (organic, not perfect circles).
   RING_RADII.forEach((R, ri) => {
@@ -211,6 +215,63 @@ const NETWORK = buildRoadNetwork()
 export const ROADS: RoadPath[] = NETWORK.roads
 export const PARCELS: Parcel[] = NETWORK.parcels
 export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).filter(segClearsAnchors)
+
+// --- Connector driveways: tie every building & landmark to the road network ---
+// Buildings live on a square grid; the roads are a polar ring/spoke system, so
+// most plots don't sit on a road. For each plot we drop a short footpath from
+// its edge to the closest point on the nearest road, so nothing reads as
+// "floating" and the network visibly reaches every door.
+const CONNECTOR_W = 1.8
+
+function nearestPointOnSegs(px: number, pz: number, segs: RoadSeg[]): { x: number; z: number; dist: number } {
+  let bx = 0
+  let bz = 0
+  let best = Infinity
+  for (const s of segs) {
+    const dx = s.bx - s.ax
+    const dz = s.bz - s.az
+    const len2 = dx * dx + dz * dz || 1
+    let t = ((px - s.ax) * dx + (pz - s.az) * dz) / len2
+    t = Math.max(0, Math.min(1, t))
+    const cx = s.ax + dx * t
+    const cz = s.az + dz * t
+    const d = Math.hypot(px - cx, pz - cz)
+    if (d < best) {
+      best = d
+      bx = cx
+      bz = cz
+    }
+  }
+  return { x: bx, z: bz, dist: best }
+}
+
+function buildConnectors(): RoadSeg[] {
+  const out: RoadSeg[] = []
+  const plots = [
+    ...BUILDINGS.map((b) => ({ x: b.position[0], z: b.position[2], r: b.footprint * 0.5 })),
+    ...LANDMARK_DEFS.map((l) => ({ x: l.position[0], z: l.position[2], r: l.footprint * 0.5 })),
+  ]
+  for (const p of plots) {
+    const near = nearestPointOnSegs(p.x, p.z, ROAD_SEGS)
+    const dx = near.x - p.x
+    const dz = near.z - p.z
+    const d = Math.hypot(dx, dz)
+    if (d < p.r + 1) continue // already meets a road
+    if (d > 40) continue // unreachably far — don't draw a runway across the map
+    const ux = dx / d
+    const uz = dz / d
+    out.push({
+      ax: p.x + ux * p.r, // start flush at the building edge
+      az: p.z + uz * p.r,
+      bx: near.x, // end on the road centre-line (forms a clean T-join)
+      bz: near.z,
+      width: CONNECTOR_W,
+    })
+  }
+  return out
+}
+
+export const CONNECTOR_SEGS: RoadSeg[] = buildConnectors()
 
 // Gateway avenues — the main Z axis runs out of the city in both directions:
 // the future recedes ahead (−Z, into the fog), the past trails behind (+Z).

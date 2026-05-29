@@ -173,11 +173,12 @@ export function Ground() {
         <meshStandardMaterial color={PLAZA} roughness={0.95} />
       </mesh>
 
-      {/* Roundabout ring road — sits above the road surface (top face y=0.08)
-          with polygonOffset so it never z-fights with crossing road segments. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.083, 0]}>
+      {/* Roundabout ring road — circles the monument inside the plaza island.
+          depthWrite:false + renderOrder keeps it in the road layer's paint
+          stack so it never z-fights the carriageway feeding the roundabout. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} renderOrder={2}>
         <ringGeometry args={[LOT * 0.52, LOT * 0.76, 64]} />
-        <meshBasicMaterial color={ROAD} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-4} />
+        <meshBasicMaterial color={ROAD} depthWrite={false} />
       </mesh>
 
       {/* Central obelisk / monument */}

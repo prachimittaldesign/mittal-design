@@ -1,11 +1,18 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { InstancedMesh, MeshStandardMaterial, Object3D } from 'three'
 import { ROAD } from './lib/cityTheme'
-import { ROAD_SEGS, GATEWAY_SEGS } from './lib/cityModel'
+import { ROAD_SEGS, GATEWAY_SEGS, CONNECTOR_SEGS } from './lib/cityModel'
 
-const ALL_SEGS = [...ROAD_SEGS, ...GATEWAY_SEGS]
+const ALL_SEGS = [...ROAD_SEGS, ...GATEWAY_SEGS, ...CONNECTOR_SEGS]
 const PATH_W = 1.3 // sidewalk width revealed on each side of the road
 const PAVE = '#cbc2af' // warm sidewalk paving
+
+// Render-order stack for the road layer. Everything here uses depthWrite:false
+// so coplanar road/pave slabs can never z-fight each other (they paint in a
+// fixed order instead of competing for the depth buffer). depthTest stays on,
+// so the ground below and buildings in front still occlude correctly.
+const ORDER_PAVE = 1
+const ORDER_ROAD = 2
 
 // Unique vertices across the network — used to drop "junction pads" that fill
 // the wedge gaps where two angled segments meet, so the network reads as one
@@ -17,26 +24,14 @@ interface Junction {
 }
 
 export function Roads() {
-  const roadMat = useMemo(() => new MeshStandardMaterial({ color: ROAD, roughness: 1 }), [])
-  const paveMat = useMemo(() => new MeshStandardMaterial({ color: PAVE, roughness: 0.98 }), [])
-  // Separate pad materials with polygonOffset so junction circles always win
-  // the depth test over the segment surfaces they sit flush on top of.
-  const roadPadMat = useMemo(
-    () => new MeshStandardMaterial({ color: ROAD, roughness: 1, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
-    [],
-  )
-  const pavePadMat = useMemo(
-    () => new MeshStandardMaterial({ color: PAVE, roughness: 0.98, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 }),
-    [],
-  )
+  const roadMat = useMemo(() => new MeshStandardMaterial({ color: ROAD, roughness: 1, depthWrite: false }), [])
+  const paveMat = useMemo(() => new MeshStandardMaterial({ color: PAVE, roughness: 0.98, depthWrite: false }), [])
   useEffect(
     () => () => {
       roadMat.dispose()
       paveMat.dispose()
-      roadPadMat.dispose()
-      pavePadMat.dispose()
     },
-    [roadMat, paveMat, roadPadMat, pavePadMat],
+    [roadMat, paveMat],
   )
 
   // Collect junctions (segment endpoints), keeping the widest road at each.
@@ -64,16 +59,13 @@ export function Roads() {
     if (!rp || !pp) return
     const dummy = new Object3D()
     junctions.forEach((j, i) => {
-      // Place each circle flush on the surface it covers so it masks z-fighting
-      // where crossing segment boxes share the same top-face depth.
-      // Road box: center y=0.05, height=0.06 → top face at y=0.08
-      // Pave box: center y=0.02, height=0.04 → top face at y=0.04
+      // Unit circle has r=1; scale to each junction's road / sidewalk radius.
       dummy.rotation.set(-Math.PI / 2, 0, 0)
-      dummy.position.set(j.x, 0.081, j.z)
+      dummy.position.set(j.x, 0.08, j.z)
       dummy.scale.set(j.w / 2, j.w / 2, 1)
       dummy.updateMatrix()
       rp.setMatrixAt(i, dummy.matrix)
-      dummy.position.set(j.x, 0.041, j.z)
+      dummy.position.set(j.x, 0.04, j.z)
       const pr = (j.w + PATH_W * 2) / 2
       dummy.scale.set(pr, pr, 1)
       dummy.updateMatrix()
@@ -101,6 +93,7 @@ export function Roads() {
             material={paveMat}
             position={[(s.ax + s.bx) / 2, 0.02, (s.az + s.bz) / 2]}
             rotation={[0, angle, 0]}
+            renderOrder={ORDER_PAVE}
             receiveShadow
           >
             <boxGeometry args={[len + s.width + PATH_W * 2, 0.04, s.width + PATH_W * 2]} />
@@ -109,7 +102,7 @@ export function Roads() {
       })}
 
       {/* Sidewalk junction pads (pale) — fill the kerb corners at bends. */}
-      <instancedMesh ref={pavePadRef} args={[undefined, undefined, junctions.length]} material={pavePadMat} receiveShadow>
+      <instancedMesh ref={pavePadRef} args={[undefined, undefined, junctions.length]} material={paveMat} renderOrder={ORDER_PAVE} receiveShadow>
         <circleGeometry args={[1, 20]} />
       </instancedMesh>
 
@@ -125,6 +118,7 @@ export function Roads() {
             material={roadMat}
             position={[(s.ax + s.bx) / 2, 0.05, (s.az + s.bz) / 2]}
             rotation={[0, angle, 0]}
+            renderOrder={ORDER_ROAD}
             receiveShadow
           >
             <boxGeometry args={[len + s.width, 0.06, s.width]} />
@@ -134,7 +128,7 @@ export function Roads() {
 
       {/* Road junction pads (dark) — fill the carriageway corners so the tarmac
           flows continuously through every turn and crossing. */}
-      <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadPadMat} receiveShadow>
+      <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadMat} renderOrder={ORDER_ROAD} receiveShadow>
         <circleGeometry args={[1, 20]} />
       </instancedMesh>
     </group>
