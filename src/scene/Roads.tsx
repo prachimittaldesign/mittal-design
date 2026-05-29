@@ -26,7 +26,7 @@ const GATEWAY_FADE: FadeSeg[] = GATEWAY_SEGS.flatMap((gw) => {
     }
   })
 })
-const PATH_W = 1.3 // sidewalk width revealed on each side of the road
+const PATH_W = 1.8
 const PAVE = '#cbc2af' // warm sidewalk paving
 
 // Render-order stack for the road layer. Everything here uses depthWrite:false

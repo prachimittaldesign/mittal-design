@@ -6,16 +6,16 @@ import { easing } from 'maath'
 import { CITY_BOUNDS } from './lib/cityModel'
 import type { CameraCmd, ViewMode } from '../types'
 
-export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 92, 118]
+export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 138, 177]
 export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 
 // Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
-  '3d':      new Vector3(0,  92, 118),
-  iso:       new Vector3(82, 104, 82),
+  '3d':      new Vector3(0,  138, 177),
+  iso:       new Vector3(123, 156, 123),
   // Skyline: far back on Z, low-ish Y — like standing at the edge of
   // Marine Drive looking at the wall of buildings.
-  skyline:   new Vector3(0,  22, 155),
+  skyline:   new Vector3(0,  33, 233),
 }
 const ORIGIN: [number, number, number] = [0, 0, 0]
 const { minX, maxX, minZ, maxZ } = CITY_BOUNDS
@@ -113,7 +113,7 @@ export function CameraRig({
         c.enabled = false
       } else {
         const cur = camera.position.distanceTo(c.target)
-        zoomTarget.current = Math.min(230, Math.max(45, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
+        zoomTarget.current = Math.min(345, Math.max(68, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
         zooming.current = true
         c.enabled = false
       }
@@ -199,10 +199,10 @@ export function CameraRig({
       // row; orbit is disabled so the cinematic front-facing angle is locked.
       screenSpacePanning={view === 'skyline'}
       enableRotate={view === '3d'}
-      minDistance={view === 'skyline' ? 60 : 45}
+      minDistance={view === 'skyline' ? 90 : 68}
       // Raise the zoom-out ceiling on narrow screens so the responsive
       // pulled-back framing isn't clamped back in (which caused the clipping).
-      maxDistance={(view === 'skyline' ? 220 : 230) * fit(view)}
+      maxDistance={(view === 'skyline' ? 330 : 345) * fit(view)}
       minPolarAngle={view === 'skyline' ? 1.18 : 0.32}
       maxPolarAngle={view === 'skyline' ? 1.45 : 1.15}
     />

@@ -4,7 +4,7 @@ import type { RoofStyle } from '../../types'
 // isometric "look" comes from the camera angle, NOT from foreshortening here.
 //   gx = complexity  (+right)  → world +X
 //   gy = enterprise(+)/consumer(-) → world -Z (enterprise reads "north/away")
-export const LOT = 8
+export const LOT = 12
 
 export function gridToWorld(gx: number, gy: number): [number, number, number] {
   return [gx * LOT, 0, -gy * LOT]

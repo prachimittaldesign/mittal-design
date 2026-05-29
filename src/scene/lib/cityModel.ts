@@ -115,12 +115,12 @@ export interface Parcel {
   occupied: boolean
 }
 
-const PLAZA_R = 9
-const RING_RADII = [20, 40, 58]
+const PLAZA_R = 14
+const RING_RADII = [30, 60, 90]
 const SECTORS = 12
-const OUTER = 64
-const AVENUE_W = 4.8              // wider grand avenues
-const STREET_W = 3.2              // wider ring roads
+const OUTER = 96
+const AVENUE_W = 5.5
+const STREET_W = 3.8
 
 function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   const rng = mulberry32(13371)
@@ -222,7 +222,7 @@ export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).filter(segClearsAn
 // most plots don't sit on a road. For each plot we drop a short footpath from
 // its edge to the closest point on the nearest road, so nothing reads as
 // "floating" and the network visibly reaches every door.
-const CONNECTOR_W = 2.0  // was 1.8
+const CONNECTOR_W = 2.2
 
 function nearestPointOnSegs(px: number, pz: number, segs: RoadSeg[]): { x: number; z: number; dist: number } {
   let bx = 0
@@ -285,8 +285,8 @@ export const GATEWAY_SEGS: RoadSeg[] = [
 // World-space label anchors for the two gateway ends (near the reachable edge so
 // they read at the avenue's vanishing point before fading into the fog beyond).
 export const GATEWAYS = [
-  { id: 'future', label: 'The Future', z: -140 },
-  { id: 'past', label: 'The Past', z: 140 },
+  { id: 'future', label: 'The Future', z: -175 },
+  { id: 'past', label: 'The Past', z: 175 },
 ] as const
 
 // --- Richer city: grey scenery buildings filling empty parcels ---------------
@@ -305,8 +305,8 @@ function buildScenery(): SceneryDef[] {
   const out: SceneryDef[] = []
   for (const parcel of PARCELS) {
     if (parcel.occupied) continue
-    if (rng() < 0.12) continue
-    const count = 2 + Math.floor(rng() * 3) // 2..4 per parcel
+    if (rng() < 0.35) continue
+    const count = 1 + Math.floor(rng() * 2) // 1..2 per parcel
     for (let i = 0; i < count; i++) {
       const r = (parcel.rInner + parcel.rOuter) / 2 + (rng() - 0.5) * parcel.approxW * 0.6
       const theta = parcel.thetaMid + (rng() - 0.5) * ((parcel.approxD * 0.6) / Math.max(parcel.rInner, 1))
@@ -375,9 +375,9 @@ function buildProps(): PropDef[] {
     for (const gy of GRID_STEPS) {
       if (gx === 0 || gy === 0) continue
       if (occupied.has(`${gx},${gy}`)) continue
-      if (rng() < 0.4) continue
+      if (rng() < 0.6) continue
       const [x, , z] = gridToWorld(gx, gy)
-      const count = 2 + Math.floor(rng() * 2)
+      const count = 1 + Math.floor(rng() * 2)
       for (let i = 0; i < count; i++) {
         props.push({
           id: `t-${gx}-${gy}-${i}`,
@@ -427,7 +427,7 @@ function computeBounds() {
   const pad = 14
   // Extend the Z range so the camera can follow the gateway avenues a little way
   // out of the city; their far ends still recede unreachably into the fog.
-  const gatewayReach = 60
+  const gatewayReach = 40
   return {
     minX: Math.min(...xs) - pad,
     maxX: Math.max(...xs) + pad,

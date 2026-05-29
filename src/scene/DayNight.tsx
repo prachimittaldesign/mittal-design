@@ -19,7 +19,7 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
   useEffect(() => {
     if (!(scene.background instanceof Color)) scene.background = new Color(SKY)
     // Pull fog in slightly so the grass field fades gracefully before the hard horizon
-    if (!scene.fog) scene.fog = new Fog(SKY, 140, 380)
+    if (!scene.fog) scene.fog = new Fog(SKY, 200, 460)
   }, [scene])
 
   useFrame((_, dt) => {
@@ -49,16 +49,16 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
       <ambientLight ref={amb} intensity={0.35} />
       <directionalLight
         ref={dir}
-        position={[70, 110, 50]}
+        position={[105, 150, 75]}
         intensity={1.15}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-near={10}
         shadow-camera-far={360}
-        shadow-camera-left={-90}
-        shadow-camera-right={90}
-        shadow-camera-top={90}
-        shadow-camera-bottom={-90}
+        shadow-camera-left={-130}
+        shadow-camera-right={130}
+        shadow-camera-top={130}
+        shadow-camera-bottom={-130}
         // normalBias offsets the shadow lookup along the surface normal — the
         // correct cure for the diagonal "acne" shimmer the coarse shadow map
         // was raking across the near-flat ground / pave overlays. Tightening the

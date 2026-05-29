@@ -12,8 +12,8 @@ import { POND_CENTER, POND_CLEAR } from './Pond'
 // the field's edge dissolves into the horizon rather than ending in a hard ring.
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
 const TUFT_COUNT  = 6000
-const PLAZA_CLEAR = LOT * 1.5
-const FIELD_R     = CITY_RADIUS * 1.7   // sits inside the fog so the rim fades out
+const PLAZA_CLEAR = 30   // matches new TERRACE_R so grass doesn't grow on the plaza
+const FIELD_R     = Math.min(CITY_RADIUS * 1.7, 180)   // capped so grass doesn't waste instances far in fog
 
 function GrassTufts() {
   const ref = useRef<InstancedMesh>(null)
@@ -118,8 +118,8 @@ function Wildflowers() {
 // A grand circular terrace with warm sandstone paving, radiating cross strips,
 // diagonal boulevard strips, fountain basins, and concentric ring bands — like
 // Plaça de Catalunya. renderOrder 1-2 keeps it above grass but below roads (3-4).
-const TERRACE_R = 18
-const STRIP_W = 2.8
+const TERRACE_R = 27
+const STRIP_W = 4.2
 
 function PlazaDetail() {
   const fountainAngles = [22.5, 112.5, 202.5, 292.5].map((d) => (d * Math.PI) / 180)
@@ -146,7 +146,7 @@ function PlazaDetail() {
 
       {/* Mid ring band — transition between inner and outer zones */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.032, 0]} renderOrder={2}>
-        <ringGeometry args={[9.6, 11.2, 64]} />
+        <ringGeometry args={[14.5, 16.8, 64]} />
         <meshStandardMaterial color="#c4b890" roughness={0.95} depthWrite={false} />
       </mesh>
 
@@ -173,7 +173,7 @@ function PlazaDetail() {
         <group key={i}>
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[Math.cos(angle) * 13, 0.034, Math.sin(angle) * 13]}
+            position={[Math.cos(angle) * 20, 0.034, Math.sin(angle) * 20]}
             renderOrder={2}
           >
             <circleGeometry args={[2.6, 32]} />
@@ -199,8 +199,7 @@ function PlazaDetail() {
 // so the water feels reachable rather than floating in empty meadow.
 function PondPath() {
   const segs = [
-    { ax: -41, az: -41, bx: -54, bz: -50 },
-    { ax: -54, az: -50, bx: -65, bz: -57 },
+    { ax: -64, az: -64, bx: -72, bz: -65 },
   ]
   return (
     <group>
@@ -217,7 +216,7 @@ function PondPath() {
         )
       })}
       {/* Circular stone landing at the pond's edge — a viewpoint terrace */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-68, 0.04, -60]} renderOrder={3}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-76, 0.04, -65]} renderOrder={3}>
         <circleGeometry args={[4.5, 24]} />
         <meshStandardMaterial color="#a8a088" roughness={0.92} depthWrite={false} />
       </mesh>
