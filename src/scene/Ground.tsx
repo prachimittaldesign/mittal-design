@@ -182,7 +182,7 @@ function PlazaDetail() {
           {/* Stone lip ring around each basin */}
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[Math.cos(angle) * 13, 0.035, Math.sin(angle) * 13]}
+            position={[Math.cos(angle) * 20, 0.035, Math.sin(angle) * 20]}
             renderOrder={2}
           >
             <ringGeometry args={[2.5, 2.85, 32]} />
