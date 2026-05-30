@@ -346,6 +346,10 @@ export interface PropDef {
 
 const GRID_STEPS = [-6, -4, -2, 0, 2, 4, 6]
 
+// Exclusion zone around the central plaza — trees inside this radius are skipped.
+// Slightly larger than TERRACE_R=27 so props from inner grid positions can't scatter in.
+const PROP_EXCL_R2 = 30 * 30
+
 function buildProps(): PropDef[] {
   const rng = mulberry32(20260526)
   const occupied = new Set<string>([
@@ -362,13 +366,12 @@ function buildProps(): PropDef[] {
     const kind: PropKind = f.glyph === 'rocks' ? 'rock' : 'tree'
     const count = kind === 'tree' ? 3 : 2
     for (let i = 0; i < count; i++) {
-      props.push({
-        id: `${f.id}-${i}`,
-        kind,
-        position: [x + (rng() - 0.5) * LOT * 0.9, 0, z + (rng() - 0.5) * LOT * 0.9],
-        rotationY: rng() * Math.PI * 2,
-        scale: 0.7 + rng() * 0.6,
-      })
+      const px = x + (rng() - 0.5) * LOT * 0.9
+      const pz = z + (rng() - 0.5) * LOT * 0.9
+      const ry = rng() * Math.PI * 2
+      const sc = 0.7 + rng() * 0.6
+      if (px * px + pz * pz < PROP_EXCL_R2) continue
+      props.push({ id: `${f.id}-${i}`, kind, position: [px, 0, pz], rotationY: ry, scale: sc })
     }
   }
 
@@ -381,13 +384,12 @@ function buildProps(): PropDef[] {
       const [x, , z] = gridToWorld(gx, gy)
       const count = 1 + Math.floor(rng() * 2)
       for (let i = 0; i < count; i++) {
-        props.push({
-          id: `t-${gx}-${gy}-${i}`,
-          kind: 'tree',
-          position: [x + (rng() - 0.5) * LOT, 0, z + (rng() - 0.5) * LOT],
-          rotationY: rng() * Math.PI * 2,
-          scale: 0.6 + rng() * 0.5,
-        })
+        const px = x + (rng() - 0.5) * LOT
+        const pz = z + (rng() - 0.5) * LOT
+        const ry = rng() * Math.PI * 2
+        const sc = 0.6 + rng() * 0.5
+        if (px * px + pz * pz < PROP_EXCL_R2) continue
+        props.push({ id: `t-${gx}-${gy}-${i}`, kind: 'tree', position: [px, 0, pz], rotationY: ry, scale: sc })
       }
     }
   }

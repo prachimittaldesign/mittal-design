@@ -15,7 +15,7 @@ const TERRACE_R = 27
 // the field's edge dissolves into the horizon rather than ending in a hard ring.
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
 const TUFT_COUNT  = 6000
-const PLAZA_CLEAR = TERRACE_R   // grass starts exactly where the stone terrace ends
+const PLAZA_CLEAR = TERRACE_R + 2   // 2-unit grass buffer beyond the stone terrace edge
 const FIELD_R     = Math.min(CITY_RADIUS * 1.7, 180)   // capped so grass doesn't waste instances far in fog
 
 function GrassTufts() {
