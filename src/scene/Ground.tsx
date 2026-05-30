@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
-import { GROUND, PLAZA, ROAD } from './lib/cityTheme'
+import { GROUND, ROAD } from './lib/cityTheme'
 import { CITY_RADIUS } from './lib/cityModel'
 import { LOT } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
+
+// Plaza terrace radius — declared here so PLAZA_CLEAR and PlazaDetail share it.
+const TERRACE_R = 27
 
 // ─── Grass ───────────────────────────────────────────────────────────────────
 // Short, soft, low-saturation tufts laid densely so the field reads as turf
@@ -12,7 +15,7 @@ import { POND_CENTER, POND_CLEAR } from './Pond'
 // the field's edge dissolves into the horizon rather than ending in a hard ring.
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
 const TUFT_COUNT  = 6000
-const PLAZA_CLEAR = 30   // matches new TERRACE_R so grass doesn't grow on the plaza
+const PLAZA_CLEAR = TERRACE_R   // grass starts exactly where the stone terrace ends
 const FIELD_R     = Math.min(CITY_RADIUS * 1.7, 180)   // capped so grass doesn't waste instances far in fog
 
 function GrassTufts() {
@@ -114,75 +117,55 @@ function Wildflowers() {
   )
 }
 
-// ─── Plaza paving — Barcelona-style decorated terrace ─────────────────────────
-// A grand circular terrace with warm sandstone paving, radiating cross strips,
-// diagonal boulevard strips, fountain basins, and concentric ring bands — like
-// Plaça de Catalunya. renderOrder 1-2 keeps it above grass but below roads (3-4).
-const TERRACE_R = 27
-const STRIP_W = 4.2
+// ─── Plaza paving ─────────────────────────────────────────────────────────────
+// Concentric sandstone circles with fountain basins — all circleGeometry /
+// ringGeometry so nothing is infinitely thin or broken from low viewing angles.
 
+// Only circleGeometry / ringGeometry — no planeGeometry so there are no
+// infinitely-thin surfaces that look broken when viewed from a low angle.
 function PlazaDetail() {
   const fountainAngles = [22.5, 112.5, 202.5, 292.5].map((d) => (d * Math.PI) / 180)
 
   return (
     <group>
-      {/* Outer sandstone terrace — octagonal (8 sides), warm buff stone */}
-      <mesh rotation={[-Math.PI / 2, Math.PI / 8, 0]} position={[0, 0.03, 0]} renderOrder={1}>
-        <circleGeometry args={[TERRACE_R, 8]} />
-        <meshStandardMaterial color="#cfc2a0" roughness={0.95} depthWrite={false} />
+      {/* Base sandstone terrace — full solid circle, no octagon so no gap */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0]} renderOrder={1}>
+        <circleGeometry args={[TERRACE_R, 96]} />
+        <meshStandardMaterial color="#cfc2a0" roughness={0.96} depthWrite={false} />
       </mesh>
 
-      {/* Inner terrace — lighter tone, creates depth and framing */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.031, 0]} renderOrder={1}>
-        <circleGeometry args={[TERRACE_R * 0.61, 64]} />
-        <meshStandardMaterial color="#ddd2b2" roughness={0.95} depthWrite={false} />
+      {/* Outer decorative border ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.029, 0]} renderOrder={2}>
+        <ringGeometry args={[TERRACE_R - 2.5, TERRACE_R, 96]} />
+        <meshStandardMaterial color="#b8a878" roughness={0.96} depthWrite={false} />
       </mesh>
 
-      {/* Outer decorative band — octagonal border detail */}
-      <mesh rotation={[-Math.PI / 2, Math.PI / 8, 0]} position={[0, 0.032, 0]} renderOrder={2}>
-        <ringGeometry args={[TERRACE_R - 2.0, TERRACE_R, 8]} />
-        <meshStandardMaterial color="#b8a878" roughness={0.95} depthWrite={false} />
+      {/* Inner lighter zone — creates depth without strips */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.029, 0]} renderOrder={2}>
+        <circleGeometry args={[TERRACE_R * 0.6, 96]} />
+        <meshStandardMaterial color="#ddd2b2" roughness={0.96} depthWrite={false} />
       </mesh>
 
-      {/* Mid ring band — transition between inner and outer zones */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.032, 0]} renderOrder={2}>
-        <ringGeometry args={[14.5, 16.8, 64]} />
-        <meshStandardMaterial color="#c4b890" roughness={0.95} depthWrite={false} />
+      {/* Mid accent ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.030, 0]} renderOrder={2}>
+        <ringGeometry args={[14.5, 16.8, 96]} />
+        <meshStandardMaterial color="#c4b890" roughness={0.96} depthWrite={false} />
       </mesh>
 
-      {/* Cardinal paving strips — N/S and E/W cross paths */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.033, 0]} renderOrder={2}>
-        <planeGeometry args={[STRIP_W, TERRACE_R * 2]} />
-        <meshStandardMaterial color="#c8bb98" roughness={0.95} depthWrite={false} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.033, 0]} renderOrder={2}>
-        <planeGeometry args={[TERRACE_R * 2, STRIP_W]} />
-        <meshStandardMaterial color="#c8bb98" roughness={0.95} depthWrite={false} />
-      </mesh>
-
-      {/* Diagonal paving strips — 45° crossings, slightly narrower */}
-      {[Math.PI / 4, -Math.PI / 4].map((angle, i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, angle, 0]} position={[0, 0.034, 0]} renderOrder={2}>
-          <planeGeometry args={[STRIP_W * 0.72, TERRACE_R * 2]} />
-          <meshStandardMaterial color="#c0b490" roughness={0.95} depthWrite={false} />
-        </mesh>
-      ))}
-
-      {/* Fountain basins — 4 shallow basins sitting between road spokes */}
+      {/* Fountain basins — 4 water features between the 8 road spokes */}
       {fountainAngles.map((angle, i) => (
         <group key={i}>
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[Math.cos(angle) * 20, 0.034, Math.sin(angle) * 20]}
+            position={[Math.cos(angle) * 20, 0.031, Math.sin(angle) * 20]}
             renderOrder={2}
           >
             <circleGeometry args={[2.6, 32]} />
             <meshStandardMaterial color="#7fa0b0" roughness={0.7} depthWrite={false} />
           </mesh>
-          {/* Stone lip ring around each basin */}
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[Math.cos(angle) * 20, 0.035, Math.sin(angle) * 20]}
+            position={[Math.cos(angle) * 20, 0.032, Math.sin(angle) * 20]}
             renderOrder={2}
           >
             <ringGeometry args={[2.5, 2.85, 32]} />
@@ -248,10 +231,10 @@ export function Ground() {
       {/* A restrained two-tone wildflower scatter */}
       <Wildflowers />
 
-      {/* Central plaza — calm moss circle, clear of grass */}
+      {/* Central paved circle — warm stone matching the terrace, no green patch */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <circleGeometry args={[LOT * 1.1, 96]} />
-        <meshStandardMaterial color={PLAZA} roughness={0.95} />
+        <circleGeometry args={[LOT * 1.2, 96]} />
+        <meshStandardMaterial color="#d8ccb0" roughness={0.95} />
       </mesh>
 
       {/* Roundabout carriageway — a smooth ring of tarmac circling the island.

@@ -58,7 +58,9 @@ export const LANDMARK_DEFS: LandmarkDef[] = LANDMARKS.map((l) => ({
 // Civic clock tower — a fixed monument near the plaza that keeps Hyderabad time.
 // Sits off the avenues/spokes so it claims a clear plot; registered as an anchor
 // so roads skirt it and scenery doesn't grow over it.
-export const CLOCK_TOWER = { position: [6, 0, 21] as [number, number, number], footprint: 5 }
+// Moved to radius ~43 (between the first two ring roads) — old position [6,0,21]
+// was inside the plaza after TERRACE_R grew to 27 with the 1.5x city rescale.
+export const CLOCK_TOWER = { position: [LOT * 3, 0, LOT * 2] as [number, number, number], footprint: 5 }
 
 // Fixed plots the roads must avoid and scenery must not occupy.
 interface Anchor {
