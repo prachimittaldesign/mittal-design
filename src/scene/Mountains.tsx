@@ -11,6 +11,7 @@ import {
 } from 'three'
 import { easing } from 'maath'
 import { MOUNTAIN_SNOW } from './lib/cityTheme'
+import type { ViewMode } from '../types'
 
 function mulberry32(seed: number): () => number {
   let s = seed >>> 0
@@ -120,7 +121,7 @@ function buildRange(): BufferGeometry {
 // vantage and fades in only as the camera tilts down toward the horizon, so it
 // reveals itself like a real range coming into view rather than always sitting
 // there as obvious cones.
-export function Mountains() {
+export function Mountains({ view }: { view: ViewMode }) {
   const geom = useMemo(buildRange, [])
   const matRef = useRef<MeshStandardMaterial>(null)
   const camera = useThree((s) => s.camera)
@@ -129,6 +130,14 @@ export function Mountains() {
   useFrame((_, dt) => {
     const m = matRef.current
     if (!m) return
+    // In skyline view the camera is nearly horizontal — mountains would fill the
+    // frame and hide buildings. Force them invisible; let them appear only in
+    // the 3D aerial vantage where they frame the horizon at the right angle.
+    if (view === 'skyline') {
+      easing.damp(m, 'opacity', 0, 0.2, dt)
+      m.visible = m.opacity > 0.02
+      return
+    }
     camera.getWorldDirection(dir)
     // dir.y ≈ -0.95 straight-down, ≈ -0.41 at the most horizontal tilt allowed.
     // Reveal as the view tilts past the default aerial toward the horizon.

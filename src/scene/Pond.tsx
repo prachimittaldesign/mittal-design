@@ -15,7 +15,7 @@ function mulberry32(seed: number): () => number {
 
 // Pond placement — sits where the old waterfall peak stood (back-left, in the
 // grass). Exported so the grass field can clear a circle for it.
-export const POND_CENTER: [number, number] = [-78, -68]
+export const POND_CENTER: [number, number] = [-104, -42]
 export const POND_CLEAR = 24
 
 const RX = 15 // pond radius along x

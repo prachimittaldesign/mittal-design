@@ -13,9 +13,11 @@ export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   '3d':      new Vector3(0,  138, 177),
   iso:       new Vector3(123, 156, 123),
-  // Skyline: far back on Z, low-ish Y — like standing at the edge of
-  // Marine Drive looking at the wall of buildings.
-  skyline:   new Vector3(0,  33, 233),
+  // Skyline: low eye height, close enough that enterprise buildings
+  // (z=−72) stay within the fog-clear zone, wide enough to frame the full
+  // width of the city without mountains blocking (mountains are hidden in
+  // skyline mode separately).
+  skyline:   new Vector3(0,  28, 195),
 }
 const ORIGIN: [number, number, number] = [0, 0, 0]
 const { minX, maxX, minZ, maxZ } = CITY_BOUNDS

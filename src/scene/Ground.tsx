@@ -1,9 +1,26 @@
 import { useEffect, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
 import { GROUND, ROAD } from './lib/cityTheme'
-import { CITY_RADIUS } from './lib/cityModel'
-import { LOT } from './lib/project3d'
+import { CITY_RADIUS, ROAD_SEGS_DRAW, CONNECTOR_SEGS, RING_RADII, RING_ROAD_W } from './lib/cityModel'
+import { LOT, pointToSegDist } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
+
+// ─── Road exclusion for grass ─────────────────────────────────────────────────
+// Grass tufts and flowers must not spawn on road or sidewalk surfaces.
+// Buffer beyond each road's half-width: covers the sidewalk (PATH_W≈1.8) + a
+// small visual margin so no green peeks out from under the kerb.
+const ROAD_EXCL = 3.0
+const _ALL_SEGS = [...ROAD_SEGS_DRAW, ...CONNECTOR_SEGS]
+function isOnRoad(x: number, z: number): boolean {
+  const r = Math.hypot(x, z)
+  for (const R of RING_RADII) {
+    if (Math.abs(r - R) < RING_ROAD_W / 2 + ROAD_EXCL) return true
+  }
+  for (const s of _ALL_SEGS) {
+    if (pointToSegDist(x, z, s.ax, s.az, s.bx, s.bz) < s.width / 2 + ROAD_EXCL) return true
+  }
+  return false
+}
 
 // Plaza terrace radius — declared here so PLAZA_CLEAR and PlazaDetail share it.
 const TERRACE_R = 27
@@ -38,6 +55,7 @@ function GrassTufts() {
       const pdx = x - POND_CENTER[0]
       const pdz = z - POND_CENTER[1]
       if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
+      if (isOnRoad(x, z)) continue
 
       // Short and soft — gentle bumps of turf, not tall spikes.
       const h = 0.28 + Math.random() * 0.55
@@ -93,6 +111,7 @@ function Wildflowers() {
       const pdx = x - POND_CENTER[0]
       const pdz = z - POND_CENTER[1]
       if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
+      if (isOnRoad(x, z)) continue
 
       dummy.position.set(x, 0.5, z)
       dummy.rotation.set(0, Math.random() * Math.PI * 2, 0)
@@ -181,8 +200,10 @@ function PlazaDetail() {
 // A winding garden path connecting the SW diagonal avenue to the pond,
 // so the water feels reachable rather than floating in empty meadow.
 function PondPath() {
+  // Path runs from the outer ring road (~r=90, angle 202°) to the pond edge.
+  // Pond centre [-104, -42], ring-90 at that angle ≈ [-83, -34].
   const segs = [
-    { ax: -64, az: -64, bx: -72, bz: -65 },
+    { ax: -83, az: -34, bx: -92, bz: -38 },
   ]
   return (
     <group>
@@ -198,8 +219,8 @@ function PondPath() {
           </mesh>
         )
       })}
-      {/* Circular stone landing at the pond's edge — a viewpoint terrace */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-76, 0.04, -65]} renderOrder={3}>
+      {/* Circular stone landing at the pond's near edge */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-92, 0.04, -38]} renderOrder={3}>
         <circleGeometry args={[4.5, 24]} />
         <meshStandardMaterial color="#a8a088" roughness={0.92} depthWrite={false} />
       </mesh>

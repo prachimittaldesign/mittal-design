@@ -97,7 +97,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         <Roads />
         <Props />
         <StreetFurniture />
-        <Mountains />
+        <Mountains view={view} />
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}
         {view === '3d' && <Pond />}
