@@ -12,7 +12,9 @@ export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 // Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   '3d':      new Vector3(0,  138, 177),
-  iso:       new Vector3(123, 156, 123),
+  // 2D: camera directly overhead so the city reads as a flat map.
+  // Tiny Z keeps MapControls from gimbal-locking without any visible tilt.
+  iso:       new Vector3(0,  320, 0.1),
   // Skyline: low eye height, close enough that enterprise buildings
   // (z=−72) stay within the fog-clear zone, wide enough to frame the full
   // width of the city without mountains blocking (mountains are hidden in
@@ -125,8 +127,8 @@ export function CameraRig({
     if (view !== lastView.current) {
       lastView.current = view
       viewing.current = true
-      // Skyline: reset pan target to origin so all buildings are in frame.
-      if (view === 'skyline') {
+      // Skyline / iso: reset pan to origin so the full city is in frame.
+      if (view === 'skyline' || view === 'iso') {
         c.target.set(0, 0, 0)
         c.update()
       }
@@ -197,16 +199,16 @@ export function CameraRig({
       makeDefault
       enableDamping
       dampingFactor={0.08}
-      // Skyline: screen-space pan lets the user slide left/right along the
-      // row; orbit is disabled so the cinematic front-facing angle is locked.
-      screenSpacePanning={view === 'skyline'}
+      // Iso: screen-space panning keeps drag feeling like a map scroll from above.
+      // Skyline: same, locks the cinematic front-facing angle.
+      screenSpacePanning={view === 'iso' || view === 'skyline'}
       enableRotate={view === '3d'}
       minDistance={view === 'skyline' ? 90 : 68}
-      // Raise the zoom-out ceiling on narrow screens so the responsive
-      // pulled-back framing isn't clamped back in (which caused the clipping).
       maxDistance={(view === 'skyline' ? 330 : 345) * fit(view)}
-      minPolarAngle={view === 'skyline' ? 1.18 : 0.32}
-      maxPolarAngle={view === 'skyline' ? 1.45 : 1.15}
+      // Iso: allow polar angle down to 0 (straight overhead); cap tilt at ~20°
+      // so the top-down map feel is preserved even if the user tries to orbit.
+      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0 : 0.32}
+      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 0.35 : 1.15}
     />
   )
 }

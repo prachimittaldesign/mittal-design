@@ -28,8 +28,13 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
     const fog = scene.fog
     if (fog instanceof Fog) {
       easing.dampC(fog.color, p.fog, 0.6, dt)
-      easing.damp(fog, 'near', p.fogNear, 0.6, dt)
-      easing.damp(fog, 'far', p.fogFar, 0.6, dt)
+      // In top-down 2D mode the camera is ~320 units above the ground, so the
+      // normal fog values would haze the entire city. Push them way out so the
+      // overhead map reads sharp and clear.
+      const fogNear = view === 'iso' ? 600 : p.fogNear
+      const fogFar  = view === 'iso' ? 900 : p.fogFar
+      easing.damp(fog, 'near', fogNear, 0.6, dt)
+      easing.damp(fog, 'far',  fogFar,  0.6, dt)
     }
     if (hemi.current) {
       easing.dampC(hemi.current.color, p.hemiSky, 0.6, dt)
