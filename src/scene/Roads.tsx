@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { InstancedMesh, MeshStandardMaterial, Object3D } from 'three'
 import { ROAD } from './lib/cityTheme'
-import { ROAD_SEGS, GATEWAY_SEGS, CONNECTOR_SEGS, type RoadSeg } from './lib/cityModel'
+import { ROAD_SEGS_DRAW, RING_RADII, RING_ROAD_W, GATEWAY_SEGS, CONNECTOR_SEGS, type RoadSeg } from './lib/cityModel'
 
-// City roads + connector driveways — no gateway segments here; those fade separately.
-const ALL_SEGS = [...ROAD_SEGS, ...CONNECTOR_SEGS]
+// Avenues + connectors as box segments; ring roads rendered separately as flat circles.
+const ALL_SEGS = [...ROAD_SEGS_DRAW, ...CONNECTOR_SEGS]
 
 // Split each gateway into N steps with linearly decreasing opacity so the road
 // dissolves naturally into the fog at the horizon.
@@ -101,6 +101,25 @@ export function Roads() {
 
   return (
     <group>
+      {/* ── Ring roads: rendered as flat annular rings for guaranteed smooth circles.
+          These draw first (lowest renderOrder) so avenues / spokes paint on top
+          at intersections, which is the correct visual hierarchy. */}
+      {RING_RADII.map((R, i) => {
+        const half = RING_ROAD_W / 2
+        return (
+          <group key={`ring-flat-${i}`}>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} renderOrder={ORDER_PAVE - 1}>
+              <ringGeometry args={[R - half - PATH_W, R + half + PATH_W, 128]} />
+              <primitive object={paveMat} attach="material" />
+            </mesh>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} renderOrder={ORDER_ROAD - 1}>
+              <ringGeometry args={[R - half, R + half, 128]} />
+              <primitive object={roadMat} attach="material" />
+            </mesh>
+          </group>
+        )
+      })}
+
       {/* ── Sidewalk layer ── a wider pale slab under every segment; it spills
           PATH_W beyond the kerb on both sides and past each end, so the borders
           stay continuous around curves and through junctions. */}

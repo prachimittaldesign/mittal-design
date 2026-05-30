@@ -113,8 +113,8 @@ export function skyProfile(frac: number, weather: Weather | null): SkyProfile {
   OUT.ambient = lerpN(a.am, b.am, t)
   OUT.dirIntensity = lerpN(a.di, b.di, t)
   OUT.fog.copy(OUT.background)
-  OUT.fogNear = 200
-  OUT.fogFar = 460
+  OUT.fogNear = 300
+  OUT.fogFar = 620
   OUT.rain = false
 
   // Weather: clouds dim + grey the day; rain/fog pull the horizon in.

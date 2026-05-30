@@ -19,7 +19,7 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
   useEffect(() => {
     if (!(scene.background instanceof Color)) scene.background = new Color(SKY)
     // Pull fog in slightly so the grass field fades gracefully before the hard horizon
-    if (!scene.fog) scene.fog = new Fog(SKY, 200, 460)
+    if (!scene.fog) scene.fog = new Fog(SKY, 300, 620)
   }, [scene])
 
   useFrame((_, dt) => {

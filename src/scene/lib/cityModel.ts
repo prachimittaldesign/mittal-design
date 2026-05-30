@@ -118,11 +118,12 @@ export interface Parcel {
 }
 
 const PLAZA_R = 14
-const RING_RADII = [30, 60, 90]
+export const RING_RADII = [30, 60, 90]
+export const RING_ROAD_W = 3.8   // width of each ring road (= STREET_W)
 const SECTORS = 12
 const OUTER = 96
 const AVENUE_W = 5.5
-const STREET_W = 3.8
+const STREET_W = RING_ROAD_W
 
 function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   const rng = mulberry32(13371)
@@ -218,6 +219,8 @@ const NETWORK = buildRoadNetwork()
 export const ROADS: RoadPath[] = NETWORK.roads
 export const PARCELS: Parcel[] = NETWORK.parcels
 export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).filter(segClearsAnchors)
+// Non-ring segments only — rings are rendered as flat ringGeometry in Roads.tsx for smooth circles.
+export const ROAD_SEGS_DRAW: RoadSeg[] = ROADS.filter((r) => r.kind !== 'ring').flatMap(pathToSegs).filter(segClearsAnchors)
 
 // --- Connector driveways: tie every building & landmark to the road network ---
 // Buildings live on a square grid; the roads are a polar ring/spoke system, so
