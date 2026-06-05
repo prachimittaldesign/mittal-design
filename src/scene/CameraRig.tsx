@@ -14,10 +14,10 @@ const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   // 3D: a scenic coastal overview — pitched ~30° so the sea around the town and
   // the dusk horizon read behind it, while the city layout stays legible.
   '3d':      new Vector3(0,  125, 215),
-  // 2D ("coastal dusk"): a scenic low-aerial pitched ~16° below horizontal and
-  // pulled back so the deep-blue dusk sky, the sea and the distant headlands all
-  // frame the full-height townscape — a real, mature postcard view.
-  iso:       new Vector3(0,  95, 326),
+  // 2D ("bird's-eye"): a high, steeply-angled overhead view (~52° below
+  // horizontal) — clearly looking down on the town and its coastline, with the
+  // sea ring fading to the dusk horizon around it.
+  iso:       new Vector3(0,  235, 185),
   // Street view: a low eye, pushed OUT over the water (past the LAND_R≈206
   // coastline) so shimmering reflections fill the foreground and the lit town
   // rises across the bay against the dusk sky — the closest match to Amalfi.
@@ -122,7 +122,7 @@ export function CameraRig({
         c.enabled = false
       } else {
         const cur = camera.position.distanceTo(c.target)
-        const zMin = view === 'skyline' ? 90 : view === 'iso' ? 120 : 68
+        const zMin = view === 'skyline' ? 90 : view === 'iso' ? 120 : 26
         const zMax = view === 'skyline' ? 480 : view === 'iso' ? 520 : 345
         zoomTarget.current = Math.min(zMax, Math.max(zMin, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
         zooming.current = true
@@ -210,12 +210,14 @@ export function CameraRig({
       // coastal 2D view both allow free orbit so you can sweep the bay.
       screenSpacePanning={view === 'skyline'}
       enableRotate={view !== 'skyline'}
-      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 120 : 68}
+      // 3D: allow getting right down near street level (26) so the headland
+      //   hills behind the town can be admired from a low, dramatic angle.
+      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 120 : 26}
       maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 520 : 345 * fit(view)}
-      // Coastal 2D: keep the camera in a scenic elevated band (never straight
-      // down, never below the horizon) so the dusk sky + sea always frame it.
-      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0.95 : 0.32}
-      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 1.42 : 1.15}
+      // 2D bird's-eye stays steeply overhead; 3D can drop almost to the horizon
+      // (1.46 ≈ 84°) for that low waterfront angle, or rise to a high aerial.
+      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0.32 : 0.3}
+      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 1.0 : 1.46}
     />
   )
 }

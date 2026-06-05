@@ -4,7 +4,7 @@ import { Billboard } from '@react-three/drei'
 import { Color, ExtrudeGeometry, Group, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
-import { bodyColor, roofColor, DIM_GREY, layerColor, GLASS_WINDOW, WARM_WINDOW } from './lib/cityTheme'
+import { amalfiFacade, amalfiRoof, DIM_GREY, layerColor, AMALFI_WINDOW } from './lib/cityTheme'
 import { type BuildingDef } from './lib/cityModel'
 import type { Appearance, Project, RoofStyle, ViewMode } from '../types'
 
@@ -29,19 +29,18 @@ function pickShape(id: string, district: 'glass' | 'warm', height: number): Shap
 }
 
 // Glowing window bands on all four faces, respecting rectangular footprints.
-function WindowStrip({ w, d, y, district }: { w: number; d: number; y: number; district: 'glass' | 'warm' }) {
-  const wColor = district === 'glass' ? GLASS_WINDOW : WARM_WINDOW
+function WindowStrip({ w, d, y }: { w: number; d: number; y: number }) {
   const mat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: wColor,
-        emissive: wColor,
-        emissiveIntensity: 1.3,
-        roughness: 0.2,
-        metalness: 0.1,
+        color: AMALFI_WINDOW,
+        emissive: AMALFI_WINDOW,
+        emissiveIntensity: 1.5,
+        roughness: 0.3,
+        metalness: 0,
         toneMapped: false,
       }),
-    [wColor],
+    [],
   )
   useEffect(() => () => mat.dispose(), [mat])
 
@@ -216,33 +215,37 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const roofH  = w * 0.5
   const signY  = roofStyle === 'pitched' ? height + roofH + 2.0 : height + crownH + 3.0
 
-  const baseEmissive = district === 'glass' ? 0.14 : 0.05
-  const baseColor = useMemo(() => new Color(bodyColor(district)), [district])
+  // Deterministic Amalfi stucco facade + terracotta roof per building.
+  const facadeHex = useMemo(() => amalfiFacade(district, idHash(project.id)), [district, project.id])
+  const roofHex = useMemo(() => amalfiRoof(idHash(project.id)), [project.id])
+
+  const baseEmissive = 0.06 // warm interior bleed; windows do the real glowing
+  const baseColor = useMemo(() => new Color(facadeHex), [facadeHex])
   const body = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: bodyColor(district),
-        roughness: district === 'glass' ? 0.42 : 0.88,
-        metalness: district === 'glass' ? 0.18 : 0.0,
-        emissive: district === 'glass' ? '#2b3742' : '#3a2f1e',
+        color: facadeHex,
+        roughness: 0.92, // matte lime-washed stucco
+        metalness: 0.0,
+        emissive: '#3a2a18',
         emissiveIntensity: baseEmissive,
       }),
-    [district, baseEmissive],
+    [facadeHex],
   )
   useEffect(() => () => body.dispose(), [body])
 
   const hoverGlow = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: district === 'glass' ? '#5aa0e8' : '#ff8a50',
-        emissive: district === 'glass' ? '#5aa0e8' : '#ff8a50',
+        color: '#ffb24d',
+        emissive: '#ffb24d',
         emissiveIntensity: 0,
         transparent: true,
         opacity: 0,
         roughness: 0.4,
         toneMapped: false,
       }),
-    [district],
+    [],
   )
   useEffect(() => () => hoverGlow.dispose(), [hoverGlow])
 
@@ -305,10 +308,10 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }}
     >
       <group ref={liftRef}>
-        {/* footing — rectangular base matching the tower footprint */}
+        {/* footing — warm stone base matching the building footprint */}
         <mesh position={[0, 0.3, 0]} receiveShadow>
           <boxGeometry args={[baseW * 1.06, 0.6, baseD * 1.06]} />
-          <meshStandardMaterial color="#9a9488" roughness={0.95} />
+          <meshStandardMaterial color="#c4b596" roughness={0.95} />
         </mesh>
 
         {/* massing tiers */}
@@ -325,53 +328,53 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
 
         {/* window bands — use actual base footprint dimensions */}
         {windowFloors.map((y, i) => (
-          <WindowStrip key={i} w={baseW} d={baseD} y={y} district={district} />
+          <WindowStrip key={i} w={baseW} d={baseD} y={y} />
         ))}
 
         {/* ── Roofline ── */}
         {roofStyle === 'pitched' ? (
           <mesh position={[0, height + roofH / 2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[w * 0.74, roofH, 4]} />
-            <meshStandardMaterial color={roofColor('warm')} roughness={0.9} />
+            <meshStandardMaterial color={roofHex} roughness={0.9} />
           </mesh>
         ) : shape === 'tapered' ? (
-          // Diamond pyramid cap — signature Art-Deco top.
+          // Terracotta pyramid cap.
           <mesh position={[0, height, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[topW * 0.62, w * 0.40, 4]} />
-            <meshStandardMaterial color={roofColor(district)} roughness={0.62} metalness={0.14} />
+            <meshStandardMaterial color={roofHex} roughness={0.78} metalness={0.0} />
           </mesh>
         ) : (
           <>
-            {/* Flat parapet slab matching the top tier footprint */}
+            {/* Flat terracotta parapet slab matching the top tier footprint */}
             <mesh position={[0, height + 0.25, 0]} castShadow>
               <boxGeometry args={[topW * 1.06, 0.5, topD * 1.06]} />
-              <meshStandardMaterial color={roofColor(district)} roughness={0.8} />
+              <meshStandardMaterial color={roofHex} roughness={0.85} />
             </mesh>
-            {/* Mechanical penthouse detail — only on regular-footprint glass towers */}
-            {district === 'glass' && height > 20 && shape !== 'slab' && (
+            {/* Rooftop terrace detail — a small pergola/penthouse on taller blocks */}
+            {height > 20 && shape !== 'slab' && (
               <mesh position={[topW * 0.18, height + 1.3, -topD * 0.12]} castShadow>
                 <boxGeometry args={[topW * 0.4, 1.6, topW * 0.4]} />
-                <meshStandardMaterial color="#8a939c" roughness={0.7} />
+                <meshStandardMaterial color="#cdbfa6" roughness={0.85} />
               </mesh>
             )}
           </>
         )}
 
-        {/* Setback antenna — slim spire above tall stepped towers */}
+        {/* Setback finial — slim terracotta chimney above tall stepped blocks */}
         {shape === 'setback' && height > 28 && (
           <mesh position={[0, height + height * 0.07, 0]} castShadow>
-            <cylinderGeometry args={[0.06, 0.18, height * 0.18, 6]} />
-            <meshStandardMaterial color="#8a939c" roughness={0.55} metalness={0.45} />
+            <cylinderGeometry args={[0.12, 0.18, height * 0.14, 6]} />
+            <meshStandardMaterial color={roofHex} roughness={0.85} />
           </mesh>
         )}
 
-        {/* Slab end-wall fins — thin dark plates on the narrow ends, deepening the shadow */}
+        {/* Slab end-wall fins — pale stucco pilasters on the narrow ends */}
         {shape === 'slab' && district === 'glass' && height > 20 && (
           <>
             {([-1, 1] as const).map((side) => (
               <mesh key={side} position={[baseW * 0.5 * side, tiers[0].size[1] * 0.5, 0]} castShadow>
                 <boxGeometry args={[0.28, tiers[0].size[1] * 0.98, baseD * 1.1]} />
-                <meshStandardMaterial color={roofColor(district)} roughness={0.55} metalness={0.25} />
+                <meshStandardMaterial color={roofHex} roughness={0.85} metalness={0.0} />
               </mesh>
             ))}
           </>

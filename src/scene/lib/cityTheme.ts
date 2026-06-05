@@ -34,6 +34,26 @@ export function roofColor(d: District): string {
   return ROOF[d]
 }
 
+// ─── Amalfi Coast palette ────────────────────────────────────────────────────
+// The town is reimagined as a Mediterranean cliff village at dusk: matte stucco
+// facades in warm pastels, terracotta roofs, and warm lamplit windows. The
+// enterprise (glass) district leans toward the paler creams/whites that climb
+// the upper town; the consumer (warm) district takes the deeper terracotta and
+// coral tones nearer the water.
+const AMALFI_PALE = ['#ece0c6', '#efe4cb', '#e7d8b8', '#f0e2c0', '#e3d3ad', '#ead9bb']
+const AMALFI_WARM = ['#e0a878', '#d98e63', '#cf9d6c', '#e6b98f', '#d8896a', '#c9784f', '#e3b07a']
+export const AMALFI_ROOFS = ['#a8553a', '#b5683f', '#9c5236', '#c07a4e', '#94472f']
+export const AMALFI_WINDOW = '#ffcf8a' // warm lamplit windows
+
+// Deterministic facade colour for a building from its hash + district.
+export function amalfiFacade(d: District, hash: number): string {
+  const pal = d === 'glass' ? AMALFI_PALE : AMALFI_WARM
+  return pal[hash % pal.length]
+}
+export function amalfiRoof(hash: number): string {
+  return AMALFI_ROOFS[hash % AMALFI_ROOFS.length]
+}
+
 // Ground district tint pulled straight from the 2D BIOME so the 3D ground
 // encodes the same Enterprise/Consumer × Simple/Complex quadrants.
 export function districtTint(q: Quadrant): string {
