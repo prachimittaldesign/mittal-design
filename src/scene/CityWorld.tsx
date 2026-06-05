@@ -15,6 +15,7 @@ import { Pond } from './Pond'
 import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
 import { Billboards } from './Billboards'
+import { CityLife } from './CityLife'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS, ISO_FLATTEN } from './lib/cityModel'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
@@ -105,6 +106,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         {view === '3d' && <Birds />}
         {view === '3d' && <ClockTower />}
         {view === '3d' && <Billboards />}
+        {view === '3d' && <CityLife />}
         {view === 'iso' && <AvenueLabels />}
         {BUILDINGS.map((def) => (
           <Building

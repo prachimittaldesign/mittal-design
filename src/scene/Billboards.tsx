@@ -119,19 +119,20 @@ interface ScreenSpot {
 
 function ringScreens(): ScreenSpot[] {
   const spots: ScreenSpot[] = []
-  // angles between the diagonals: 0, 90, 180, 270 (the cardinal avenue ends),
-  // pulled out to r≈50 and set beside the avenue so they flank it.
+  // Eight screens around the plaza. The cardinal ends (0/90/180/270) flank the
+  // four avenues; four more sit between the diagonals at r≈58 facing centre.
   const cfg = [
-    { ang: 0, ch: 0 },
-    { ang: 90, ch: 2 },
-    { ang: 180, ch: 1 },
-    { ang: 270, ch: 2 },
+    { ang: 0, r: 50, side: 9, ch: 0 },
+    { ang: 90, r: 50, side: -9, ch: 2 },
+    { ang: 180, r: 50, side: 9, ch: 1 },
+    { ang: 270, r: 50, side: -9, ch: 2 },
+    { ang: 22.5, r: 58, side: 0, ch: 1 },
+    { ang: 112.5, r: 58, side: 0, ch: 0 },
+    { ang: 202.5, r: 58, side: 0, ch: 2 },
+    { ang: 292.5, r: 58, side: 0, ch: 1 },
   ]
-  cfg.forEach(({ ang, ch }, i) => {
+  cfg.forEach(({ ang, r, side, ch }) => {
     const a = (ang * Math.PI) / 180
-    const r = 50
-    // offset to the side of the avenue so it doesn't sit on the carriageway
-    const side = i % 2 === 0 ? 9 : -9
     const px = Math.cos(a) * r + Math.cos(a + Math.PI / 2) * side
     const pz = Math.sin(a) * r + Math.sin(a + Math.PI / 2) * side
     // face toward centre
@@ -213,21 +214,21 @@ function Screen({ spot, texture, twinPost }: { spot: ScreenSpot; texture: Canvas
         </mesh>
       )}
 
-      {/* Dark bezel behind the screen */}
-      <mesh position={[0, y, -0.12]} castShadow>
-        <boxGeometry args={[w + 0.5, h + 0.5, 0.3]} />
+      {/* Dark bezel core between the two screen faces */}
+      <mesh position={[0, y, 0]} castShadow>
+        <boxGeometry args={[w + 0.5, h + 0.5, 0.34]} />
         <meshStandardMaterial color="#15171f" roughness={0.6} metalness={0.3} />
       </mesh>
 
-      {/* The glowing animated panel — basic + toneMapped:false so it blooms */}
-      <mesh position={[0, y, 0.06]}>
+      {/* Front glowing animated panel — basic + toneMapped:false so it blooms */}
+      <mesh position={[0, y, 0.19]}>
         <planeGeometry args={[w, h]} />
         <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
-      {/* Back face shows a dim version so it isn't a black void from behind */}
-      <mesh position={[0, y, -0.13]} rotation={[0, Math.PI, 0]}>
+      {/* Back glowing animated panel — same live texture, flipped to face behind */}
+      <mesh position={[0, y, -0.19]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[w, h]} />
-        <meshStandardMaterial color="#1b1e28" roughness={0.8} />
+        <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
     </group>
   )
