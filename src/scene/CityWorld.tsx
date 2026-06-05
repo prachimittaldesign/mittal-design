@@ -10,7 +10,6 @@ import { Building } from './Building'
 import { Landmark } from './Landmark'
 import { StreetSigns, GatewayLabels } from './StreetSigns'
 import { StreetFurniture } from './StreetFurniture'
-import { Mountains } from './Mountains'
 import { Pond } from './Pond'
 import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
@@ -97,12 +96,11 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
   return (
     <>
       <group ref={worldRef}>
-        <Ground view={view} />
-        {view === 'iso' && <CoastEnvironment />}
+        <Ground />
+        <CoastEnvironment />
         <Roads />
         <Props />
         <StreetFurniture />
-        <Mountains view={view} />
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}
         {/* Lively layers also enrich the coastal 2D dusk view; skyline keeps a

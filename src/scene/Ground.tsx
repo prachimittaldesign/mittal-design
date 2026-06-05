@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
 import { GROUND, ROAD } from './lib/cityTheme'
-import { CITY_RADIUS, ROAD_SEGS_DRAW, CONNECTOR_SEGS, RING_RADII, RING_ROAD_W } from './lib/cityModel'
+import { ROAD_SEGS_DRAW, CONNECTOR_SEGS, RING_RADII, RING_ROAD_W } from './lib/cityModel'
 import { LOT, pointToSegDist } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
 import { LAND_R } from './CoastEnvironment'
-import type { ViewMode } from '../types'
 
 // ─── Road exclusion for grass ─────────────────────────────────────────────────
 // Grass tufts and flowers must not spawn on road or sidewalk surfaces.
@@ -35,7 +34,7 @@ const TERRACE_R = 27
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
 const TUFT_COUNT  = 6000
 const PLAZA_CLEAR = TERRACE_R + 2   // 2-unit grass buffer beyond the stone terrace edge
-const FIELD_R     = Math.min(CITY_RADIUS * 1.7, 180)   // capped so grass doesn't waste instances far in fog
+const FIELD_R     = LAND_R - 36     // keep all greenery inside the coastline (LAND_R)
 
 function GrassTufts() {
   const ref = useRef<InstancedMesh>(null)
@@ -106,7 +105,7 @@ function Wildflowers() {
 
     for (let attempt = 0; placed < FLOWER_COUNT && attempt < FLOWER_COUNT * 8; attempt++) {
       const angle = Math.random() * Math.PI * 2
-      const r     = PLAZA_CLEAR + Math.sqrt(Math.random()) * CITY_RADIUS * 1.1
+      const r     = PLAZA_CLEAR + Math.sqrt(Math.random()) * FIELD_R
       const x     = Math.cos(angle) * r
       const z     = Math.sin(angle) * r
       if (x * x + z * z < PLAZA_CLEAR * PLAZA_CLEAR) continue
@@ -231,11 +230,10 @@ function PondPath() {
 }
 
 // ─── Ground ──────────────────────────────────────────────────────────────────
-export function Ground({ view }: { view: ViewMode }) {
-  // In 2D the city becomes a coastal town: the meadow shrinks to a land disc
-  // (LAND_R) so the surrounding sea (CoastEnvironment) reads as open water.
-  // Elsewhere the meadow runs past the fog horizon so it never shows an edge.
-  const groundR = view === 'iso' ? LAND_R + 6 : CITY_RADIUS * 5
+export function Ground() {
+  // The city is a coastal town in every view: the meadow is a land disc (LAND_R)
+  // and the surrounding sea (CoastEnvironment) reads as open water all around.
+  const groundR = LAND_R + 6
   return (
     <group>
       {/* Soft matte meadow base — one seamless circle so no square corners or

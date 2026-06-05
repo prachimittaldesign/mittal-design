@@ -6,21 +6,22 @@ import { easing } from 'maath'
 import { CITY_BOUNDS } from './lib/cityModel'
 import type { CameraCmd, ViewMode } from '../types'
 
-export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 138, 177]
+export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 125, 215]
 export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 
 // Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
-  '3d':      new Vector3(0,  138, 177),
+  // 3D: a scenic coastal overview — pitched ~30° so the sea around the town and
+  // the dusk horizon read behind it, while the city layout stays legible.
+  '3d':      new Vector3(0,  125, 215),
   // 2D ("coastal dusk"): a scenic low-aerial pitched ~16° below horizontal and
   // pulled back so the deep-blue dusk sky, the sea and the distant headlands all
   // frame the full-height townscape — a real, mature postcard view.
   iso:       new Vector3(0,  95, 326),
-  // Skyline: low eye height, close enough that enterprise buildings
-  // (z=−72) stay within the fog-clear zone, wide enough to frame the full
-  // width of the city without mountains blocking (mountains are hidden in
-  // skyline mode separately).
-  skyline:   new Vector3(0,  28, 195),
+  // Street view: a low eye, pushed OUT over the water (past the LAND_R≈206
+  // coastline) so shimmering reflections fill the foreground and the lit town
+  // rises across the bay against the dusk sky — the closest match to Amalfi.
+  skyline:   new Vector3(0,  34, 245),
 }
 const ORIGIN: [number, number, number] = [0, 0, 0]
 const { minX, maxX, minZ, maxZ } = CITY_BOUNDS
