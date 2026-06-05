@@ -8,7 +8,7 @@ import { Props } from './Props'
 import { CityFill } from './CityFill'
 import { Building } from './Building'
 import { Landmark } from './Landmark'
-import { StreetSigns, AvenueLabels, GatewayLabels } from './StreetSigns'
+import { StreetSigns, GatewayLabels } from './StreetSigns'
 import { StreetFurniture } from './StreetFurniture'
 import { Mountains } from './Mountains'
 import { Pond } from './Pond'
@@ -16,7 +16,8 @@ import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
 import { Billboards } from './Billboards'
 import { CityLife } from './CityLife'
-import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS, ISO_FLATTEN } from './lib/cityModel'
+import { CoastEnvironment } from './CoastEnvironment'
+import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
 interface CityWorldProps {
@@ -69,9 +70,10 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
 
-  // 2D/iso view flattens the city vertically.
+  // The city keeps its full height in every view — 2D is now a cinematic
+  // coastal-dusk townscape, not a flattened map.
   useFrame((_, dt) => {
-    if (worldRef.current) easing.damp(worldRef.current.scale, 'y', view === 'iso' ? ISO_FLATTEN : 1, 0.22, dt)
+    if (worldRef.current) easing.damp(worldRef.current.scale, 'y', 1, 0.22, dt)
   })
 
   const handleSelect = useCallback(
@@ -95,19 +97,21 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
   return (
     <>
       <group ref={worldRef}>
-        <Ground />
+        <Ground view={view} />
+        {view === 'iso' && <CoastEnvironment />}
         <Roads />
         <Props />
         <StreetFurniture />
         <Mountains view={view} />
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}
-        {view === '3d' && <Pond />}
-        {view === '3d' && <Birds />}
-        {view === '3d' && <ClockTower />}
-        {view === '3d' && <Billboards />}
-        {view === '3d' && <CityLife />}
-        {view === 'iso' && <AvenueLabels />}
+        {/* Lively layers also enrich the coastal 2D dusk view; skyline keeps a
+            clean rearranged row, so they stay out of it. */}
+        {view !== 'skyline' && <Pond />}
+        {view !== 'skyline' && <Birds />}
+        {view !== 'skyline' && <ClockTower />}
+        {view !== 'skyline' && <Billboards />}
+        {view !== 'skyline' && <CityLife />}
         {BUILDINGS.map((def) => (
           <Building
             key={def.project.id}
@@ -128,7 +132,6 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
             def={def}
             hovered={hovered === def.landmark.id}
             showLabel={showLabel}
-            view={view}
             onHover={setHovered}
             onSelect={handleSelectLandmark}
           />

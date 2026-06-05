@@ -4,6 +4,8 @@ import { GROUND, ROAD } from './lib/cityTheme'
 import { CITY_RADIUS, ROAD_SEGS_DRAW, CONNECTOR_SEGS, RING_RADII, RING_ROAD_W } from './lib/cityModel'
 import { LOT, pointToSegDist } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
+import { LAND_R } from './CoastEnvironment'
+import type { ViewMode } from '../types'
 
 // ─── Road exclusion for grass ─────────────────────────────────────────────────
 // Grass tufts and flowers must not spawn on road or sidewalk surfaces.
@@ -229,14 +231,17 @@ function PondPath() {
 }
 
 // ─── Ground ──────────────────────────────────────────────────────────────────
-export function Ground() {
+export function Ground({ view }: { view: ViewMode }) {
+  // In 2D the city becomes a coastal town: the meadow shrinks to a land disc
+  // (LAND_R) so the surrounding sea (CoastEnvironment) reads as open water.
+  // Elsewhere the meadow runs past the fog horizon so it never shows an edge.
+  const groundR = view === 'iso' ? LAND_R + 6 : CITY_RADIUS * 5
   return (
     <group>
       {/* Soft matte meadow base — one seamless circle so no square corners or
-          colour seams are ever visible; radius exceeds the far fog distance in
-          every direction, so the field simply dissolves into the horizon. */}
+          colour seams are ever visible. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <circleGeometry args={[CITY_RADIUS * 5, 96]} />
+        <circleGeometry args={[groundR, 96]} />
         <meshStandardMaterial color={GROUND} roughness={1} metalness={0.0} />
       </mesh>
 

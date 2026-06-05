@@ -130,10 +130,9 @@ export function Mountains({ view }: { view: ViewMode }) {
   useFrame((_, dt) => {
     const m = matRef.current
     if (!m) return
-    // In skyline view the camera is nearly horizontal — mountains would fill the
-    // frame and hide buildings. Force them invisible; let them appear only in
-    // the 3D aerial vantage where they frame the horizon at the right angle.
-    if (view === 'skyline') {
+    // Hidden in skyline (would hide the buildings) and in 2D coastal view
+    // (would block the sea / dusk horizon). Mountains belong to the 3D vantage.
+    if (view === 'skyline' || view === 'iso') {
       easing.damp(m, 'opacity', 0, 0.2, dt)
       m.visible = m.opacity > 0.02
       return

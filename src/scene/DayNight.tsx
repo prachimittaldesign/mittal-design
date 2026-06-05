@@ -8,6 +8,14 @@ import { Rain } from './Rain'
 import type { Weather } from '../lib/weather'
 import type { ViewMode } from '../types'
 
+// Fixed deep-blue dusk palette for the 2D coastal view — applied regardless of
+// Hyderabad time so the city always reads as a warm-lit town against a blue sea
+// and sky. The fog colour matches the sky so the sea melts into the horizon.
+const DUSK_SKY = new Color('#1d3a66')
+const DUSK_HEMI_SKY = new Color('#2c4d7e')
+const DUSK_HEMI_GROUND = new Color('#16243a')
+const DUSK_DIR = new Color('#ffd9a0')
+
 // Owns the scene lights, background, and fog, easing them toward the time-of-day
 // + weather profile every frame. No sun mesh — just the ambient/key light shift.
 export function DayNight({ weather, view }: { weather: Weather | null; view: ViewMode }) {
@@ -24,27 +32,32 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
 
   useFrame((_, dt) => {
     const p = skyProfile(getHyderabadTime().frac, weather)
-    if (scene.background instanceof Color) easing.dampC(scene.background, p.background, 0.6, dt)
+    const coast = view === 'iso'
+
+    if (scene.background instanceof Color) {
+      easing.dampC(scene.background, coast ? DUSK_SKY : p.background, 0.6, dt)
+    }
     const fog = scene.fog
     if (fog instanceof Fog) {
-      easing.dampC(fog.color, p.fog, 0.6, dt)
-      // iso: camera ~320 u above ground — normal fog would haze the whole city.
-      // skyline: on mobile portrait camera pulls back to ~360 u; push fog out so
-      //   enterprise buildings (z=−72, ~430 u from camera) stay visible.
-      const fogNear = view === 'iso' ? 600 : view === 'skyline' ? 450 : p.fogNear
-      const fogFar  = view === 'iso' ? 900 : view === 'skyline' ? 750 : p.fogFar
+      easing.dampC(fog.color, coast ? DUSK_SKY : p.fog, 0.6, dt)
+      // Coastal 2D: fog colour = sky colour and far≈1500, so the sea dissolves
+      //   seamlessly into the dusk horizon while the city (≤~110 u) stays crisp.
+      // skyline: camera pulls back to ~360 u on mobile; push fog out so the
+      //   far enterprise buildings stay visible.
+      const fogNear = coast ? 480 : view === 'skyline' ? 450 : p.fogNear
+      const fogFar  = coast ? 1500 : view === 'skyline' ? 750 : p.fogFar
       easing.damp(fog, 'near', fogNear, 0.6, dt)
       easing.damp(fog, 'far',  fogFar,  0.6, dt)
     }
     if (hemi.current) {
-      easing.dampC(hemi.current.color, p.hemiSky, 0.6, dt)
-      easing.dampC(hemi.current.groundColor, p.hemiGround, 0.6, dt)
-      easing.damp(hemi.current, 'intensity', p.hemiIntensity, 0.6, dt)
+      easing.dampC(hemi.current.color, coast ? DUSK_HEMI_SKY : p.hemiSky, 0.6, dt)
+      easing.dampC(hemi.current.groundColor, coast ? DUSK_HEMI_GROUND : p.hemiGround, 0.6, dt)
+      easing.damp(hemi.current, 'intensity', coast ? 0.55 : p.hemiIntensity, 0.6, dt)
     }
-    if (amb.current) easing.damp(amb.current, 'intensity', p.ambient, 0.6, dt)
+    if (amb.current) easing.damp(amb.current, 'intensity', coast ? 0.3 : p.ambient, 0.6, dt)
     if (dir.current) {
-      easing.dampC(dir.current.color, p.dirColor, 0.6, dt)
-      easing.damp(dir.current, 'intensity', p.dirIntensity, 0.6, dt)
+      easing.dampC(dir.current.color, coast ? DUSK_DIR : p.dirColor, 0.6, dt)
+      easing.damp(dir.current, 'intensity', coast ? 0.55 : p.dirIntensity, 0.6, dt)
     }
   })
 

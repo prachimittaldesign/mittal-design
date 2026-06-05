@@ -3,8 +3,8 @@ import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { Billboard, Text } from '@react-three/drei'
 import { Group, MeshStandardMaterial, type Object3D } from 'three'
 import { easing } from 'maath'
-import type { Landmark as LandmarkData, LandmarkKind, ViewMode } from '../types'
-import { ISO_FLATTEN, type LandmarkDef } from './lib/cityModel'
+import type { Landmark as LandmarkData, LandmarkKind } from '../types'
+import { type LandmarkDef } from './lib/cityModel'
 import interBold from '@fontsource/inter/files/inter-latin-800-normal.woff'
 
 const CIVIC_GREY = '#bcb6a8'
@@ -13,12 +13,11 @@ interface LandmarkProps {
   def: LandmarkDef
   hovered: boolean
   showLabel: boolean
-  view: ViewMode
   onHover: (id: string | null) => void
   onSelect: (landmark: LandmarkData, object: Object3D) => void
 }
 
-export function Landmark({ def, hovered, showLabel, view, onHover, onSelect }: LandmarkProps) {
+export function Landmark({ def, hovered, showLabel, onHover, onSelect }: LandmarkProps) {
   const { landmark, footprint: w } = def
   const liftRef = useRef<Group>(null)
   const labelRef = useRef<Group>(null)
@@ -37,8 +36,8 @@ export function Landmark({ def, hovered, showLabel, view, onHover, onSelect }: L
   useEffect(() => () => grey.dispose(), [grey])
 
   useFrame((_, dt) => {
-    // Cancel the world's iso y-flatten on the sign so it doesn't squash.
-    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', view === 'iso' ? 1 / ISO_FLATTEN : 1, 0.22, dt)
+    // World keeps full height in every view now, so the sign needs no counter-scale.
+    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', 1, 0.22, dt)
     // Hover glows the landmark rather than lifting it.
     easing.damp(grey, 'emissiveIntensity', hovered ? 0.38 : 0, 0.12, dt)
   })

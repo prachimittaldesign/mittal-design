@@ -12,9 +12,10 @@ export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 // Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   '3d':      new Vector3(0,  138, 177),
-  // 2D: camera directly overhead so the city reads as a flat map.
-  // Tiny Z keeps MapControls from gimbal-locking without any visible tilt.
-  iso:       new Vector3(0,  320, 0.1),
+  // 2D ("coastal dusk"): a scenic low-aerial pitched ~16° below horizontal and
+  // pulled back so the deep-blue dusk sky, the sea and the distant headlands all
+  // frame the full-height townscape — a real, mature postcard view.
+  iso:       new Vector3(0,  95, 326),
   // Skyline: low eye height, close enough that enterprise buildings
   // (z=−72) stay within the fog-clear zone, wide enough to frame the full
   // width of the city without mountains blocking (mountains are hidden in
@@ -37,12 +38,12 @@ export interface FocusTarget {
 
 // How much to push the camera back as the viewport gets narrower than this
 // reference (wide-desktop) aspect.
-// iso: no scaling — the overhead camera height is fixed; the user pinches to zoom.
+// iso: modest pull-back on narrow screens so the coastal townscape still fits.
 // skyline: capped at 1.85× so mobile portrait fits all buildings in the narrow
 //   horizontal FOV (fov=40° → hFOV≈23° at aspect 0.56) without pushing the
 //   camera so far back that enterprise buildings (z=−72) hit the fog.
 const REF_ASPECT = 1.5
-const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 1.0, skyline: 1.85 }
+const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 1.5, skyline: 1.85 }
 
 export function CameraRig({
   focus,
@@ -120,8 +121,8 @@ export function CameraRig({
         c.enabled = false
       } else {
         const cur = camera.position.distanceTo(c.target)
-        const zMin = view === 'skyline' ? 90 : view === 'iso' ? 60 : 68
-        const zMax = view === 'skyline' ? 480 : view === 'iso' ? 420 : 345
+        const zMin = view === 'skyline' ? 90 : view === 'iso' ? 120 : 68
+        const zMax = view === 'skyline' ? 480 : view === 'iso' ? 520 : 345
         zoomTarget.current = Math.min(zMax, Math.max(zMin, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
         zooming.current = true
         c.enabled = false
@@ -204,16 +205,16 @@ export function CameraRig({
       makeDefault
       enableDamping
       dampingFactor={0.08}
-      // Iso: screen-space panning keeps drag feeling like a map scroll from above.
-      // Skyline: same, locks the cinematic front-facing angle.
-      screenSpacePanning={view === 'iso' || view === 'skyline'}
-      enableRotate={view === '3d'}
-      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 60 : 68}
-      maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 420 : 345 * fit(view)}
-      // Iso: allow polar angle down to 0 (straight overhead); cap tilt at ~20°
-      // so the top-down map feel is preserved even if the user tries to orbit.
-      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0 : 0.32}
-      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 0.35 : 1.15}
+      // Skyline locks its cinematic front angle via screen-space pan. 3D and the
+      // coastal 2D view both allow free orbit so you can sweep the bay.
+      screenSpacePanning={view === 'skyline'}
+      enableRotate={view !== 'skyline'}
+      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 120 : 68}
+      maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 520 : 345 * fit(view)}
+      // Coastal 2D: keep the camera in a scenic elevated band (never straight
+      // down, never below the horizon) so the dusk sky + sea always frame it.
+      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0.95 : 0.32}
+      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 1.42 : 1.15}
     />
   )
 }

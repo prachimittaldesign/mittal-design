@@ -5,7 +5,7 @@ import { Color, ExtrudeGeometry, Group, MeshStandardMaterial, Shape as ThreeShap
 import { easing } from 'maath'
 import { Label } from './Label'
 import { bodyColor, roofColor, DIM_GREY, layerColor, GLASS_WINDOW, WARM_WINDOW } from './lib/cityTheme'
-import { ISO_FLATTEN, type BuildingDef } from './lib/cityModel'
+import { type BuildingDef } from './lib/cityModel'
 import type { Appearance, Project, RoofStyle, ViewMode } from '../types'
 
 const DIM = new Color(DIM_GREY)
@@ -279,8 +279,8 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }
     }
     if (liftRef.current) easing.damp(liftRef.current.position, 'y', liftBonus, 0.12, dt)
-    const labelScale = view === 'iso' ? 1 / ISO_FLATTEN : 1
-    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', labelScale, 0.22, dt)
+    // World keeps full height in every view now, so labels need no counter-scale.
+    if (labelRef.current) easing.damp(labelRef.current.scale, 'y', 1, 0.22, dt)
     easing.dampC(body.color, target, 0.18, dt)
     easing.damp(body, 'emissiveIntensity', em, 0.15, dt)
     easing.damp(hoverGlow, 'emissiveIntensity', hovered ? 1.6 : 0, 0.14, dt)
