@@ -19,6 +19,7 @@ import { CityLife } from './CityLife'
 import { CoastEnvironment } from './CoastEnvironment'
 import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
+import { Constellations } from './Constellations'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
@@ -101,6 +102,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
       <group ref={worldRef}>
         <Ground />
         <CoastEnvironment />
+        <Constellations />
         <Roads />
         <Props />
         <StreetFurniture />
