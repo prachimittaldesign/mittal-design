@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useRef } from 'react'
 import { Color, InstancedMesh, Object3D } from 'three'
-import { ROAD_SEGS } from './lib/cityModel'
+import { ROAD_SEGS, BUILDINGS } from './lib/cityModel'
 import { POND_CENTER, POND_CLEAR } from './Pond'
 
 function mulberry32(seed: number): () => number {
@@ -233,12 +233,84 @@ function CafeTerraces() {
   )
 }
 
+// ─── Sitouts — little terraces in front of the buildings ──────────────────────
+// A paver patio with a bench, chairs, a planter and a warm lamp, set in the
+// gap between each building and the street so the doorsteps feel lived-in.
+const RUG_TONES = ['#d3c8b0', '#c8b394', '#dcd2bb', '#cdbfa6']
+function Sitouts() {
+  const spots = useMemo(() => {
+    const rng = mulberry32(5150)
+    return BUILDINGS.flatMap((b) => {
+      if (rng() < 0.4) return [] // not every building gets one
+      const [bx, , bz] = b.position
+      const len = Math.hypot(bx, bz) || 1
+      // Place the patio on the side of the building facing the city centre.
+      const ux = -bx / len
+      const uz = -bz / len
+      const out = b.footprint * 0.5 + 2.6
+      const x = bx + ux * out
+      const z = bz + uz * out
+      if (nearOrigin(x, z, 14) || nearPond(x, z)) return []
+      return [{ x, z, yaw: Math.atan2(ux, uz), tone: RUG_TONES[Math.floor(rng() * RUG_TONES.length)], lamp: '#ffcf8a' }]
+    })
+  }, [])
+
+  return (
+    <group>
+      {spots.map((s, i) => (
+        <group key={i} position={[s.x, 0, s.z]} rotation={[0, s.yaw, 0]}>
+          {/* paver rug */}
+          <mesh position={[0, 0.04, 0]} receiveShadow>
+            <boxGeometry args={[3.6, 0.08, 2.8]} />
+            <meshStandardMaterial color={s.tone} roughness={0.95} />
+          </mesh>
+          {/* bench */}
+          <mesh position={[0, 0.5, -1.0]} castShadow>
+            <boxGeometry args={[2.0, 0.14, 0.5]} />
+            <meshStandardMaterial color="#8c6a3e" roughness={0.9} />
+          </mesh>
+          <mesh position={[0, 0.26, -1.0]}>
+            <boxGeometry args={[1.8, 0.4, 0.1]} />
+            <meshStandardMaterial color="#5a4020" roughness={0.95} />
+          </mesh>
+          {/* two chairs */}
+          {[-0.9, 0.9].map((cx) => (
+            <mesh key={cx} position={[cx, 0.4, 0.7]} castShadow>
+              <boxGeometry args={[0.42, 0.5, 0.42]} />
+              <meshStandardMaterial color="#cdbfa6" roughness={0.9} />
+            </mesh>
+          ))}
+          {/* corner planter */}
+          <mesh position={[1.5, 0.3, -1.0]} castShadow>
+            <cylinderGeometry args={[0.34, 0.26, 0.6, 8]} />
+            <meshStandardMaterial color="#b5673f" roughness={0.92} />
+          </mesh>
+          <mesh position={[1.5, 0.8, -1.0]}>
+            <sphereGeometry args={[0.42, 8, 7]} />
+            <meshStandardMaterial color="#d6447a" roughness={0.85} />
+          </mesh>
+          {/* warm lamp on a slim post */}
+          <mesh position={[-1.6, 1.0, 0.9]}>
+            <cylinderGeometry args={[0.05, 0.06, 2.0, 6]} />
+            <meshStandardMaterial color="#3a3530" roughness={0.8} metalness={0.3} />
+          </mesh>
+          <mesh position={[-1.6, 2.1, 0.9]}>
+            <sphereGeometry args={[0.22, 8, 8]} />
+            <meshStandardMaterial color={s.lamp} emissive={s.lamp} emissiveIntensity={2.3} toneMapped={false} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
 export function StreetDecor() {
   return (
     <group>
       <StreetFestoon />
       <Planters />
       <CafeTerraces />
+      <Sitouts />
     </group>
   )
 }

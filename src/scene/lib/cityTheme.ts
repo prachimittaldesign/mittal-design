@@ -35,13 +35,14 @@ export function roofColor(d: District): string {
 }
 
 // ─── Amalfi Coast palette ────────────────────────────────────────────────────
-// The town is reimagined as a Mediterranean cliff village at dusk: matte stucco
-// facades in warm pastels, terracotta roofs, and warm lamplit windows. The
-// enterprise (glass) district leans toward the paler creams/whites that climb
-// the upper town; the consumer (warm) district takes the deeper terracotta and
-// coral tones nearer the water.
-const AMALFI_PALE = ['#ece0c6', '#efe4cb', '#e7d8b8', '#f0e2c0', '#e3d3ad', '#ead9bb']
-const AMALFI_WARM = ['#e0a878', '#d98e63', '#cf9d6c', '#e6b98f', '#d8896a', '#c9784f', '#e3b07a']
+// The town is a vivid Mediterranean cliff village (think Burano / Positano):
+// saturated stucco facades in every joyful colour, terracotta roofs, and warm
+// lamplit windows. The enterprise (glass) district leans to the sunny golds and
+// pastels of the upper town; the consumer (warm) district takes the bold corals,
+// pinks, blues and greens nearer the water. Each building self-illuminates its
+// own hue a touch so the colours stay exciting against the dusk.
+const AMALFI_PALE = ['#f2cf63', '#f4b85f', '#f7d98a', '#ecd06a', '#f6c878', '#8fd0c6', '#f0dca0', '#f5a65a']
+const AMALFI_WARM = ['#e8533c', '#e0457a', '#ef6aa0', '#3f9bd6', '#3fae93', '#e8923a', '#c8438a', '#dd6a3a', '#9b5fc0', '#e0c64a']
 export const AMALFI_ROOFS = ['#a8553a', '#b5683f', '#9c5236', '#c07a4e', '#94472f']
 export const AMALFI_WINDOW = '#ffcf8a' // warm lamplit windows
 

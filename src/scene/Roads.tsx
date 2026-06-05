@@ -27,7 +27,12 @@ const GATEWAY_FADE: FadeSeg[] = GATEWAY_SEGS.flatMap((gw) => {
   })
 })
 const PATH_W = 1.8
-const PAVE = '#cbc2af' // warm sidewalk paving
+const PAVE = '#cbc2af' // warm sidewalk paving (gateways / junction pads)
+
+// A set of stone-paver tones so the sidewalks read as laid stone of varying
+// type — sandstone, travertine, warm grey, pale limestone — rather than one
+// flat colour. Assigned per segment by index.
+const PAVE_TONES = ['#d3c8b0', '#c8b394', '#dcd2bb', '#bfb398', '#d8c6a4']
 
 // Render-order stack for the road layer. Everything here uses depthWrite:false
 // so coplanar road/pave slabs can never z-fight each other (they paint in a
@@ -48,12 +53,18 @@ interface Junction {
 export function Roads() {
   const roadMat = useMemo(() => new MeshStandardMaterial({ color: ROAD, roughness: 1, depthWrite: false }), [])
   const paveMat = useMemo(() => new MeshStandardMaterial({ color: PAVE, roughness: 0.98, depthWrite: false }), [])
+  // One shared material per paver tone (cheap — reused across many segments).
+  const paveMats = useMemo(
+    () => PAVE_TONES.map((c) => new MeshStandardMaterial({ color: c, roughness: 0.98, depthWrite: false })),
+    [],
+  )
   useEffect(
     () => () => {
       roadMat.dispose()
       paveMat.dispose()
+      paveMats.forEach((m) => m.dispose())
     },
-    [roadMat, paveMat],
+    [roadMat, paveMat, paveMats],
   )
 
   // Collect junctions (segment endpoints), keeping the widest road at each.
@@ -131,7 +142,7 @@ export function Roads() {
         return (
           <mesh
             key={`pave-${i}`}
-            material={paveMat}
+            material={paveMats[i % paveMats.length]}
             position={[(s.ax + s.bx) / 2, 0.02, (s.az + s.bz) / 2]}
             rotation={[0, angle, 0]}
             renderOrder={ORDER_PAVE}

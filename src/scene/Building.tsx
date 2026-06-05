@@ -219,15 +219,17 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const facadeHex = useMemo(() => amalfiFacade(district, idHash(project.id)), [district, project.id])
   const roofHex = useMemo(() => amalfiRoof(idHash(project.id)), [project.id])
 
-  const baseEmissive = 0.06 // warm interior bleed; windows do the real glowing
+  // Each facade self-illuminates its own hue a touch so the colours stay vivid
+  // and exciting against the dusk instead of going muddy.
+  const baseEmissive = 0.2
   const baseColor = useMemo(() => new Color(facadeHex), [facadeHex])
   const body = useMemo(
     () =>
       new MeshStandardMaterial({
         color: facadeHex,
-        roughness: 0.92, // matte lime-washed stucco
+        roughness: 0.82, // lime-washed stucco with a faint sheen
         metalness: 0.0,
-        emissive: '#3a2a18',
+        emissive: facadeHex,
         emissiveIntensity: baseEmissive,
       }),
     [facadeHex],

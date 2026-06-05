@@ -17,6 +17,8 @@ import { ClockTower } from './ClockTower'
 import { Billboards } from './Billboards'
 import { CityLife } from './CityLife'
 import { CoastEnvironment } from './CoastEnvironment'
+import { Campfires } from './Campfires'
+import { SkyBeams } from './SkyBeams'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
@@ -103,6 +105,10 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         <Props />
         <StreetFurniture />
         <StreetDecor />
+        <Campfires />
+        {/* Searchlight beams read best from the 3D and street angles; in the
+            steep bird's-eye they'd point straight at the camera. */}
+        {view !== 'iso' && <SkyBeams />}
         {layers.showScenery && <CityFill />}
         {view === '3d' && <StreetSigns />}
         {/* Lively layers also enrich the coastal 2D dusk view; skyline keeps a
