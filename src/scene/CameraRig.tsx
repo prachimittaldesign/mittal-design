@@ -36,10 +36,13 @@ export interface FocusTarget {
 }
 
 // How much to push the camera back as the viewport gets narrower than this
-// reference (wide-desktop) aspect. A tall phone screen fits far less width at a
-// given distance, so 2D/skyline would clip without this — hence per-view caps.
+// reference (wide-desktop) aspect.
+// iso: no scaling — the overhead camera height is fixed; the user pinches to zoom.
+// skyline: capped at 1.85× so mobile portrait fits all buildings in the narrow
+//   horizontal FOV (fov=40° → hFOV≈23° at aspect 0.56) without pushing the
+//   camera so far back that enterprise buildings (z=−72) hit the fog.
 const REF_ASPECT = 1.5
-const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 2.45, skyline: 2.7 }
+const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 1.0, skyline: 1.85 }
 
 export function CameraRig({
   focus,
@@ -117,7 +120,9 @@ export function CameraRig({
         c.enabled = false
       } else {
         const cur = camera.position.distanceTo(c.target)
-        zoomTarget.current = Math.min(345, Math.max(68, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
+        const zMin = view === 'skyline' ? 90 : view === 'iso' ? 60 : 68
+        const zMax = view === 'skyline' ? 480 : view === 'iso' ? 420 : 345
+        zoomTarget.current = Math.min(zMax, Math.max(zMin, cur * (cmd.type === 'zoomIn' ? 0.78 : 1.28)))
         zooming.current = true
         c.enabled = false
       }
@@ -203,8 +208,8 @@ export function CameraRig({
       // Skyline: same, locks the cinematic front-facing angle.
       screenSpacePanning={view === 'iso' || view === 'skyline'}
       enableRotate={view === '3d'}
-      minDistance={view === 'skyline' ? 90 : 68}
-      maxDistance={(view === 'skyline' ? 330 : 345) * fit(view)}
+      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 60 : 68}
+      maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 420 : 345 * fit(view)}
       // Iso: allow polar angle down to 0 (straight overhead); cap tilt at ~20°
       // so the top-down map feel is preserved even if the user tries to orbit.
       minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0 : 0.32}
