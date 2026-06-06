@@ -1,21 +1,19 @@
+/**
+ * DayNight — drives the Hyderabad local-time sky cycle while keeping coastal
+ * fog distances large enough for the sea to dissolve into the horizon.
+ * skyProfile() provides the 24h colour/lighting keyframes; fog near/far are
+ * overridden here to the coastal scale regardless of weather.
+ */
+
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { AmbientLight, Color, DirectionalLight, Fog, HemisphereLight } from 'three'
 import { easing } from 'maath'
 import { Rain } from './Rain'
+import { getHyderabadTime, skyProfile } from '../lib/sky'
 import type { Weather } from '../lib/weather'
 import type { ViewMode } from '../types'
 
-// Fixed deep-blue coastal-dusk palette, applied in every view so the city
-// always reads as a warm-lit Amalfi-style town against a blue sea and sky. The
-// fog colour matches the sky so the surrounding sea melts into the horizon.
-const DUSK_SKY = new Color('#1d3a66')
-const DUSK_HEMI_SKY = new Color('#2c4d7e')
-const DUSK_HEMI_GROUND = new Color('#16243a')
-const DUSK_DIR = new Color('#ffd9a0')
-
-// Owns the scene lights, background, and fog, easing them toward the coastal
-// dusk profile every frame. Only the fog distances differ per camera framing.
 export function DayNight({ weather, view }: { weather: Weather | null; view: ViewMode }) {
   const scene = useThree((s) => s.scene)
   const hemi = useRef<HemisphereLight>(null)
@@ -23,33 +21,35 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
   const dir = useRef<DirectionalLight>(null)
 
   useEffect(() => {
-    if (!(scene.background instanceof Color)) scene.background = new Color(DUSK_SKY)
-    if (!scene.fog) scene.fog = new Fog(DUSK_SKY.getHex(), 380, 1500)
-  }, [scene])
+    const p = skyProfile(getHyderabadTime().frac, weather)
+    if (!(scene.background instanceof Color)) scene.background = new Color().copy(p.background)
+    if (!scene.fog) scene.fog = new Fog(p.fog.getHex(), 380, 1500)
+  }, [scene, weather])
 
   useFrame((_, dt) => {
-    // Per-camera fog distances: keep the town crisp while the far sea fades into
-    // the dusk-blue horizon. The low skyline camera needs the nearest pull-in;
-    // the high 2D aerial the farthest.
+    const p = skyProfile(getHyderabadTime().frac, weather)
+
+    // Override fog distances to coastal scale so the surrounding sea fades
+    // into the horizon instead of the original tight city values.
     const fogNear = view === 'iso' ? 480 : view === 'skyline' ? 300 : 360
     const fogFar = view === 'skyline' ? 1400 : 1500
 
-    if (scene.background instanceof Color) easing.dampC(scene.background, DUSK_SKY, 0.6, dt)
+    if (scene.background instanceof Color) easing.dampC(scene.background, p.background, 0.6, dt)
     const fog = scene.fog
     if (fog instanceof Fog) {
-      easing.dampC(fog.color, DUSK_SKY, 0.6, dt)
+      easing.dampC(fog.color, p.fog, 0.6, dt)
       easing.damp(fog, 'near', fogNear, 0.6, dt)
       easing.damp(fog, 'far', fogFar, 0.6, dt)
     }
     if (hemi.current) {
-      easing.dampC(hemi.current.color, DUSK_HEMI_SKY, 0.6, dt)
-      easing.dampC(hemi.current.groundColor, DUSK_HEMI_GROUND, 0.6, dt)
-      easing.damp(hemi.current, 'intensity', 0.6, 0.6, dt)
+      easing.dampC(hemi.current.color, p.hemiSky, 0.6, dt)
+      easing.dampC(hemi.current.groundColor, p.hemiGround, 0.6, dt)
+      easing.damp(hemi.current, 'intensity', p.hemiIntensity, 0.6, dt)
     }
-    if (amb.current) easing.damp(amb.current, 'intensity', 0.32, 0.6, dt)
+    if (amb.current) easing.damp(amb.current, 'intensity', p.ambient, 0.6, dt)
     if (dir.current) {
-      easing.dampC(dir.current.color, DUSK_DIR, 0.6, dt)
-      easing.damp(dir.current, 'intensity', 0.6, 0.6, dt)
+      easing.dampC(dir.current.color, p.dirColor, 0.6, dt)
+      easing.damp(dir.current, 'intensity', p.dirIntensity, 0.6, dt)
     }
   })
 
@@ -70,9 +70,6 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
         shadow-camera-right={130}
         shadow-camera-top={130}
         shadow-camera-bottom={-130}
-        // normalBias offsets the shadow lookup along the surface normal — the
-        // correct cure for the diagonal "acne" shimmer the coarse shadow map
-        // was raking across the near-flat ground / pave overlays.
         shadow-bias={-0.0004}
         shadow-normalBias={0.12}
       />

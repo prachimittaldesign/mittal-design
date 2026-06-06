@@ -1,14 +1,23 @@
 /**
- * Constellations — a quiet field of stars across the dusk sky, plus a
+ * Constellations — a quiet field of stars across the dusk/night sky, plus a
  * line-connected Orion hung high in the −Z sky, over "The Future" gateway.
  *
  * Star materials disable fog and toneMapping so the points stay crisp and bloom
- * gently against the deep-blue dusk instead of fading into the haze.
+ * gently against the deep-blue sky instead of fading into the haze.
+ * Stars fade out during Hyderabad daytime and appear only at dusk/night.
  */
 
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { BufferGeometry, Float32BufferAttribute, Group, Mesh, PointsMaterial } from 'three'
+import {
+  BufferGeometry,
+  Float32BufferAttribute,
+  Group,
+  LineBasicMaterial,
+  Mesh,
+  PointsMaterial,
+} from 'three'
+import { getHyderabadTime } from '../lib/sky'
 
 function mulberry32(seed: number): () => number {
   let s = seed >>> 0
@@ -18,6 +27,15 @@ function mulberry32(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
+}
+
+// Returns 0 during full day, 1 at night, smoothly interpolated at dawn/dusk.
+function nightFactor(): number {
+  const { frac } = getHyderabadTime()
+  if (frac >= 6.5 && frac < 18.5) return 0               // daytime: invisible
+  if (frac >= 5.5 && frac < 6.5) return 1 - (frac - 5.5) // dawn fade-out
+  if (frac >= 18.5 && frac < 19.5) return frac - 18.5    // dusk fade-in
+  return 1                                                  // night: fully visible
 }
 
 // ─── Scattered star field across the upper sky ───────────────────────────────
@@ -42,8 +60,11 @@ function StarField() {
 
   const matRef = useRef<PointsMaterial>(null)
   useFrame((state) => {
-    // Whole-field shimmer — barely-there breathing of brightness.
-    if (matRef.current) matRef.current.opacity = 0.72 + Math.sin(state.clock.elapsedTime * 0.6) * 0.12
+    if (!matRef.current) return
+    const nf = nightFactor()
+    // Whole-field shimmer — barely-there breathing of brightness, scaled by night factor.
+    matRef.current.opacity = nf * (0.72 + Math.sin(state.clock.elapsedTime * 0.6) * 0.12)
+    matRef.current.visible = nf > 0.01
   })
 
   return (
@@ -98,6 +119,7 @@ const SCALE = 78
 
 function Orion() {
   const starRefs = useRef<(Mesh | null)[]>([])
+  const lineMatRef = useRef<LineBasicMaterial>(null)
 
   const lineGeom = useMemo(() => {
     const pts: number[] = []
@@ -113,16 +135,29 @@ function Orion() {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
+    const nf = nightFactor()
     starRefs.current.forEach((m, i) => {
-      if (m) m.scale.setScalar(1 + Math.sin(t * 1.4 + i * 1.7) * 0.12)
+      if (m) m.scale.setScalar(nf * (1 + Math.sin(t * 1.4 + i * 1.7) * 0.12))
     })
+    if (lineMatRef.current) {
+      lineMatRef.current.opacity = nf * 0.3
+      lineMatRef.current.visible = nf > 0.01
+    }
   })
 
   return (
     <group>
       {/* faint connecting lines */}
       <lineSegments geometry={lineGeom}>
-        <lineBasicMaterial color="#9fc0ff" transparent opacity={0.3} depthWrite={false} toneMapped={false} fog={false} />
+        <lineBasicMaterial
+          ref={lineMatRef}
+          color="#9fc0ff"
+          transparent
+          opacity={0.3}
+          depthWrite={false}
+          toneMapped={false}
+          fog={false}
+        />
       </lineSegments>
 
       {/* stars */}
