@@ -17,7 +17,7 @@ import {
   Mesh,
   PointsMaterial,
 } from 'three'
-import { getHyderabadTime } from '../lib/sky'
+import { nightFactor } from '../lib/sky'
 
 function mulberry32(seed: number): () => number {
   let s = seed >>> 0
@@ -27,15 +27,6 @@ function mulberry32(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
-}
-
-// Returns 0 during full day, 1 at night, smoothly interpolated at dawn/dusk.
-function nightFactor(): number {
-  const { frac } = getHyderabadTime()
-  if (frac >= 6.5 && frac < 18.5) return 0               // daytime: invisible
-  if (frac >= 5.5 && frac < 6.5) return 1 - (frac - 5.5) // dawn fade-out
-  if (frac >= 18.5 && frac < 19.5) return frac - 18.5    // dusk fade-in
-  return 1                                                  // night: fully visible
 }
 
 // ─── Scattered star field across the upper sky ───────────────────────────────

@@ -47,18 +47,30 @@ interface Key {
   dc: Color // directional color
 }
 
-// Keyframes across a 24h cycle (wraps at 24→0). Warm "paper" daytime that sinks
-// into a cool deep-blue night, with peach dawn / amber dusk in between.
+// Keyframes across a 24h cycle (wraps at 24→0).
+// Daytime palette: vivid Amalfi-coast Mediterranean azure — deep cerulean sky,
+// warm sandy ground light, intense Mediterranean sun.
+// Dawn/dusk: rich coral/amber that bleeds into orange.
+// Night: deep indigo-navy with cool blue stars.
 const KEYS: Key[] = [
-  { h: 0, bg: C('#1a2436'), hs: C('#3a4763'), hg: C('#1e2735'), hi: 0.58, am: 0.32, di: 0.45, dc: C('#b7c8e4') },
-  { h: 5, bg: C('#232d3f'), hs: C('#48526a'), hg: C('#2a2f3e'), hi: 0.62, am: 0.34, di: 0.5, dc: C('#c3cfe2') },
-  { h: 6.8, bg: C('#e6c2b2'), hs: C('#f0ccb8'), hg: C('#ad9784'), hi: 0.6, am: 0.3, di: 0.62, dc: C('#ffcf9c') },
-  { h: 9, bg: C('#f7efe2'), hs: C('#fbf7ee'), hg: C('#cdbfa6'), hi: 0.82, am: 0.34, di: 1.05, dc: C('#fff3df') },
-  { h: 13, bg: C('#fbf7ee'), hs: C('#fbf7ee'), hg: C('#cdbfa6'), hi: 0.88, am: 0.36, di: 1.22, dc: C('#fff6e6') },
-  { h: 16.5, bg: C('#f6ecdb'), hs: C('#fbf2e2'), hg: C('#c9ba9f'), hi: 0.82, am: 0.34, di: 1.05, dc: C('#ffe9cb') },
-  { h: 18.3, bg: C('#f0c79e'), hs: C('#f6cda2'), hg: C('#b39577'), hi: 0.62, am: 0.3, di: 0.82, dc: C('#ffb877') },
-  { h: 19.6, bg: C('#c79aa3'), hs: C('#d9a9a8'), hg: C('#8f7785'), hi: 0.48, am: 0.26, di: 0.45, dc: C('#e8967a') },
-  { h: 21, bg: C('#222d40'), hs: C('#42506e'), hg: C('#252d3c'), hi: 0.6, am: 0.33, di: 0.46, dc: C('#bccbe2') },
+  // midnight — deep indigo
+  { h: 0,    bg: C('#0c1828'), hs: C('#1c2e4a'), hg: C('#0a1218'), hi: 0.50, am: 0.26, di: 0.32, dc: C('#98aec8') },
+  // pre-dawn — dark blue
+  { h: 5,    bg: C('#16243a'), hs: C('#283c58'), hg: C('#121c28'), hi: 0.54, am: 0.28, di: 0.38, dc: C('#a8bcd0') },
+  // dawn — vibrant coral/amber sunrise
+  { h: 6.8,  bg: C('#e8773a'), hs: C('#f4a060'), hg: C('#905838'), hi: 0.62, am: 0.32, di: 0.75, dc: C('#ffb04a') },
+  // morning — bright Amalfi azure
+  { h: 9,    bg: C('#38aede'), hs: C('#68caee'), hg: C('#c8b880'), hi: 0.88, am: 0.40, di: 1.10, dc: C('#fff6d8') },
+  // noon — deep vivid Mediterranean cerulean
+  { h: 13,   bg: C('#1696cc'), hs: C('#3ab6e4'), hg: C('#c0a878'), hi: 0.92, am: 0.42, di: 1.28, dc: C('#fff4cc') },
+  // late afternoon — warm vivid azure
+  { h: 16.5, bg: C('#26a0d8'), hs: C('#52bcea'), hg: C('#b8a068'), hi: 0.86, am: 0.38, di: 1.08, dc: C('#ffe4a8') },
+  // golden hour — rich orange/coral sunset
+  { h: 18.3, bg: C('#f07228'), hs: C('#f49a42'), hg: C('#885830'), hi: 0.65, am: 0.30, di: 0.82, dc: C('#ffa840') },
+  // twilight — deep purple/rose
+  { h: 19.6, bg: C('#7a3a68'), hs: C('#a85878'), hg: C('#582848'), hi: 0.48, am: 0.26, di: 0.40, dc: C('#e07848') },
+  // evening — settling to night
+  { h: 21,   bg: C('#0e1c30'), hs: C('#1e3050'), hg: C('#0c1420'), hi: 0.52, am: 0.28, di: 0.36, dc: C('#a0b2ca') },
 ]
 
 export interface SkyProfile {
@@ -89,9 +101,20 @@ const OUT: SkyProfile = {
   fogFar: 460,
   rain: false,
 }
-const DAY_GREY = new Color('#c6c4bd')
+// Overcast sky during day — cool blue-grey (clouds over the Mediterranean)
+const DAY_GREY = new Color('#8aabbc')
 
 const lerpN = (a: number, b: number, t: number) => a + (b - a) * t
+
+// Returns 0 during full day, 1 at night, with smooth transitions at dawn/dusk.
+// Used to fade stars and the sky beam out when the sun is up.
+export function nightFactor(): number {
+  const { frac } = getHyderabadTime()
+  if (frac >= 6.5 && frac < 18.5) return 0                  // daytime: invisible
+  if (frac >= 5.5 && frac < 6.5) return 1 - (frac - 5.5)   // dawn fade-out
+  if (frac >= 18.5 && frac < 19.5) return frac - 18.5       // dusk fade-in
+  return 1                                                     // night: fully visible
+}
 
 export function skyProfile(frac: number, weather: Weather | null): SkyProfile {
   let i = KEYS.length - 1
