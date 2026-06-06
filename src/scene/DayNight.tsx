@@ -10,7 +10,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { AmbientLight, Color, DirectionalLight, Fog, HemisphereLight } from 'three'
 import { easing } from 'maath'
 import { Rain } from './Rain'
-import { getHyderabadTime, skyProfile } from '../lib/sky'
+import { getHyderabadTime, skyProfile, nightFactor } from '../lib/sky'
 import type { Weather } from '../lib/weather'
 import type { ViewMode } from '../types'
 
@@ -28,11 +28,14 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
 
   useFrame((_, dt) => {
     const p = skyProfile(getHyderabadTime().frac, weather)
+    const nf = nightFactor() // 0 = full day, 1 = full night
 
-    // Override fog distances to coastal scale so the surrounding sea fades
-    // into the horizon instead of the original tight city values.
-    const fogNear = view === 'iso' ? 480 : view === 'skyline' ? 300 : 360
-    const fogFar = view === 'skyline' ? 1400 : 1500
+    // Clear Amalfi daytime: push fog far out so buildings read crisp and vivid.
+    // Night: bring the coastal atmosphere back in.
+    const baseFogNear = view === 'iso' ? 480 : view === 'skyline' ? 300 : 360
+    const baseFogFar = view === 'skyline' ? 1400 : 1500
+    const fogNear = baseFogNear + (1 - nf) * 700  // up to 1180 during full day
+    const fogFar = baseFogFar + (1 - nf) * 2000   // up to 3500 during full day
 
     if (scene.background instanceof Color) easing.dampC(scene.background, p.background, 0.6, dt)
     const fog = scene.fog

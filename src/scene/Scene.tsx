@@ -6,6 +6,7 @@ import type { Points } from 'three'
 import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
 import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
+import { DaySky } from './DaySky'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
 import { useHyderabad } from '../lib/useHyderabad'
@@ -77,8 +78,10 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           dpr={[1, 2]}
           camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
         >
-          {/* Lights, sky, and fog ease with Hyderabad time-of-day + weather. */}
+          {/* Lights, fog and time-of-day cycle. */}
           <DayNight weather={weather} view={view} />
+          {/* Physically-based atmospheric sky + clouds during daytime. */}
+          <DaySky />
 
           <Suspense fallback={null}>
             <CityWorld
