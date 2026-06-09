@@ -56,11 +56,11 @@ export const LANDMARK_DEFS: LandmarkDef[] = LANDMARKS.map((l) => ({
 }))
 
 // Civic clock tower — a fixed monument near the plaza that keeps Hyderabad time.
-// Sits off the avenues/spokes so it claims a clear plot; registered as an anchor
-// so roads skirt it and scenery doesn't grow over it.
-// Moved to radius ~43 (between the first two ring roads) — old position [6,0,21]
-// was inside the plaza after TERRACE_R grew to 27 with the 1.5x city rescale.
 export const CLOCK_TOWER = { position: [LOT * 3, 0, LOT * 2] as [number, number, number], footprint: 5 }
+
+// Lighthouse — stands near The Past gateway (z ≈ 175), throws a rotating beam
+// at night. Placed slightly off the central avenue so the gateway label reads.
+export const LIGHTHOUSE = { position: [32, 0, 162] as [number, number, number], footprint: 7 }
 
 // Fixed plots the roads must avoid and scenery must not occupy.
 interface Anchor {
@@ -72,6 +72,7 @@ const ANCHORS: Anchor[] = [
   ...BUILDINGS.map((b) => ({ x: b.position[0], z: b.position[2], clearance: b.footprint * 0.5 + 3 })),
   ...LANDMARK_DEFS.map((l) => ({ x: l.position[0], z: l.position[2], clearance: l.footprint * 0.5 + 3 })),
   { x: CLOCK_TOWER.position[0], z: CLOCK_TOWER.position[2], clearance: CLOCK_TOWER.footprint * 0.5 + 1 },
+  { x: LIGHTHOUSE.position[0],  z: LIGHTHOUSE.position[2],  clearance: LIGHTHOUSE.footprint * 0.5 + 2 },
 ]
 
 function mulberry32(seed: number): () => number {
