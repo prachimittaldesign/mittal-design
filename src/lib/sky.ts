@@ -60,11 +60,11 @@ const KEYS: Key[] = [
   // dawn — vibrant coral/amber sunrise
   { h: 6.8,  bg: C('#e8773a'), hs: C('#f4a060'), hg: C('#905838'), hi: 0.62, am: 0.32, di: 0.75, dc: C('#ffb04a') },
   // morning — bright Amalfi azure
-  { h: 9,    bg: C('#38aede'), hs: C('#68caee'), hg: C('#c8b880'), hi: 0.88, am: 0.40, di: 1.10, dc: C('#fff6d8') },
+  { h: 9,    bg: C('#38aede'), hs: C('#68caee'), hg: C('#c8b880'), hi: 0.66, am: 0.34, di: 0.82, dc: C('#fff6d8') },
   // noon — deep vivid Mediterranean cerulean
-  { h: 13,   bg: C('#1696cc'), hs: C('#3ab6e4'), hg: C('#c0a878'), hi: 0.92, am: 0.42, di: 1.28, dc: C('#fff4cc') },
+  { h: 13,   bg: C('#1696cc'), hs: C('#3ab6e4'), hg: C('#c0a878'), hi: 0.70, am: 0.36, di: 0.92, dc: C('#fff4cc') },
   // late afternoon — warm vivid azure
-  { h: 16.5, bg: C('#26a0d8'), hs: C('#52bcea'), hg: C('#b8a068'), hi: 0.86, am: 0.38, di: 1.08, dc: C('#ffe4a8') },
+  { h: 16.5, bg: C('#26a0d8'), hs: C('#52bcea'), hg: C('#b8a068'), hi: 0.66, am: 0.34, di: 0.82, dc: C('#ffe4a8') },
   // golden hour — rich orange/coral sunset
   { h: 18.3, bg: C('#f07228'), hs: C('#f49a42'), hg: C('#885830'), hi: 0.65, am: 0.30, di: 0.82, dc: C('#ffa840') },
   // twilight — deep purple/rose
