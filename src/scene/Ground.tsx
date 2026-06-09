@@ -255,10 +255,13 @@ export function Ground() {
       {/* A restrained two-tone wildflower scatter */}
       <Wildflowers />
 
-      {/* Central paved circle — warm stone matching the terrace, no green patch */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+      {/* Central paved circle — warm stone matching the terrace. depthWrite:false
+          + a high renderOrder folds it into the plaza paint stack so it always
+          paints cleanly on top of the terrace discs beneath instead of
+          z-fighting them across the tiny height gap from the far top-down view. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} renderOrder={3}>
         <circleGeometry args={[LOT * 1.2, 96]} />
-        <meshStandardMaterial color="#d8ccb0" roughness={0.95} />
+        <meshStandardMaterial color="#d8ccb0" roughness={0.95} depthWrite={false} />
       </mesh>
 
       {/* Roundabout carriageway — a smooth ring of tarmac circling the island.
