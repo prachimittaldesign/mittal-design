@@ -2,12 +2,12 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { InstancedMesh, Object3D } from 'three'
 
-const COUNT  = 1800     // dense heavy-rain curtain
-const SPREAD = 200      // half-extent X/Z
-const TOP    = 115      // respawn ceiling
-const SPEED  = 98       // base fall speed (units/s)
-const WIND_X =  0.13    // wind lean along X (radians)
-const WIND_Z = -0.05    // subtle depth lean
+const COUNT  = 700      // gentle visible rain
+const SPREAD = 180      // half-extent X/Z
+const TOP    = 100      // respawn ceiling
+const SPEED  = 80       // base fall speed (units/s)
+const WIND_X =  0.08    // slight wind lean along X (radians)
+const WIND_Z = -0.03    // subtle depth lean
 
 // Instanced falling streaks — one draw call for the full downpour.
 // Mounted only while it's raining in Hyderabad (see DayNight).
@@ -46,8 +46,8 @@ export function Rain() {
 
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, COUNT]} frustumCulled={false}>
-      <boxGeometry args={[0.026, 2.8, 0.026]} />
-      <meshBasicMaterial color="#8ab2cc" transparent opacity={0.64} depthWrite={false} />
+      <boxGeometry args={[0.032, 2.0, 0.032]} />
+      <meshBasicMaterial color="#b0cce0" transparent opacity={0.38} depthWrite={false} />
     </instancedMesh>
   )
 }

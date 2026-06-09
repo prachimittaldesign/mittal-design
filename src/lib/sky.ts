@@ -154,23 +154,23 @@ export function skyProfile(frac: number, weather: Weather | null): SkyProfile {
       case 'fog':    cloud = 0.50; fogMul = 0.45; skyTarget = DAY_OVERCAST; break
       case 'snow':   cloud = 0.65; fogMul = 0.68; skyTarget = DAY_OVERCAST; break
       case 'rain':
-        cloud = 0.92; fogMul = 0.22
+        cloud = 0.55; fogMul = 0.60
         skyTarget = DAY_RAIN
         OUT.rain = true
         break
       case 'storm':
-        cloud = 0.97; fogMul = 0.14
+        cloud = 0.72; fogMul = 0.45
         skyTarget = DAY_STORM
         OUT.rain = true
         break
     }
     if (cloud > 0) {
-      OUT.dirIntensity  *= 1 - cloud * 0.82
-      OUT.hemiIntensity *= 1 - cloud * 0.50
-      OUT.ambient       *= 1 - cloud * 0.28
+      OUT.dirIntensity  *= 1 - cloud * 0.60
+      OUT.hemiIntensity *= 1 - cloud * 0.30
+      OUT.ambient       *= 1 - cloud * 0.15
       const day = frac >= 6.8 && frac < 18.3
       if (day && skyTarget) {
-        OUT.background.lerp(skyTarget, cloud * 0.85)
+        OUT.background.lerp(skyTarget, cloud * 0.45)
         OUT.fog.copy(OUT.background)
       }
       OUT.fogFar  *= fogMul

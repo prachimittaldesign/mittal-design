@@ -71,27 +71,25 @@ export function DaySky({ weather }: { weather?: Weather | null }) {
   const isRain  = weather?.condition === 'rain'  || weather?.condition === 'storm'
   const isCloud = weather?.condition === 'cloudy' || weather?.condition === 'fog'
 
-  // Cloud tint: white in clear sky → dark pewter in storms
-  const cloudNear = isRain  ? '#424e58' : isCloud ? '#9aabb8' : '#f8f8ff'
-  const cloudMid  = isRain  ? '#3c4850' : isCloud ? '#8a9caa' : '#f4f6ff'
-  const cloudFar  = isRain  ? '#363e46' : isCloud ? '#7c8e9a' : '#eef2ff'
-  const cloudOpa  = isRain  ? 0.98      : 0.90
-  const cloudSpd  = isRain  ? 0.28      : 0.12   // faster in wind
+  // Cloud tint: white in clear sky → soft grey in rain
+  const cloudNear = isRain  ? '#c0cdd8' : isCloud ? '#d0dae2' : '#f8f8ff'
+  const cloudMid  = isRain  ? '#b4c2cc' : isCloud ? '#c4d0da' : '#f4f6ff'
+  const cloudFar  = isRain  ? '#a8b8c4' : isCloud ? '#b8c6d0' : '#eef2ff'
+  const cloudOpa  = isRain  ? 0.92      : 0.90
+  const cloudSpd  = isRain  ? 0.18      : 0.12
 
   return (
     <>
-      {/* Clear-sky Preetham shader — hidden during rain/storm so the dark
-          scene.background (set by skyProfile) shows through as overcast sky. */}
-      {!isRain && (
-        <Sky
-          distance={45000}
-          sunPosition={pos}
-          turbidity={isCloud ? turbidity + 4 : turbidity}
-          rayleigh={isCloud ? 0.8 : 1.5}
-          mieCoefficient={0.003}
-          mieDirectionalG={0.75}
-        />
-      )}
+      {/* Sky shader — always visible; turbidity rises during rain/cloud for
+          a softer, more diffused look without killing the blue entirely. */}
+      <Sky
+        distance={45000}
+        sunPosition={pos}
+        turbidity={isRain ? turbidity + 8 : isCloud ? turbidity + 4 : turbidity}
+        rayleigh={isRain ? 0.6 : isCloud ? 0.9 : 1.5}
+        mieCoefficient={0.003}
+        mieDirectionalG={0.75}
+      />
 
       {nf < 0.5 && (
         <Clouds texture={cloudTex} limit={700}>

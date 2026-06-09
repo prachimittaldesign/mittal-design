@@ -37,9 +37,9 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
     let fogNear: number
     let fogFar:  number
     if (weather?.rain) {
-      // Heavy rain: fog clamps within the city block so buildings fade at distance
-      fogNear = weather.condition === 'storm' ? 60  : 80
-      fogFar  = weather.condition === 'storm' ? 220 : 300
+      // Rain: bring atmosphere in gently without killing city readability
+      fogNear = weather.condition === 'storm' ? 220 : 320
+      fogFar  = weather.condition === 'storm' ? 700 : 900
     } else {
       fogNear = baseFogNear + (1 - nf) * 700   // up to 1060 in clear day
       fogFar  = baseFogFar  + (1 - nf) * 2000  // up to 3500 in clear day
