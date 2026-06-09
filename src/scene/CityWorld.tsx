@@ -8,7 +8,7 @@ import { Props } from './Props'
 import { CityFill } from './CityFill'
 import { Building } from './Building'
 import { Landmark } from './Landmark'
-import { StreetSigns, GatewayLabels } from './StreetSigns'
+import { GatewayLabels } from './StreetSigns'
 import { StreetFurniture } from './StreetFurniture'
 import { StreetDecor } from './StreetDecor'
 import { Pond } from './Pond'
@@ -112,7 +112,6 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
             steep bird's-eye they'd point straight at the camera. */}
         {view !== 'iso' && <SkyBeams />}
         {layers.showScenery && <CityFill />}
-        {view === '3d' && <StreetSigns />}
         {/* Lively layers also enrich the coastal 2D dusk view; skyline keeps a
             clean rearranged row, so they stay out of it. */}
         {view !== 'skyline' && <Pond />}

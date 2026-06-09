@@ -55,10 +55,10 @@ export function buildingCategory(tags: string[]): BuildingCategory {
   return 'enterprise'
 }
 
-// Only tall enterprise towers go glass — the "Future" core skyscrapers rising
-// above a warm colourful town.
-export function isGlassTower(cat: BuildingCategory, height: number): boolean {
-  return cat === 'enterprise' && height > 30
+// Every building reads as sleek cool-blue curtain-wall glass — the chic
+// mirror-glass skyline that reflects the live sky and clouds.
+export function isGlassTower(_cat: BuildingCategory, _height: number): boolean {
+  return true
 }
 
 // Warm sunlit stucco families per category — every family vibrant but cohesive,

@@ -250,11 +250,11 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
     () =>
       new MeshStandardMaterial({
         color: facadeHex,
-        roughness: glass ? 0.06 : 0.7,
-        metalness: glass ? 0.95 : 0.0,
+        roughness: glass ? 0.12 : 0.7,
+        metalness: glass ? 0.9 : 0.0,
         emissive: facadeHex,
         emissiveIntensity: baseEmissive,
-        envMapIntensity: glass ? 1.4 : 0.5,
+        envMapIntensity: glass ? 0.95 : 0.5,
       }),
     [facadeHex, glass, baseEmissive],
   )
