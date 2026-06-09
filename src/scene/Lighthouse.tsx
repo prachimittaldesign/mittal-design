@@ -236,12 +236,14 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
       {/* ── Night lighting ───────────────────────────────────────────────── */}
       <pointLight ref={lampRef} position={[0, LANTERN_H, 0]} color="#ffdd88" intensity={0} distance={280} decay={1.5} castShadow={false} />
 
+      {/* Beams tilt downward so they rake across the water/ground as they
+          sweep — a real lighthouse light hits the sea, not the empty sky. */}
       <group ref={beamRef} position={[0, LANTERN_H, 0]}>
-        <mesh position={[0, -0.4, BEAM_LEN * 0.5]}>
+        <mesh position={[0, -BEAM_LEN * 0.5 * Math.sin(0.18), BEAM_LEN * 0.5 * Math.cos(0.18)]} rotation={[-0.18, 0, 0]}>
           <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
           <primitive object={beamMat} />
         </mesh>
-        <mesh position={[0, -0.4, -BEAM_LEN * 0.5]}>
+        <mesh position={[0, -BEAM_LEN * 0.5 * Math.sin(0.18), -BEAM_LEN * 0.5 * Math.cos(0.18)]} rotation={[0.18, 0, 0]}>
           <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
           <primitive object={beam2Mat} />
         </mesh>
