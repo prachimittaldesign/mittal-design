@@ -34,7 +34,7 @@ const TERRACE_R = 27
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
 const TUFT_COUNT  = 6000
 const PLAZA_CLEAR = TERRACE_R + 2   // 2-unit grass buffer beyond the stone terrace edge
-const FIELD_R     = LAND_R - 36     // keep all greenery inside the coastline (LAND_R)
+const FIELD_R     = 104             // grass stays in the city core; terraced hills ring the rim
 
 function GrassTufts() {
   const ref = useRef<InstancedMesh>(null)

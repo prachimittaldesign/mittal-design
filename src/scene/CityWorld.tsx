@@ -17,6 +17,7 @@ import { ClockTower } from './ClockTower'
 import { Billboards } from './Billboards'
 import { CityLife } from './CityLife'
 import { CoastEnvironment } from './CoastEnvironment'
+import { Hillside } from './Hillside'
 import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
@@ -102,6 +103,9 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
       <group ref={worldRef}>
         <Ground />
         <CoastEnvironment />
+        {/* Terraced green cliffs ringing the town — the Amalfi amphitheatre.
+            Skipped in the skyline row, which rearranges buildings flat. */}
+        {view !== 'skyline' && <Hillside />}
         <Constellations />
         <Roads />
         <Props />
