@@ -60,7 +60,7 @@ export const CLOCK_TOWER = { position: [LOT * 3, 0, LOT * 2] as [number, number,
 
 // Lighthouse — stands near The Past gateway (z ≈ 175), throws a rotating beam
 // at night. Placed slightly off the central avenue so the gateway label reads.
-export const LIGHTHOUSE = { position: [32, 0, 162] as [number, number, number], footprint: 7 }
+export const LIGHTHOUSE = { position: [22, 0, 158] as [number, number, number], footprint: 7 }
 
 // Fixed plots the roads must avoid and scenery must not occupy.
 interface Anchor {

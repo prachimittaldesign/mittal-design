@@ -22,6 +22,7 @@ import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
+import { PROJECTS } from '../data/projects'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
 interface CityWorldProps {
@@ -119,10 +120,21 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
         {view !== 'skyline' && <Pond />}
         {view !== 'skyline' && <Birds />}
         {view !== 'skyline' && <ClockTower />}
-        {view !== 'skyline' && <Lighthouse />}
+        {view !== 'skyline' && (() => {
+          const studioProject = PROJECTS.find(p => p.id === 'arch')
+          return studioProject ? (
+            <Lighthouse
+              project={studioProject}
+              hovered={hovered === studioProject.id}
+              showLabel={showLabel}
+              onHover={setHovered}
+              onSelect={handleSelect}
+            />
+          ) : null
+        })()}
         {view !== 'skyline' && <Billboards />}
         {view !== 'skyline' && <CityLife />}
-        {BUILDINGS.map((def) => (
+        {BUILDINGS.filter(d => d.project.id !== 'arch').map((def) => (
           <Building
             key={def.project.id}
             def={def}
