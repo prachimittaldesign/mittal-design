@@ -92,13 +92,15 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           <DaySky />
           {/* Live environment map — captures a second copy of the sky, clouds
               and balloons into a cube map so the glass facades mirror them.
+              far must exceed the Sky dome's distance (45000) or the sky gets
+              clipped out of the cube and the glass reflects only darkness.
               Half resolution on mobile (256 vs 512) to cut the per-frame cost. */}
           <Environment
             frames={Infinity}
             resolution={isMobile ? 256 : 512}
             background={false}
-            near={10}
-            far={1500}
+            near={1}
+            far={100000}
           >
             <DaySky />
             {/* colourful balloons drifting in the reflected sky */}

@@ -9,8 +9,30 @@
  * overexposing the scene.
  */
 
+import { useMemo } from 'react'
 import { Sky, Clouds, Cloud } from '@react-three/drei'
 import { getHyderabadTime, nightFactor } from '../lib/sky'
+
+// Self-contained soft cloud puff texture (radial alpha falloff), generated on a
+// canvas as a data URL. drei's <Cloud> otherwise pulls its sprite from an
+// external CDN (githack), which fails silently behind strict network policies —
+// then no clouds render at all (and nothing to reflect). This guarantees they
+// always appear.
+function makeCloudTexture(): string {
+  if (typeof document === 'undefined') return ''
+  const c = document.createElement('canvas')
+  c.width = c.height = 128
+  const ctx = c.getContext('2d')!
+  const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+  g.addColorStop(0, 'rgba(255,255,255,1)')
+  g.addColorStop(0.45, 'rgba(255,255,255,0.85)')
+  g.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = g
+  ctx.beginPath()
+  ctx.arc(64, 64, 64, 0, Math.PI * 2)
+  ctx.fill()
+  return c.toDataURL()
+}
 
 // Sun sweeps east (+X) at sunrise → south (+Z, behind camera) at noon → west (−X) at sunset.
 // Keeping Z positive ensures the sun disk stays behind the camera when looking at the city.
@@ -23,6 +45,7 @@ function sunPos(frac: number): [number, number, number] {
 }
 
 export function DaySky() {
+  const cloudTex = useMemo(makeCloudTexture, [])
   const nf = nightFactor() // 0=full day, 1=full night
   if (nf > 0.95) return null
 
@@ -45,49 +68,17 @@ export function DaySky() {
         mieDirectionalG={0.75}
       />
 
-      {/* Soft white Mediterranean clouds — mid-sky, off to the sides */}
+      {/* Soft white Mediterranean clouds spread across the whole dome — front
+          (+Z), back (−Z), sides and overhead — so the glass facades reflect
+          clouds from any camera angle, not just the back-facing sky. */}
       {nf < 0.5 && (
-        <Clouds>
-          <Cloud
-            position={[260, 220, -560]}
-            seed={1}
-            segments={14}
-            bounds={[100, 30, 60]}
-            volume={24}
-            opacity={0.55}
-            speed={0.14}
-            fade={50}
-          />
-          <Cloud
-            position={[-200, 250, -480]}
-            seed={2}
-            segments={12}
-            bounds={[80, 24, 48]}
-            volume={20}
-            opacity={0.50}
-            speed={0.11}
-            fade={45}
-          />
-          <Cloud
-            position={[80, 240, -720]}
-            seed={3}
-            segments={10}
-            bounds={[90, 26, 54]}
-            volume={22}
-            opacity={0.45}
-            speed={0.17}
-            fade={50}
-          />
-          <Cloud
-            position={[-340, 230, -560]}
-            seed={4}
-            segments={10}
-            bounds={[70, 20, 42]}
-            volume={16}
-            opacity={0.40}
-            speed={0.09}
-            fade={40}
-          />
+        <Clouds texture={cloudTex}>
+          <Cloud position={[40, 300, 60]} seed={1} segments={16} bounds={[120, 30, 120]} volume={28} opacity={0.6} speed={0.12} fade={60} />
+          <Cloud position={[320, 250, 240]} seed={2} segments={14} bounds={[100, 28, 70]} volume={24} opacity={0.55} speed={0.14} fade={55} />
+          <Cloud position={[-300, 260, 220]} seed={3} segments={12} bounds={[90, 26, 64]} volume={22} opacity={0.5} speed={0.11} fade={50} />
+          <Cloud position={[260, 230, -560]} seed={4} segments={14} bounds={[100, 30, 60]} volume={24} opacity={0.55} speed={0.13} fade={55} />
+          <Cloud position={[-280, 250, -480]} seed={5} segments={12} bounds={[80, 24, 48]} volume={20} opacity={0.5} speed={0.1} fade={50} />
+          <Cloud position={[120, 280, 520]} seed={6} segments={12} bounds={[90, 26, 60]} volume={22} opacity={0.5} speed={0.15} fade={55} />
         </Clouds>
       )}
     </>
