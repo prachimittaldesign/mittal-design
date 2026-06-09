@@ -52,14 +52,14 @@ function Headland({
 
   return (
     <group position={[x, 0, z]}>
-      {/* Hill silhouette — dusk-dark, hazed by fog into the horizon */}
+      {/* Hill silhouette — warm Amalfi limestone cliffs */}
       <mesh position={[0, 14 * scale, 0]}>
         <coneGeometry args={[60 * scale, 40 * scale, 14]} />
-        <meshStandardMaterial color="#14233c" roughness={1} />
+        <meshStandardMaterial color="#8a7860" roughness={0.9} />
       </mesh>
       <mesh position={[42 * scale, 9 * scale, 6 * scale]}>
         <coneGeometry args={[40 * scale, 28 * scale, 12]} />
-        <meshStandardMaterial color="#162844" roughness={1} />
+        <meshStandardMaterial color="#9e8a6e" roughness={0.92} />
       </mesh>
       {/* Warm town lights scattered on the slope */}
       {lights.map((l, i) => (
@@ -157,7 +157,7 @@ export function CoastEnvironment() {
           depthScale={1.1}
           minDepthThreshold={0.3}
           maxDepthThreshold={1.5}
-          color="#13243d"
+          color="#0d4258"
           roughness={0.65}
           metalness={0.55}
         />
@@ -171,7 +171,7 @@ export function CoastEnvironment() {
       {/* A darker wet band just below the stone, where the water laps the shore */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
         <ringGeometry args={[LAND_R + 7, LAND_R + 16, 96]} />
-        <meshStandardMaterial color="#1a3047" roughness={0.8} metalness={0.3} />
+        <meshStandardMaterial color="#2a4840" roughness={0.85} metalness={0.2} />
       </mesh>
 
       {/* Distant headlands across the bay, hazing into the dusk horizon */}
