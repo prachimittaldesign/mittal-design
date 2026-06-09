@@ -112,6 +112,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               appearance={appearance}
               layers={layers}
               view={view}
+              weather={weather}
               onSelect={onSelect}
               onSelectLandmark={onSelectLandmark}
             />

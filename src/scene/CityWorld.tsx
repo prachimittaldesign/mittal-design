@@ -22,14 +22,17 @@ import { CoastEnvironment } from './CoastEnvironment'
 import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
+import { Rainbow } from './Rainbow'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import { PROJECTS } from '../data/projects'
+import type { Weather } from '../lib/weather'
 import type { Appearance, LayerState, ViewMode, Project, Landmark as LandmarkData } from '../types'
 
 interface CityWorldProps {
   appearance: Appearance
   layers: LayerState
   view: ViewMode
+  weather: Weather | null
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: LandmarkData, rect: DOMRect) => void
 }
@@ -70,7 +73,7 @@ function projectRect(object: Object3D, camera: Camera, canvas: HTMLCanvasElement
   return new DOMRect(minX, minY, Math.max(8, maxX - minX), Math.max(8, maxY - minY))
 }
 
-export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark }: CityWorldProps) {
+export function CityWorld({ appearance, layers, view, weather, onSelect, onSelectLandmark }: CityWorldProps) {
   const [hovered, setHovered] = useState<string | null>(null)
   const worldRef = useRef<Group>(null)
   const camera = useThree((s) => s.camera)
@@ -134,6 +137,7 @@ export function CityWorld({ appearance, layers, view, onSelect, onSelectLandmark
             />
           ) : null
         })()}
+        {view !== 'skyline' && <Rainbow weather={weather} />}
         {view !== 'skyline' && <Billboards />}
         {view !== 'skyline' && <CityLife />}
         {BUILDINGS.filter(d => d.project.id !== 'arch').map((def) => (

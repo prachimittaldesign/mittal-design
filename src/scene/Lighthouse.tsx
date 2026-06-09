@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { Group, MeshBasicMaterial, MeshStandardMaterial, PointLight, type Object3D } from 'three'
+import { AdditiveBlending, CanvasTexture, DoubleSide, Group, MeshBasicMaterial, MeshStandardMaterial, PointLight, SpotLight, type Object3D } from 'three'
 import { easing } from 'maath'
 import { LIGHTHOUSE } from './lib/cityModel'
 import { getHyderabadTime } from '../lib/sky'
@@ -15,6 +15,38 @@ function lampFactor(): number {
   if (frac < 6.5) return 1 - (frac - 5.5)
   return 0
 }
+
+// Beam texture — soft length-wise gradient so both the lamp-end and the far
+// end fade away. Combined with a cone the beam reads as a rounded, tapering
+// volume of light rather than a hard box.
+function makeBeamTexture(): CanvasTexture {
+  const W = 64, H = 256
+  const c = document.createElement('canvas')
+  c.width = W; c.height = H
+  const ctx = c.getContext('2d')!
+  const img = ctx.createImageData(W, H)
+  for (let y = 0; y < H; y++) {
+    // Cone UV: V=0 at base (far end), V=1 at apex (lamp)
+    const v = y / (H - 1)
+    const vp = 0.86                                  // peak just below apex
+    let along: number
+    if (v >= vp) along = (1 - v) / (1 - vp)          // soft fade right at the lamp
+    else along = Math.pow(v / vp, 0.55)              // long gentle fade to far end
+    const a = Math.max(0, Math.min(1, along)) * 255
+    for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4
+      img.data[i]   = 255
+      img.data[i+1] = 248
+      img.data[i+2] = 222
+      img.data[i+3] = a
+    }
+  }
+  ctx.putImageData(img, 0, 0)
+  const tex = new CanvasTexture(c)
+  tex.needsUpdate = true
+  return tex
+}
+
 import type { Project } from '../types'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -37,8 +69,11 @@ const CAP_Y       = LANTERN_Y + 4.0
 const LABEL_Y     = CAP_Y + 6.8    // float label above the finial
 const TWO_PI      = Math.PI * 2
 
-const BEAM_LEN  = 220
-const ROT_SPEED = 0.42   // rad/s ≈ 15 s per revolution
+const BEAM_LEN    = 220
+const BEAM_R      = 14            // cone radius at far end — diverging searchlight
+const BEAM_TILT   = 0.12          // ~7° down so the cone grazes the sea surface
+const SWEEP_SPEED = 0.16          // rad/s on the sin oscillator (slow scan)
+const SWEEP_HALF  = Math.PI / 4   // ±45° — sweeps across the sea-facing arc only
 
 interface LighthouseProps {
   project: Project
@@ -52,15 +87,22 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
   const gl      = useThree((s) => s.gl)
   const beamRef = useRef<Group>(null)
 
+  const beamTex = useMemo(makeBeamTexture, [])
   const beamMat = useMemo(
-    () => new MeshBasicMaterial({ color: LENS, transparent: true, opacity: 0, depthWrite: false }),
-    [],
+    () => new MeshBasicMaterial({
+      map: beamTex,
+      color: LENS,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      side: DoubleSide,
+    }),
+    [beamTex],
   )
-  const beam2Mat = useMemo(
-    () => new MeshBasicMaterial({ color: LENS, transparent: true, opacity: 0, depthWrite: false }),
-    [],
-  )
-  const lampRef = useRef<PointLight>(null)
+  const lampRef    = useRef<PointLight>(null)
+  const spotRef    = useRef<SpotLight>(null)
+  const spotTgtRef = useRef<Object3D>(null)
   const glowMat = useMemo(
     () => new MeshStandardMaterial({ color: LENS, emissive: LENS, emissiveIntensity: 0, roughness: 1 }),
     [],
@@ -71,20 +113,30 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
     [],
   )
 
-  useEffect(() => () => {
-    beamMat.dispose(); beam2Mat.dispose(); glowMat.dispose(); hoverMat.dispose()
-  }, [beamMat, beam2Mat, glowMat, hoverMat])
+  // The spotLight needs an explicit target Object3D so the cast direction
+  // follows the rotating beam group.
+  useEffect(() => {
+    if (spotRef.current && spotTgtRef.current) spotRef.current.target = spotTgtRef.current
+  }, [])
 
-  useFrame((_, dt) => {
+  useEffect(() => () => {
+    beamMat.dispose(); glowMat.dispose(); hoverMat.dispose(); beamTex.dispose()
+  }, [beamMat, glowMat, hoverMat, beamTex])
+
+  useFrame((state, dt) => {
     const lf  = lampFactor()
     const lit = lf > 0.02
 
-    if (beamRef.current) beamRef.current.rotation.y += dt * ROT_SPEED * (lit ? 1 : 0)
+    // Slow back-and-forth sweep across the sea-facing arc — feels more like a
+    // real coastal beacon scanning the water than a full carousel rotation.
+    if (beamRef.current) {
+      beamRef.current.rotation.y = Math.sin(state.clock.elapsedTime * SWEEP_SPEED) * SWEEP_HALF
+    }
 
-    const targetOpa = lit ? lf * 0.28 : 0
-    easing.damp(beamMat,  'opacity', targetOpa,       0.8, dt)
-    easing.damp(beam2Mat, 'opacity', targetOpa * 0.65, 0.8, dt)
+    const targetOpa = lit ? lf * 0.65 : 0
+    easing.damp(beamMat, 'opacity', targetOpa, 0.8, dt)
     if (lampRef.current) easing.damp(lampRef.current, 'intensity', lit ? lf * 10 : 0, 0.8, dt)
+    if (spotRef.current) easing.damp(spotRef.current, 'intensity', lit ? lf * 110 : 0, 0.8, dt)
     easing.damp(glowMat, 'emissiveIntensity', lit ? lf * 2.8 : 0, 0.8, dt)
 
     // Hover shimmer
@@ -236,17 +288,29 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
       {/* ── Night lighting ───────────────────────────────────────────────── */}
       <pointLight ref={lampRef} position={[0, LANTERN_H, 0]} color="#ffdd88" intensity={0} distance={280} decay={1.5} castShadow={false} />
 
-      {/* Beams tilt downward so they rake across the water/ground as they
-          sweep — a real lighthouse light hits the sea, not the empty sky. */}
+      {/* A single tapering cone of light, sweeping seaward. The cone is open
+          and uses additive blending — light *adds* to the night air. A real
+          spotLight rides along so whatever the cone passes over actually
+          gets brightened: sea, mountains, ground. */}
       <group ref={beamRef} position={[0, LANTERN_H, 0]}>
-        <mesh position={[0, -BEAM_LEN * 0.5 * Math.sin(0.18), BEAM_LEN * 0.5 * Math.cos(0.18)]} rotation={[-0.18, 0, 0]}>
-          <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
-          <primitive object={beamMat} />
-        </mesh>
-        <mesh position={[0, -BEAM_LEN * 0.5 * Math.sin(0.18), -BEAM_LEN * 0.5 * Math.cos(0.18)]} rotation={[0.18, 0, 0]}>
-          <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
-          <primitive object={beam2Mat} />
-        </mesh>
+        <group rotation={[BEAM_TILT, 0, 0]}>
+          <mesh position={[0, 0, BEAM_LEN * 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
+            <coneGeometry args={[BEAM_R, BEAM_LEN, 32, 1, true]} />
+            <primitive object={beamMat} />
+          </mesh>
+          <spotLight
+            ref={spotRef}
+            position={[0, 0, 0]}
+            angle={0.075}
+            penumbra={0.55}
+            distance={BEAM_LEN * 1.4}
+            decay={1.4}
+            intensity={0}
+            color="#fff0d0"
+            castShadow={false}
+          />
+          <object3D ref={spotTgtRef} position={[0, 0, BEAM_LEN]} />
+        </group>
       </group>
 
     </group>
