@@ -14,7 +14,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { MeshReflectorMaterial } from '@react-three/drei'
-import { Group } from 'three'
+import { AdditiveBlending, Group, ShaderMaterial } from 'three'
 
 // Radius of the land disc rendered by Ground in 2D — the sea begins past this.
 export const LAND_R = 206
@@ -27,6 +27,132 @@ function mulberry32(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
+}
+
+// ─── Subtle animated wave overlay ────────────────────────────────────────────
+// A wide thin disc above the reflector that paints scrolling wave bands and
+// caustic glints. Two layers of slow sine noise modulate a soft turquoise
+// highlight — gives the static reflector a living, breathing sea surface
+// without breaking the bloom budget.
+const WAVE_VERT = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vWorld;
+  void main() {
+    vUv = uv;
+    vec4 wp = modelMatrix * vec4(position, 1.0);
+    vWorld = wp.xyz;
+    gl_Position = projectionMatrix * viewMatrix * wp;
+  }
+`
+const WAVE_FRAG = /* glsl */ `
+  precision highp float;
+  uniform float uTime;
+  uniform float uLandR;
+  varying vec2 vUv;
+  varying vec3 vWorld;
+
+  // smooth pseudo-noise from layered sines — cheap, no texture
+  float wave(vec2 p, float t) {
+    float a = sin(p.x * 0.06 + t * 0.45) + sin(p.y * 0.05 - t * 0.38);
+    float b = sin((p.x + p.y) * 0.04 + t * 0.32) + sin((p.x - p.y) * 0.045 - t * 0.28);
+    return (a + b) * 0.25; // ~[-1, 1]
+  }
+
+  void main() {
+    float r = length(vWorld.xz);
+    // Don't paint over the land disc; soft fade in past the coastline.
+    float landFade = smoothstep(uLandR - 2.0, uLandR + 28.0, r);
+    // Atmospheric falloff toward the deep horizon so the wave glints don't
+    // tile across the entire 1800u sea.
+    float farFade = 1.0 - smoothstep(450.0, 1100.0, r);
+
+    float w1 = wave(vWorld.xz, uTime);
+    float w2 = wave(vWorld.xz * 2.4 + vec2(120.0, -80.0), uTime * 1.3);
+
+    // Slow large-scale tonal variation — turquoise deepens / lightens.
+    float tonal = 0.5 + 0.5 * w1;
+    vec3 deep = vec3(0.05, 0.32, 0.42);   // deep Amalfi teal
+    vec3 shallow = vec3(0.18, 0.55, 0.62); // brighter turquoise crest
+    vec3 sea = mix(deep, shallow, tonal * 0.7);
+
+    // Crisp wave crests — additive highlights, very subtle.
+    float crest = smoothstep(0.55, 0.95, w2);
+    sea += vec3(0.35, 0.55, 0.55) * crest * 0.4;
+
+    float alpha = landFade * farFade * 0.55;
+    gl_FragColor = vec4(sea, alpha);
+  }
+`
+
+function SeaWaves({ landR }: { landR: number }) {
+  const matRef = useRef<ShaderMaterial>(null)
+  const uniforms = useMemo(
+    () => ({ uTime: { value: 0 }, uLandR: { value: landR } }),
+    [landR],
+  )
+  useFrame((state) => {
+    if (matRef.current) matRef.current.uniforms.uTime.value = state.clock.elapsedTime
+  })
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.55, 0]}>
+      <circleGeometry args={[1700, 96]} />
+      <shaderMaterial
+        ref={matRef}
+        vertexShader={WAVE_VERT}
+        fragmentShader={WAVE_FRAG}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+      />
+    </mesh>
+  )
+}
+
+// ─── Soft white surf ring along the coastline ─────────────────────────────────
+// A thin animated band that pulses just outside the stone shore — the foam that
+// laps the rocks. Two staggered sine pulses keep it from looking metronomic.
+function CoastSurf({ landR }: { landR: number }) {
+  const matRef = useRef<ShaderMaterial>(null)
+  const uniforms = useMemo(() => ({ uTime: { value: 0 } }), [])
+  useFrame((state) => {
+    if (matRef.current) matRef.current.uniforms.uTime.value = state.clock.elapsedTime
+  })
+  const surfVert = /* glsl */ `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+  const surfFrag = /* glsl */ `
+    precision highp float;
+    uniform float uTime;
+    varying vec2 vUv;
+    void main() {
+      // vUv.y = 0 (inner edge / shore) → 1 (outer edge / open sea)
+      float band = smoothstep(0.0, 0.35, vUv.y) * (1.0 - smoothstep(0.5, 1.0, vUv.y));
+      // Angular sine — gentle, irregular pulse around the ring
+      float a = vUv.x * 6.2831853;
+      float pulse = 0.5 + 0.5 * sin(a * 18.0 + uTime * 0.7);
+      pulse *= 0.5 + 0.5 * sin(a * 7.0 - uTime * 0.45);
+      float alpha = band * (0.18 + 0.4 * pulse);
+      gl_FragColor = vec4(0.9, 0.97, 1.0, alpha);
+    }
+  `
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+      <ringGeometry args={[landR + 6, landR + 22, 128, 1]} />
+      <shaderMaterial
+        ref={matRef}
+        vertexShader={surfVert}
+        fragmentShader={surfFrag}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        blending={AdditiveBlending}
+      />
+    </mesh>
+  )
 }
 
 // ─── Distant headland across the bay ─────────────────────────────────────────────
@@ -144,24 +270,28 @@ export function CoastEnvironment() {
 
   return (
     <group>
-      {/* ── The sea ── a vast reflective disc just below the land. It mirrors the
-          lit city, so the warm windows and lamps streak gold across the water. */}
+      {/* ── The sea ── a vast reflective disc just below the land. Tuned to a
+          deep Amalfi turquoise; the wave overlay above paints the lighter
+          turquoise highlights and gentle scrolling crests on top. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.7, 0]}>
         <circleGeometry args={[1800, 96]} />
         <MeshReflectorMaterial
           resolution={512}
-          mirror={0.62}
-          blur={[480, 120]}
-          mixBlur={12}
-          mixStrength={2.4}
+          mirror={0.55}
+          blur={[520, 140]}
+          mixBlur={14}
+          mixStrength={2.0}
           depthScale={1.1}
           minDepthThreshold={0.3}
           maxDepthThreshold={1.5}
-          color="#0d4258"
-          roughness={0.65}
-          metalness={0.55}
+          color="#0a3e54"
+          roughness={0.7}
+          metalness={0.45}
         />
       </mesh>
+
+      {/* Animated wave overlay — slow turquoise tonal shift + crisp crest glints. */}
+      <SeaWaves landR={LAND_R} />
 
       {/* Pale stone coastline ring at the land's edge */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
@@ -171,8 +301,11 @@ export function CoastEnvironment() {
       {/* A darker wet band just below the stone, where the water laps the shore */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
         <ringGeometry args={[LAND_R + 7, LAND_R + 16, 96]} />
-        <meshStandardMaterial color="#2a4840" roughness={0.85} metalness={0.2} />
+        <meshStandardMaterial color="#1d4250" roughness={0.85} metalness={0.2} />
       </mesh>
+
+      {/* Animated white surf pulse along the shoreline */}
+      <CoastSurf landR={LAND_R} />
 
       {/* Distant headlands across the bay, hazing into the dusk horizon */}
       <Headland x={-120} z={-820} scale={3.0} seed={101} />
