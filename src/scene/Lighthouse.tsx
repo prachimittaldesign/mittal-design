@@ -3,8 +3,18 @@ import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { Group, MeshBasicMaterial, MeshStandardMaterial, PointLight, type Object3D } from 'three'
 import { easing } from 'maath'
 import { LIGHTHOUSE } from './lib/cityModel'
-import { nightFactor } from '../lib/sky'
+import { getHyderabadTime } from '../lib/sky'
 import { Label } from './Label'
+
+// Lamp on at 17:20 IST → full by 18:30 → stays on through the night,
+// fades out at dawn (5:30 → 6:30 IST).
+function lampFactor(): number {
+  const { frac } = getHyderabadTime()
+  if (frac >= 17.333 && frac < 18.5) return (frac - 17.333) / (18.5 - 17.333)
+  if (frac >= 18.5 || frac < 5.5) return 1
+  if (frac < 6.5) return 1 - (frac - 5.5)
+  return 0
+}
 import type { Project } from '../types'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -66,16 +76,16 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
   }, [beamMat, beam2Mat, glowMat, hoverMat])
 
   useFrame((_, dt) => {
-    const nf      = nightFactor()
-    const evening = nf > 0.05
+    const lf  = lampFactor()
+    const lit = lf > 0.02
 
-    if (beamRef.current) beamRef.current.rotation.y += dt * ROT_SPEED * (evening ? 1 : 0)
+    if (beamRef.current) beamRef.current.rotation.y += dt * ROT_SPEED * (lit ? 1 : 0)
 
-    const targetOpa = evening ? nf * 0.11 : 0
+    const targetOpa = lit ? lf * 0.11 : 0
     easing.damp(beamMat,  'opacity', targetOpa,       0.8, dt)
     easing.damp(beam2Mat, 'opacity', targetOpa * 0.7, 0.8, dt)
-    if (lampRef.current) easing.damp(lampRef.current, 'intensity', evening ? nf * 10 : 0, 0.8, dt)
-    easing.damp(glowMat, 'emissiveIntensity', evening ? nf * 2.8 : 0, 0.8, dt)
+    if (lampRef.current) easing.damp(lampRef.current, 'intensity', lit ? lf * 10 : 0, 0.8, dt)
+    easing.damp(glowMat, 'emissiveIntensity', lit ? lf * 2.8 : 0, 0.8, dt)
 
     // Hover shimmer
     easing.damp(hoverMat, 'opacity',          hovered ? 0.18 : 0, 0.14, dt)

@@ -1,39 +1,41 @@
 /**
- * FutureBridge — a fancy cable-stayed bridge launching out of the city along
- * "The Future" avenue (−Z) and rising into a distant mountain peak. Symbolic:
- * the journey from the present at the city edge to the goals on the horizon.
+ * FutureBridge — a fancy cable-stayed sea bridge running flat over the water
+ * from "The Future" gateway end (−Z) toward the distant mountain peaks. At the
+ * end, a ferry slowly drifts onward toward the peak — the journey continues
+ * past where the bridge can reach.
  *
  * Two tall pylon towers carry fans of steel cables that suspend a stone deck
- * arcing upward. Warm lanterns line the railings and glow at dusk.
+ * just above the water. Stone piers descend into the sea at intervals. Warm
+ * lanterns line the railings and glow at dusk.
  */
 
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
+import { DoubleSide, Group, Mesh, MeshStandardMaterial, Vector3 } from 'three'
 import { easing } from 'maath'
 import { nightFactor } from '../lib/sky'
 
-// ── Path endpoints — start at end of The Future gateway avenue (z = −200) and
-// climb into a distant mountain peak deep in the −Z direction. ────────────────
-const START = new Vector3(0,  1.6, -200)
-const END   = new Vector3(0, 72,   -320)
+// ── Geometry ─────────────────────────────────────────────────────────────────
+// Flat causeway: starts at the end of "The Future" avenue (z = −200), runs
+// horizontally across the water toward the mountain peaks (z = −260).
+const DECK_Y    = 2.0
+const SEA_FLOOR = -3.0
+const START = new Vector3(0, DECK_Y, -200)
+const END   = new Vector3(0, DECK_Y, -260)
 
-const SEGMENTS      = 56     // deck segment count
-const DECK_W        = 6.4    // road surface width
-const RAIL_H        = 1.4    // railing height
-const PYLON1        = 0.30   // pylon #1 at 30% along the deck
-const PYLON2        = 0.66   // pylon #2 at 66% along the deck
-const PYLON_H       = 26     // tower height above the deck
-const LANTERN_EVERY = 4      // a lantern post every Nth segment
+const SEGMENTS      = 36
+const DECK_W        = 6.4
+const RAIL_H        = 1.4
+const PYLON1        = 0.30
+const PYLON2        = 0.66
+const PYLON_H       = 22
+const LANTERN_EVERY = 4
+const PIER_EVERY    = 6     // stone support every N segments
 
-// Parametric path point at fraction t ∈ [0,1].
-// X/Z lerp linearly; Y mixes a linear ramp with a smoothstep so the deck
-// climbs gracefully — gentle off the gateway, steeper near the peak.
 function pathAt(t: number, out = new Vector3()): Vector3 {
-  const e = t * t * (3 - 2 * t)
   out.x = START.x + (END.x - START.x) * t
+  out.y = DECK_Y
   out.z = START.z + (END.z - START.z) * t
-  out.y = START.y + (END.y - START.y) * (0.18 * t + 0.82 * e)
   return out
 }
 function tangentAt(t: number): Vector3 {
@@ -43,12 +45,13 @@ function tangentAt(t: number): Vector3 {
 }
 
 export function FutureBridge() {
-  // Build all geometry once.
+  // Build all static geometry once.
   const data = useMemo(() => {
     const deck:     Array<{ p: Vector3; left: Vector3; right: Vector3 }> = []
     const pylons:   Array<{ base: Vector3; top: Vector3; left: Vector3; right: Vector3 }> = []
     const lanterns: Array<{ p: Vector3 }> = []
     const cables:   Array<{ a: Vector3; b: Vector3 }> = []
+    const piers:    Array<{ p: Vector3; radius: number }> = []
 
     const half = DECK_W / 2
 
@@ -65,9 +68,13 @@ export function FutureBridge() {
         lanterns.push({ p: left.clone() })
         lanterns.push({ p: right.clone() })
       }
+      // Supporting pier every PIER_EVERY (but skip where a pylon will sit)
+      if (i > 0 && i < SEGMENTS && i % PIER_EVERY === 0) {
+        piers.push({ p: p.clone(), radius: 0.55 })
+      }
     }
 
-    // Pylons + fan stays
+    // Two A-frame pylons + fans of cables
     for (const tp of [PYLON1, PYLON2]) {
       const p   = pathAt(tp, new Vector3())
       const tan = tangentAt(tp)
@@ -78,8 +85,11 @@ export function FutureBridge() {
       const right = base.clone().addScaledVector(lat, -half * 0.92)
       pylons.push({ base, top, left, right })
 
-      const SPAN = 0.18
-      const N = 6
+      // Stone foundation piers under each pylon leg
+      piers.push({ p: left.clone(),  radius: 0.85 })
+      piers.push({ p: right.clone(), radius: 0.85 })
+
+      const SPAN = 0.18, N = 6
       for (let i = 1; i <= N; i++) {
         for (const ti of [Math.min(1, tp + (SPAN * i) / N), Math.max(0, tp - (SPAN * i) / N)]) {
           const dp  = pathAt(ti, new Vector3())
@@ -91,7 +101,7 @@ export function FutureBridge() {
       }
     }
 
-    return { deck, pylons, lanterns, cables }
+    return { deck, pylons, lanterns, cables, piers }
   }, [])
 
   // Lantern emissive — fades in at dusk via shared material.
@@ -141,16 +151,15 @@ export function FutureBridge() {
         </mesh>
       </group>
 
-      {/* ── Deck segments — boxes oriented along the path ─────────────── */}
+      {/* ── Deck segments ────────────────────────────────────────────── */}
       {data.deck.slice(0, -1).map((seg, i) => {
         const next = data.deck[i + 1]
         const mid  = new Vector3().addVectors(seg.p, next.p).multiplyScalar(0.5)
         const dir  = new Vector3().subVectors(next.p, seg.p)
         const len  = dir.length()
-        const yaw   =  Math.atan2(dir.x, dir.z)
-        const pitch = -Math.atan2(dir.y, Math.hypot(dir.x, dir.z))
+        const yaw  = Math.atan2(dir.x, dir.z)
         return (
-          <mesh key={`d${i}`} position={mid} rotation={[pitch, yaw, 0]} castShadow receiveShadow>
+          <mesh key={`d${i}`} position={mid} rotation={[0, yaw, 0]} castShadow receiveShadow>
             <boxGeometry args={[DECK_W, 0.5, len + 0.05]} />
             <meshStandardMaterial color="#d8c8a8" roughness={0.82} />
           </mesh>
@@ -166,15 +175,25 @@ export function FutureBridge() {
           const mid = new Vector3().addVectors(a, b).multiplyScalar(0.5)
           const dir = new Vector3().subVectors(b, a)
           const len = dir.length()
-          const yaw   =  Math.atan2(dir.x, dir.z)
-          const pitch = -Math.atan2(dir.y, Math.hypot(dir.x, dir.z))
+          const yaw = Math.atan2(dir.x, dir.z)
           return (
-            <mesh key={`r${i}${side}`} position={[mid.x, mid.y + RAIL_H / 2, mid.z]} rotation={[pitch, yaw, 0]}>
+            <mesh key={`r${i}${side}`} position={[mid.x, mid.y + RAIL_H / 2, mid.z]} rotation={[0, yaw, 0]}>
               <boxGeometry args={[0.22, RAIL_H, len + 0.05]} />
               <meshStandardMaterial color="#5a4a3a" roughness={0.72} metalness={0.18} />
             </mesh>
           )
         })
+      })}
+
+      {/* ── Stone piers descending into the water ────────────────────── */}
+      {data.piers.map((pier, i) => {
+        const h = DECK_Y - SEA_FLOOR
+        return (
+          <mesh key={`pi${i}`} position={[pier.p.x, (DECK_Y + SEA_FLOOR) / 2, pier.p.z]} castShadow>
+            <cylinderGeometry args={[pier.radius, pier.radius * 1.25, h, 10]} />
+            <meshStandardMaterial color="#9a8878" roughness={0.92} />
+          </mesh>
+        )
       })}
 
       {/* ── Pylon towers ──────────────────────────────────────────────── */}
@@ -211,9 +230,7 @@ export function FutureBridge() {
       })}
 
       {/* ── Cable fans ────────────────────────────────────────────────── */}
-      {data.cables.map((c, i) => (
-        <Cable key={`c${i}`} a={c.a} b={c.b} />
-      ))}
+      {data.cables.map((c, i) => <Cable key={`c${i}`} a={c.a} b={c.b} />)}
 
       {/* ── Lantern posts ────────────────────────────────────────────── */}
       {data.lanterns.map((lp, i) => (
@@ -233,17 +250,94 @@ export function FutureBridge() {
         </group>
       ))}
 
+      {/* ── Ferry drifting past the bridge end toward the peak ───────── */}
+      <Ferry from={new Vector3(END.x, 0.45, END.z - 6)} travelDist={62} />
+
     </group>
   )
 }
 
-// A taut cable cylinder stretched from a → b.  Quaternion is set via the ref
-// callback so we don't need a wrapping group or per-frame work.
+// Steam ferry — slowly drifts in −Z (toward the peaks), bobs and rolls on the
+// water, then loops back. The cycle is long enough that the snap-back is
+// inconspicuous at this distance from the camera.
+function Ferry({ from, travelDist }: { from: Vector3; travelDist: number }) {
+  const ref = useRef<Group>(null)
+  useFrame((state) => {
+    const r = ref.current
+    if (!r) return
+    const t = state.clock.elapsedTime
+    const cycle = 140
+    const phase = (t % cycle) / cycle  // 0..1
+    r.position.x = from.x
+    r.position.z = from.z - phase * travelDist
+    r.position.y = from.y + Math.sin(t * 1.1) * 0.12
+    r.rotation.z = Math.sin(t * 0.65) * 0.035
+    r.rotation.y = Math.PI  // bow points in −Z (toward the peak)
+  })
+
+  return (
+    <group ref={ref}>
+      {/* hull — light cream painted wood */}
+      <mesh position={[0, 0.3, 0]} castShadow>
+        <boxGeometry args={[1.7, 0.55, 4.4]} />
+        <meshStandardMaterial color="#f4ecdc" roughness={0.72} />
+      </mesh>
+      {/* trim line along the gunwale */}
+      <mesh position={[0, 0.62, 0]}>
+        <boxGeometry args={[1.74, 0.1, 4.45]} />
+        <meshStandardMaterial color="#5a4a3a" roughness={0.7} />
+      </mesh>
+      {/* pointed bow (diamond box from above) */}
+      <mesh position={[0, 0.3, 2.5]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <boxGeometry args={[1.2, 0.55, 1.2]} />
+        <meshStandardMaterial color="#f4ecdc" roughness={0.72} />
+      </mesh>
+      {/* cabin */}
+      <mesh position={[0, 1.0, -0.4]} castShadow>
+        <boxGeometry args={[1.35, 0.95, 2.2]} />
+        <meshStandardMaterial color="#5a86c9" roughness={0.6} />
+      </mesh>
+      {/* dark window band */}
+      <mesh position={[0, 1.18, -0.4]}>
+        <boxGeometry args={[1.37, 0.3, 2.22]} />
+        <meshStandardMaterial color="#16243a" roughness={0.4} />
+      </mesh>
+      {/* cabin roof */}
+      <mesh position={[0, 1.55, -0.4]}>
+        <boxGeometry args={[1.45, 0.1, 2.3]} />
+        <meshStandardMaterial color="#3a3028" roughness={0.7} />
+      </mesh>
+      {/* smokestack */}
+      <mesh position={[0, 2.2, -0.9]} castShadow>
+        <cylinderGeometry args={[0.18, 0.18, 1.2, 10]} />
+        <meshStandardMaterial color="#3a3028" roughness={0.65} />
+      </mesh>
+      {/* smokestack red band */}
+      <mesh position={[0, 2.55, -0.9]}>
+        <cylinderGeometry args={[0.19, 0.19, 0.18, 10]} />
+        <meshStandardMaterial color="#c44040" roughness={0.7} />
+      </mesh>
+      {/* aft flagpole */}
+      <mesh position={[0, 1.95, -1.8]}>
+        <cylinderGeometry args={[0.04, 0.04, 1.4, 5]} />
+        <meshStandardMaterial color="#3a3028" />
+      </mesh>
+      {/* pennant flag */}
+      <mesh position={[0.32, 2.4, -1.8]}>
+        <planeGeometry args={[0.6, 0.32]} />
+        <meshStandardMaterial color="#c44040" roughness={0.7} side={DoubleSide} />
+      </mesh>
+    </group>
+  )
+}
+
+// A taut cable cylinder stretched from a → b. Quaternion is set via the ref
+// callback so no wrapping group or per-frame work is needed.
 function Cable({ a, b }: { a: Vector3; b: Vector3 }) {
   const mid = useMemo(() => new Vector3().addVectors(a, b).multiplyScalar(0.5), [a, b])
   const dir = useMemo(() => new Vector3().subVectors(b, a), [a, b])
   const len = dir.length()
-  const ref = (m: Mesh | null) => {
+  const cb = (m: Mesh | null) => {
     if (!m) return
     const v = dir.clone().normalize()
     const up = new Vector3(0, 1, 0)
@@ -253,7 +347,7 @@ function Cable({ a, b }: { a: Vector3; b: Vector3 }) {
     m.quaternion.setFromAxisAngle(axis.normalize(), angle)
   }
   return (
-    <mesh ref={ref} position={mid}>
+    <mesh ref={cb} position={mid}>
       <cylinderGeometry args={[0.045, 0.045, len, 6]} />
       <meshStandardMaterial color="#3a3835" roughness={0.45} metalness={0.6} />
     </mesh>
