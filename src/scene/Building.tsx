@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { Billboard } from '@react-three/drei'
-import { Color, ExtrudeGeometry, Group, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
+import { Color, ExtrudeGeometry, Group, MeshPhysicalMaterial, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
 import {
@@ -241,21 +241,32 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   )
   const winColor = glass ? GLASS_TOWER_WINDOW : STUCCO_WINDOW
 
-  // Glass towers: near-mirror curtain wall that reflects the live sky/clouds.
-  // Stucco: matte lime-washed plaster with a faint warm self-glow so the
-  // colours stay vivid and sunlit rather than going muddy.
-  const baseEmissive = glass ? 0.02 : 0.14
+  // Glass: a physical curtain-wall material. A glossy clearcoat layer over a
+  // pale, lightly-metallic tint gives a strong glassy sheen with bright,
+  // sky-coloured reflections (and Fresnel rim) instead of a dark flat mirror.
+  // Stucco branch kept for completeness though every building is glass now.
+  const baseEmissive = glass ? 0.0 : 0.14
   const baseColor = useMemo(() => new Color(facadeHex), [facadeHex])
   const body = useMemo(
     () =>
-      new MeshStandardMaterial({
-        color: facadeHex,
-        roughness: glass ? 0.04 : 0.7,
-        metalness: glass ? 0.98 : 0.0,
-        emissive: facadeHex,
-        emissiveIntensity: baseEmissive,
-        envMapIntensity: glass ? 1.5 : 0.5,
-      }),
+      glass
+        ? new MeshPhysicalMaterial({
+            color: facadeHex,
+            roughness: 0.05,
+            metalness: 0.55,
+            envMapIntensity: 2.6,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.04,
+            reflectivity: 1.0,
+          })
+        : new MeshStandardMaterial({
+            color: facadeHex,
+            roughness: 0.7,
+            metalness: 0.0,
+            emissive: facadeHex,
+            emissiveIntensity: baseEmissive,
+            envMapIntensity: 0.5,
+          }),
     [facadeHex, glass, baseEmissive],
   )
   useEffect(() => () => body.dispose(), [body])

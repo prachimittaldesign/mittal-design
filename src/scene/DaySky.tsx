@@ -68,17 +68,20 @@ export function DaySky() {
         mieDirectionalG={0.75}
       />
 
-      {/* Soft white Mediterranean clouds spread across the whole dome — front
-          (+Z), back (−Z), sides and overhead — so the glass facades reflect
-          clouds from any camera angle, not just the back-facing sky. */}
+      {/* Plenty of soft white clouds spread across the whole dome — front (+Z),
+          back (−Z), sides, overhead AND down near the horizon — so the glass
+          facades are full of drifting cloud reflections from any camera angle. */}
       {nf < 0.5 && (
-        <Clouds texture={cloudTex}>
-          <Cloud position={[40, 300, 60]} seed={1} segments={16} bounds={[120, 30, 120]} volume={28} opacity={0.6} speed={0.12} fade={60} />
-          <Cloud position={[320, 250, 240]} seed={2} segments={14} bounds={[100, 28, 70]} volume={24} opacity={0.55} speed={0.14} fade={55} />
-          <Cloud position={[-300, 260, 220]} seed={3} segments={12} bounds={[90, 26, 64]} volume={22} opacity={0.5} speed={0.11} fade={50} />
-          <Cloud position={[260, 230, -560]} seed={4} segments={14} bounds={[100, 30, 60]} volume={24} opacity={0.55} speed={0.13} fade={55} />
-          <Cloud position={[-280, 250, -480]} seed={5} segments={12} bounds={[80, 24, 48]} volume={20} opacity={0.5} speed={0.1} fade={50} />
-          <Cloud position={[120, 280, 520]} seed={6} segments={12} bounds={[90, 26, 60]} volume={22} opacity={0.5} speed={0.15} fade={55} />
+        <Clouds texture={cloudTex} limit={400}>
+          <Cloud position={[40, 300, 60]} seed={1} segments={18} bounds={[140, 34, 140]} volume={34} opacity={0.8} speed={0.12} fade={120} />
+          <Cloud position={[340, 200, 240]} seed={2} segments={16} bounds={[120, 30, 80]} volume={30} opacity={0.78} speed={0.14} fade={120} />
+          <Cloud position={[-320, 210, 220]} seed={3} segments={16} bounds={[110, 28, 76]} volume={28} opacity={0.75} speed={0.11} fade={120} />
+          <Cloud position={[300, 175, -480]} seed={4} segments={16} bounds={[120, 30, 70]} volume={30} opacity={0.78} speed={0.13} fade={120} />
+          <Cloud position={[-300, 185, -440]} seed={5} segments={14} bounds={[100, 28, 64]} volume={26} opacity={0.75} speed={0.1} fade={120} />
+          <Cloud position={[120, 230, 520]} seed={6} segments={16} bounds={[120, 30, 76]} volume={30} opacity={0.78} speed={0.15} fade={120} />
+          <Cloud position={[-140, 240, -560]} seed={7} segments={14} bounds={[110, 28, 70]} volume={28} opacity={0.75} speed={0.12} fade={120} />
+          <Cloud position={[480, 160, 40]} seed={8} segments={14} bounds={[110, 26, 80]} volume={26} opacity={0.72} speed={0.09} fade={120} />
+          <Cloud position={[-470, 165, -40]} seed={9} segments={14} bounds={[110, 26, 80]} volume={26} opacity={0.72} speed={0.1} fade={120} />
         </Clouds>
       )}
     </>
