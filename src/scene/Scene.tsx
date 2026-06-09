@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Loader } from '@react-three/drei'
+import { Environment, Loader } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import type { Points } from 'three'
 import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
@@ -82,6 +82,9 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           <DayNight weather={weather} view={view} />
           {/* Physically-based atmospheric sky + clouds during daytime. */}
           <DaySky />
+          {/* HDRI env map for glass reflections — background=false so it
+              only affects material reflections, not the visible skybox. */}
+          <Environment preset="city" background={false} />
 
           <Suspense fallback={null}>
             <CityWorld

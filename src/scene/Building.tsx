@@ -4,7 +4,15 @@ import { Billboard } from '@react-three/drei'
 import { Color, ExtrudeGeometry, Group, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
-import { amalfiFacade, amalfiRoof, DIM_GREY, layerColor, AMALFI_WINDOW } from './lib/cityTheme'
+import {
+  buildingCategory,
+  glassFacade,
+  glassRoof,
+  WINDOW_COLORS,
+  DIM_GREY,
+  layerColor,
+  type BuildingCategory,
+} from './lib/cityTheme'
 import { type BuildingDef } from './lib/cityModel'
 import type { Appearance, Project, RoofStyle, ViewMode } from '../types'
 
@@ -29,18 +37,18 @@ function pickShape(id: string, district: 'glass' | 'warm', height: number): Shap
 }
 
 // Glowing window bands on all four faces, respecting rectangular footprints.
-function WindowStrip({ w, d, y }: { w: number; d: number; y: number }) {
+function WindowStrip({ w, d, y, color }: { w: number; d: number; y: number; color: string }) {
   const mat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: AMALFI_WINDOW,
-        emissive: AMALFI_WINDOW,
-        emissiveIntensity: 1.5,
-        roughness: 0.3,
-        metalness: 0,
+        color,
+        emissive: color,
+        emissiveIntensity: 1.8,
+        roughness: 0.1,
+        metalness: 0.2,
         toneMapped: false,
       }),
-    [],
+    [color],
   )
   useEffect(() => () => mat.dispose(), [mat])
 
@@ -215,22 +223,25 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const roofH  = w * 0.5
   const signY  = roofStyle === 'pitched' ? height + roofH + 2.0 : height + crownH + 3.0
 
-  // Deterministic Amalfi stucco facade + terracotta roof per building.
-  const facadeHex = useMemo(() => amalfiFacade(district, idHash(project.id)), [district, project.id])
-  const roofHex = useMemo(() => amalfiRoof(idHash(project.id)), [project.id])
+  // Category-driven corporate glass facade.
+  const category = useMemo<BuildingCategory>(() => buildingCategory(project.tags), [project.tags])
+  const facadeHex = useMemo(() => glassFacade(category, idHash(project.id)), [category, project.id])
+  const roofHex   = useMemo(() => glassRoof(category, idHash(project.id)), [category, project.id])
+  const winColor  = WINDOW_COLORS[category]
 
-  // Each facade self-illuminates its own hue a touch so the colours stay vivid
-  // and exciting against the dusk instead of going muddy.
-  const baseEmissive = 0.2
+  // Glass curtain wall — very smooth (roughness 0.12), moderately metallic so
+  // it picks up env / hemisphere reflections and reads as tinted glass, not stucco.
+  const baseEmissive = 0.04
   const baseColor = useMemo(() => new Color(facadeHex), [facadeHex])
   const body = useMemo(
     () =>
       new MeshStandardMaterial({
         color: facadeHex,
-        roughness: 0.82, // lime-washed stucco with a faint sheen
-        metalness: 0.0,
+        roughness: 0.12,
+        metalness: 0.75,
         emissive: facadeHex,
         emissiveIntensity: baseEmissive,
+        envMapIntensity: 1.2,
       }),
     [facadeHex],
   )
@@ -310,10 +321,10 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }}
     >
       <group ref={liftRef}>
-        {/* footing — warm stone base matching the building footprint */}
+        {/* footing — dark polished granite plinth */}
         <mesh position={[0, 0.3, 0]} receiveShadow>
           <boxGeometry args={[baseW * 1.06, 0.6, baseD * 1.06]} />
-          <meshStandardMaterial color="#c4b596" roughness={0.95} />
+          <meshStandardMaterial color="#1a1c22" roughness={0.3} metalness={0.55} />
         </mesh>
 
         {/* massing tiers */}
@@ -330,53 +341,53 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
 
         {/* window bands — use actual base footprint dimensions */}
         {windowFloors.map((y, i) => (
-          <WindowStrip key={i} w={baseW} d={baseD} y={y} />
+          <WindowStrip key={i} w={baseW} d={baseD} y={y} color={winColor} />
         ))}
 
         {/* ── Roofline ── */}
         {roofStyle === 'pitched' ? (
           <mesh position={[0, height + roofH / 2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[w * 0.74, roofH, 4]} />
-            <meshStandardMaterial color={roofHex} roughness={0.9} />
+            <meshStandardMaterial color={roofHex} roughness={0.25} metalness={0.6} />
           </mesh>
         ) : shape === 'tapered' ? (
-          // Terracotta pyramid cap.
+          // Polished glass pyramid cap.
           <mesh position={[0, height, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[topW * 0.62, w * 0.40, 4]} />
-            <meshStandardMaterial color={roofHex} roughness={0.78} metalness={0.0} />
+            <meshStandardMaterial color={roofHex} roughness={0.15} metalness={0.8} />
           </mesh>
         ) : (
           <>
-            {/* Flat terracotta parapet slab matching the top tier footprint */}
+            {/* Dark glass parapet slab */}
             <mesh position={[0, height + 0.25, 0]} castShadow>
               <boxGeometry args={[topW * 1.06, 0.5, topD * 1.06]} />
-              <meshStandardMaterial color={roofHex} roughness={0.85} />
+              <meshStandardMaterial color={roofHex} roughness={0.2} metalness={0.7} />
             </mesh>
-            {/* Rooftop terrace detail — a small pergola/penthouse on taller blocks */}
+            {/* Rooftop mechanical penthouse on taller blocks */}
             {height > 20 && shape !== 'slab' && (
               <mesh position={[topW * 0.18, height + 1.3, -topD * 0.12]} castShadow>
                 <boxGeometry args={[topW * 0.4, 1.6, topW * 0.4]} />
-                <meshStandardMaterial color="#cdbfa6" roughness={0.85} />
+                <meshStandardMaterial color={roofHex} roughness={0.3} metalness={0.55} />
               </mesh>
             )}
           </>
         )}
 
-        {/* Setback finial — slim terracotta chimney above tall stepped blocks */}
+        {/* Setback finial — polished glass spire above tall stepped blocks */}
         {shape === 'setback' && height > 28 && (
           <mesh position={[0, height + height * 0.07, 0]} castShadow>
-            <cylinderGeometry args={[0.12, 0.18, height * 0.14, 6]} />
-            <meshStandardMaterial color={roofHex} roughness={0.85} />
+            <cylinderGeometry args={[0.1, 0.16, height * 0.14, 6]} />
+            <meshStandardMaterial color={roofHex} roughness={0.12} metalness={0.85} />
           </mesh>
         )}
 
-        {/* Slab end-wall fins — pale stucco pilasters on the narrow ends */}
+        {/* Slab end-wall fins — dark glass edge columns */}
         {shape === 'slab' && district === 'glass' && height > 20 && (
           <>
             {([-1, 1] as const).map((side) => (
               <mesh key={side} position={[baseW * 0.5 * side, tiers[0].size[1] * 0.5, 0]} castShadow>
                 <boxGeometry args={[0.28, tiers[0].size[1] * 0.98, baseD * 1.1]} />
-                <meshStandardMaterial color={roofHex} roughness={0.85} metalness={0.0} />
+                <meshStandardMaterial color={roofHex} roughness={0.18} metalness={0.7} />
               </mesh>
             ))}
           </>

@@ -34,7 +34,58 @@ export function roofColor(d: District): string {
   return ROOF[d]
 }
 
-// ─── Amalfi Coast palette ────────────────────────────────────────────────────
+// ─── Corporate glass tower palette ──────────────────────────────────────────
+// Buildings are categorised by their first tag. Each category gets a family of
+// dark tinted-glass tones: deep navy for enterprise, warm bronze for consumer,
+// teal for spatial/robotics, graphite for research. Paired with roughness≈0.12
+// and metalness≈0.75 so they read as genuine glass curtain walls, not stucco.
+export type BuildingCategory = 'enterprise' | 'consumer' | 'spatial' | 'research'
+
+export function buildingCategory(tags: string[]): BuildingCategory {
+  const s = new Set(tags)
+  if (s.has('Architecture') || s.has('Residential') || s.has('Robotics') || s.has('Spatial')) return 'spatial'
+  if (s.has('Consumer') || s.has('TV') || s.has('Mobile') || s.has('Healthcare') || s.has('Social') || s.has('Fundraising') || s.has('Politics')) return 'consumer'
+  if (s.has('UX Research') || s.has('Information Architecture')) return 'research'
+  return 'enterprise' // Enterprise, AI, B2B, DITA, Governance, Workflow, Documents …
+}
+
+// Tight hue-families — enough variation to tell buildings apart, all dark-glass premium.
+const CORP_ENTERPRISE = ['#1a3a5c', '#22446a', '#1e3d58', '#2a4870', '#243e64', '#1c3858']
+const CORP_CONSUMER   = ['#5c3020', '#6a3a24', '#5e3418', '#703028', '#622e1c', '#582c18']
+const CORP_SPATIAL    = ['#1a3e3a', '#224848', '#1e4040', '#2a4e4a', '#1c3c38', '#263e3e']
+const CORP_RESEARCH   = ['#2a2c3e', '#303248', '#282a3c', '#2c2e44', '#26283a', '#2e3042']
+
+const CORP_ROOF_ENTERPRISE = ['#142e4a', '#1a3858', '#12284e', '#183254']
+const CORP_ROOF_CONSUMER   = ['#3a1e10', '#481e12', '#4a2614', '#3c1e0e']
+const CORP_ROOF_SPATIAL    = ['#12302e', '#183838', '#143030', '#1a3c38']
+const CORP_ROOF_RESEARCH   = ['#1e2038', '#22223e', '#1c1e34', '#20223c']
+
+// Window glow — each category has a signature colour that reads in all light.
+export const WINDOW_COLORS: Record<BuildingCategory, string> = {
+  enterprise: '#a0c8ff', // crisp corporate sky-blue
+  consumer:   '#ffb870', // warm amber-champagne
+  spatial:    '#70e8d8', // bright teal-cyan
+  research:   '#c8d8ff', // soft neutral blue-white
+}
+
+export function glassFacade(cat: BuildingCategory, hash: number): string {
+  switch (cat) {
+    case 'consumer': return CORP_CONSUMER[hash % CORP_CONSUMER.length]
+    case 'spatial':  return CORP_SPATIAL[hash % CORP_SPATIAL.length]
+    case 'research': return CORP_RESEARCH[hash % CORP_RESEARCH.length]
+    default:         return CORP_ENTERPRISE[hash % CORP_ENTERPRISE.length]
+  }
+}
+export function glassRoof(cat: BuildingCategory, hash: number): string {
+  switch (cat) {
+    case 'consumer': return CORP_ROOF_CONSUMER[hash % CORP_ROOF_CONSUMER.length]
+    case 'spatial':  return CORP_ROOF_SPATIAL[hash % CORP_ROOF_SPATIAL.length]
+    case 'research': return CORP_ROOF_RESEARCH[hash % CORP_ROOF_RESEARCH.length]
+    default:         return CORP_ROOF_ENTERPRISE[hash % CORP_ROOF_ENTERPRISE.length]
+  }
+}
+
+// ─── Amalfi Coast palette (kept for scenery / CityFill buildings) ────────────
 // The town is a vivid Mediterranean cliff village (think Burano / Positano):
 // saturated stucco facades in every joyful colour, terracotta roofs, and warm
 // lamplit windows. The enterprise (glass) district leans to the sunny golds and
