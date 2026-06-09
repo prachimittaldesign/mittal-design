@@ -89,7 +89,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           {/* Lights, fog and time-of-day cycle. */}
           <DayNight weather={weather} view={view} />
           {/* Visible sky + clouds in the main scene. */}
-          <DaySky />
+          <DaySky weather={weather} />
           {/* Live environment map — captures a second copy of the sky, clouds
               and balloons into a cube map so the glass facades mirror them.
               far must exceed the Sky dome's distance (45000) or the sky gets
@@ -102,7 +102,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
             near={1}
             far={100000}
           >
-            <DaySky />
+            <DaySky weather={weather} />
             {/* colourful balloons drifting in the reflected sky */}
             <EnvBalloons />
           </Environment>

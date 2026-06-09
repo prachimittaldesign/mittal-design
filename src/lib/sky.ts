@@ -101,8 +101,10 @@ const OUT: SkyProfile = {
   fogFar: 460,
   rain: false,
 }
-// Overcast sky during day — cool blue-grey (clouds over the Mediterranean)
-const DAY_GREY = new Color('#8aabbc')
+// Overcast / rain sky — progressively darker grey families
+const DAY_OVERCAST = new Color('#7a9aac')   // cloudy/fog: muted steel blue-grey
+const DAY_RAIN     = new Color('#3e5060')   // rain: dark leaden grey
+const DAY_STORM    = new Color('#222c34')   // storm: near-black anvil
 
 const lerpN = (a: number, b: number, t: number) => a + (b - a) * t
 
@@ -142,48 +144,37 @@ export function skyProfile(frac: number, weather: Weather | null): SkyProfile {
 
   // Weather: clouds dim + grey the day; rain/fog pull the horizon in.
   if (weather) {
-    let cloud = 0
+    let cloud  = 0
     let fogMul = 1
+    let skyTarget: Color | null = null
     switch (weather.condition) {
-      case 'clear':
-        break
-      case 'partly':
-        cloud = 0.22
-        break
-      case 'cloudy':
-        cloud = 0.5
-        fogMul = 0.84
-        break
-      case 'fog':
-        cloud = 0.45
-        fogMul = 0.5
-        break
-      case 'snow':
-        cloud = 0.6
-        fogMul = 0.72
-        break
+      case 'clear':  break
+      case 'partly': cloud = 0.22; break
+      case 'cloudy': cloud = 0.55; fogMul = 0.80; skyTarget = DAY_OVERCAST; break
+      case 'fog':    cloud = 0.50; fogMul = 0.45; skyTarget = DAY_OVERCAST; break
+      case 'snow':   cloud = 0.65; fogMul = 0.68; skyTarget = DAY_OVERCAST; break
       case 'rain':
-        cloud = 0.72
-        fogMul = 0.64
+        cloud = 0.92; fogMul = 0.22
+        skyTarget = DAY_RAIN
         OUT.rain = true
         break
       case 'storm':
-        cloud = 0.86
-        fogMul = 0.56
+        cloud = 0.97; fogMul = 0.14
+        skyTarget = DAY_STORM
         OUT.rain = true
         break
     }
     if (cloud > 0) {
-      OUT.dirIntensity *= 1 - cloud * 0.7
-      OUT.hemiIntensity *= 1 - cloud * 0.32
-      OUT.ambient *= 1 - cloud * 0.14
+      OUT.dirIntensity  *= 1 - cloud * 0.82
+      OUT.hemiIntensity *= 1 - cloud * 0.50
+      OUT.ambient       *= 1 - cloud * 0.28
       const day = frac >= 6.8 && frac < 18.3
-      if (day) {
-        OUT.background.lerp(DAY_GREY, cloud * 0.42)
+      if (day && skyTarget) {
+        OUT.background.lerp(skyTarget, cloud * 0.85)
         OUT.fog.copy(OUT.background)
       }
-      OUT.fogFar *= fogMul
-      OUT.fogNear *= Math.min(1, fogMul + 0.25)
+      OUT.fogFar  *= fogMul
+      OUT.fogNear *= Math.min(1, fogMul + 0.18)
     }
   }
 

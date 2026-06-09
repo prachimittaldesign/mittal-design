@@ -31,11 +31,19 @@ export function DayNight({ weather, view }: { weather: Weather | null; view: Vie
     const nf = nightFactor() // 0 = full day, 1 = full night
 
     // Clear Amalfi daytime: push fog far out so buildings read crisp and vivid.
-    // Night: bring the coastal atmosphere back in.
+    // Rain/storm: override dramatically — city dissolves into grey mist.
     const baseFogNear = view === 'iso' ? 480 : view === 'skyline' ? 300 : 360
-    const baseFogFar = view === 'skyline' ? 1400 : 1500
-    const fogNear = baseFogNear + (1 - nf) * 700  // up to 1180 during full day
-    const fogFar = baseFogFar + (1 - nf) * 2000   // up to 3500 during full day
+    const baseFogFar  = view === 'skyline' ? 1400 : 1500
+    let fogNear: number
+    let fogFar:  number
+    if (weather?.rain) {
+      // Heavy rain: fog clamps within the city block so buildings fade at distance
+      fogNear = weather.condition === 'storm' ? 60  : 80
+      fogFar  = weather.condition === 'storm' ? 220 : 300
+    } else {
+      fogNear = baseFogNear + (1 - nf) * 700   // up to 1060 in clear day
+      fogFar  = baseFogFar  + (1 - nf) * 2000  // up to 3500 in clear day
+    }
 
     if (scene.background instanceof Color) easing.dampC(scene.background, p.background, 0.6, dt)
     const fog = scene.fog
