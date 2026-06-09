@@ -80,11 +80,21 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
         >
           {/* Lights, fog and time-of-day cycle. */}
           <DayNight weather={weather} view={view} />
-          {/* Physically-based atmospheric sky + clouds during daytime. */}
+          {/* Visible sky + clouds in the main scene. */}
           <DaySky />
-          {/* HDRI env map for glass reflections — background=false so it
-              only affects material reflections, not the visible skybox. */}
-          <Environment preset="city" background={false} />
+          {/* Live environment map — captures a second copy of the sky and
+              clouds into a cube map every frame so the glass facades mirror
+              the actual clouds drifting overhead. background=false keeps the
+              visible skybox driven by the main DaySky. */}
+          <Environment
+            frames={Infinity}
+            resolution={256}
+            background={false}
+            near={10}
+            far={1500}
+          >
+            <DaySky />
+          </Environment>
 
           <Suspense fallback={null}>
             <CityWorld

@@ -35,10 +35,16 @@ export function roofColor(d: District): string {
 }
 
 // ─── Corporate glass tower palette ──────────────────────────────────────────
-// Buildings are categorised by their first tag. Each category gets a family of
-// dark tinted-glass tones: deep navy for enterprise, warm bronze for consumer,
-// teal for spatial/robotics, graphite for research. Paired with roughness≈0.12
-// and metalness≈0.75 so they read as genuine glass curtain walls, not stucco.
+// One cohesive cool-blue / silver-glass family — like a modern financial
+// district photographed under a Mediterranean sky. All buildings sit in the
+// same chic tonal range; category just shifts the temperature subtly so the
+// skyline reads as one mature corporate ensemble, not a colour-block grid.
+//   Enterprise → silver-blue mid-tone   (the city's "default" look)
+//   Consumer   → slightly warmer pewter
+//   Spatial    → cool teal-leaning grey
+//   Research   → near-graphite cool grey
+// Pair with roughness≈0.06 + metalness≈0.95 + envMapIntensity≈1.4 for a true
+// mirror-glass curtain wall that picks up the live sky and clouds.
 export type BuildingCategory = 'enterprise' | 'consumer' | 'spatial' | 'research'
 
 export function buildingCategory(tags: string[]): BuildingCategory {
@@ -46,26 +52,31 @@ export function buildingCategory(tags: string[]): BuildingCategory {
   if (s.has('Architecture') || s.has('Residential') || s.has('Robotics') || s.has('Spatial')) return 'spatial'
   if (s.has('Consumer') || s.has('TV') || s.has('Mobile') || s.has('Healthcare') || s.has('Social') || s.has('Fundraising') || s.has('Politics')) return 'consumer'
   if (s.has('UX Research') || s.has('Information Architecture')) return 'research'
-  return 'enterprise' // Enterprise, AI, B2B, DITA, Governance, Workflow, Documents …
+  return 'enterprise'
 }
 
-// Tight hue-families — enough variation to tell buildings apart, all dark-glass premium.
-const CORP_ENTERPRISE = ['#1a3a5c', '#22446a', '#1e3d58', '#2a4870', '#243e64', '#1c3858']
-const CORP_CONSUMER   = ['#5c3020', '#6a3a24', '#5e3418', '#703028', '#622e1c', '#582c18']
-const CORP_SPATIAL    = ['#1a3e3a', '#224848', '#1e4040', '#2a4e4a', '#1c3c38', '#263e3e']
-const CORP_RESEARCH   = ['#2a2c3e', '#303248', '#282a3c', '#2c2e44', '#26283a', '#2e3042']
+// Same family of cool steel-blue glass tones across all categories — only the
+// undertone shifts. Hex values intentionally close in luminance so the skyline
+// reads as one piece, not stripes of colour.
+const CORP_ENTERPRISE = ['#4a5e7a', '#52688a', '#3e5474', '#586c8a', '#465e7e', '#4e6280']
+const CORP_CONSUMER   = ['#5a607a', '#4e5470', '#646a82', '#52587a', '#5c627e', '#565c78']
+const CORP_SPATIAL    = ['#42607a', '#3e6478', '#4a6c84', '#3c5e72', '#466880', '#406074']
+const CORP_RESEARCH   = ['#404858', '#444c5e', '#3c4252', '#48506a', '#3e4658', '#464e62']
 
-const CORP_ROOF_ENTERPRISE = ['#142e4a', '#1a3858', '#12284e', '#183254']
-const CORP_ROOF_CONSUMER   = ['#3a1e10', '#481e12', '#4a2614', '#3c1e0e']
-const CORP_ROOF_SPATIAL    = ['#12302e', '#183838', '#143030', '#1a3c38']
-const CORP_ROOF_RESEARCH   = ['#1e2038', '#22223e', '#1c1e34', '#20223c']
+// Roof / parapet — a couple of shades darker so the silhouette has weight
+// but stays in the same cool family.
+const CORP_ROOF_ENTERPRISE = ['#28344a', '#2a3852', '#243048', '#2c3a52']
+const CORP_ROOF_CONSUMER   = ['#2e3448', '#2a3044', '#322e48', '#28304a']
+const CORP_ROOF_SPATIAL    = ['#243846', '#28404e', '#22364a', '#263846']
+const CORP_ROOF_RESEARCH   = ['#222632', '#262a3a', '#1e2230', '#282c3c']
 
-// Window glow — each category has a signature colour that reads in all light.
+// Window glow — cool by day, warm-toned only at night when the city lights up.
+// Keep them very close in hue so they don't fight the chic palette.
 export const WINDOW_COLORS: Record<BuildingCategory, string> = {
-  enterprise: '#a0c8ff', // crisp corporate sky-blue
-  consumer:   '#ffb870', // warm amber-champagne
-  spatial:    '#70e8d8', // bright teal-cyan
-  research:   '#c8d8ff', // soft neutral blue-white
+  enterprise: '#b8d0ee',
+  consumer:   '#e2cca0',
+  spatial:    '#a8d8d4',
+  research:   '#c0c8d8',
 }
 
 export function glassFacade(cat: BuildingCategory, hash: number): string {
