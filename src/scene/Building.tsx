@@ -252,12 +252,12 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       glass
         ? new MeshPhysicalMaterial({
             color: facadeHex,
-            roughness: 0.05,
-            metalness: 0.55,
-            envMapIntensity: 2.6,
+            roughness: 0.04,
+            metalness: 0.82,
+            envMapIntensity: 1.6,
             clearcoat: 1.0,
             clearcoatRoughness: 0.04,
-            reflectivity: 1.0,
+            reflectivity: 0.95,
           })
         : new MeshStandardMaterial({
             color: facadeHex,

@@ -72,16 +72,28 @@ export function DaySky() {
           back (−Z), sides, overhead AND down near the horizon — so the glass
           facades are full of drifting cloud reflections from any camera angle. */}
       {nf < 0.5 && (
-        <Clouds texture={cloudTex} limit={400}>
-          <Cloud position={[40, 300, 60]} seed={1} segments={18} bounds={[140, 34, 140]} volume={34} opacity={0.8} speed={0.12} fade={120} />
-          <Cloud position={[340, 200, 240]} seed={2} segments={16} bounds={[120, 30, 80]} volume={30} opacity={0.78} speed={0.14} fade={120} />
-          <Cloud position={[-320, 210, 220]} seed={3} segments={16} bounds={[110, 28, 76]} volume={28} opacity={0.75} speed={0.11} fade={120} />
-          <Cloud position={[300, 175, -480]} seed={4} segments={16} bounds={[120, 30, 70]} volume={30} opacity={0.78} speed={0.13} fade={120} />
-          <Cloud position={[-300, 185, -440]} seed={5} segments={14} bounds={[100, 28, 64]} volume={26} opacity={0.75} speed={0.1} fade={120} />
-          <Cloud position={[120, 230, 520]} seed={6} segments={16} bounds={[120, 30, 76]} volume={30} opacity={0.78} speed={0.15} fade={120} />
-          <Cloud position={[-140, 240, -560]} seed={7} segments={14} bounds={[110, 28, 70]} volume={28} opacity={0.75} speed={0.12} fade={120} />
-          <Cloud position={[480, 160, 40]} seed={8} segments={14} bounds={[110, 26, 80]} volume={26} opacity={0.72} speed={0.09} fade={120} />
-          <Cloud position={[-470, 165, -40]} seed={9} segments={14} bounds={[110, 26, 80]} volume={26} opacity={0.72} speed={0.1} fade={120} />
+        <Clouds texture={cloudTex} limit={600}>
+          {/* Ring 1 — close overhead puffs, maximum coverage */}
+          <Cloud position={[40,  300,  60]}  seed={1}  segments={20} bounds={[160, 40, 160]} volume={40} opacity={0.88} speed={0.12} fade={130} />
+          <Cloud position={[-60, 280, -80]}  seed={11} segments={18} bounds={[140, 36, 140]} volume={36} opacity={0.85} speed={0.10} fade={130} />
+          <Cloud position={[180, 260,  180]} seed={12} segments={16} bounds={[120, 32,  90]} volume={32} opacity={0.82} speed={0.13} fade={130} />
+          <Cloud position={[-160, 270, 160]} seed={13} segments={16} bounds={[110, 30,  80]} volume={30} opacity={0.80} speed={0.11} fade={130} />
+          {/* Ring 2 — mid-distance all azimuths */}
+          <Cloud position={[340,  200,  240]} seed={2}  segments={18} bounds={[130, 34,  90]} volume={34} opacity={0.82} speed={0.14} fade={130} />
+          <Cloud position={[-320, 210,  220]} seed={3}  segments={16} bounds={[120, 30,  80]} volume={30} opacity={0.80} speed={0.11} fade={130} />
+          <Cloud position={[300,  175, -480]} seed={4}  segments={18} bounds={[130, 32,  80]} volume={32} opacity={0.82} speed={0.13} fade={130} />
+          <Cloud position={[-300, 185, -440]} seed={5}  segments={16} bounds={[110, 30,  70]} volume={28} opacity={0.78} speed={0.10} fade={130} />
+          <Cloud position={[120,  230,  520]} seed={6}  segments={18} bounds={[130, 34,  80]} volume={32} opacity={0.82} speed={0.15} fade={130} />
+          <Cloud position={[-140, 240, -560]} seed={7}  segments={16} bounds={[120, 30,  76]} volume={30} opacity={0.78} speed={0.12} fade={130} />
+          <Cloud position={[480,  160,   40]} seed={8}  segments={16} bounds={[120, 28,  90]} volume={28} opacity={0.76} speed={0.09} fade={130} />
+          <Cloud position={[-470, 165,  -40]} seed={9}  segments={16} bounds={[120, 28,  90]} volume={28} opacity={0.76} speed={0.10} fade={130} />
+          {/* Ring 3 — extra near-horizon wrap so glass facades see clouds from every angle */}
+          <Cloud position={[220,  140,  380]} seed={21} segments={14} bounds={[100, 24,  70]} volume={24} opacity={0.72} speed={0.11} fade={130} />
+          <Cloud position={[-240, 145,  360]} seed={22} segments={14} bounds={[ 95, 22,  65]} volume={22} opacity={0.70} speed={0.10} fade={130} />
+          <Cloud position={[380,  150, -220]} seed={23} segments={14} bounds={[100, 24,  70]} volume={24} opacity={0.72} speed={0.12} fade={130} />
+          <Cloud position={[-360, 155, -200]} seed={24} segments={14} bounds={[ 95, 22,  65]} volume={22} opacity={0.70} speed={0.09} fade={130} />
+          <Cloud position={[  0,  130,  440]} seed={25} segments={14} bounds={[110, 24,  60]} volume={24} opacity={0.72} speed={0.13} fade={130} />
+          <Cloud position={[  0,  135, -480]} seed={26} segments={14} bounds={[110, 24,  60]} volume={24} opacity={0.72} speed={0.11} fade={130} />
         </Clouds>
       )}
     </>

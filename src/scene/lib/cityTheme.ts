@@ -97,19 +97,19 @@ export function stuccoRoof(hash: number): string {
 //   consumer   → warm aqua / cyan
 //   spatial    → teal-green
 //   research   → indigo-violet
-// Light tints — a near-mirror reflects the sky brightly, so the base colour
-// must be pale or it reads as a dark opaque panel instead of glass.
+// Medium saturated tints — light enough that reflections read, saturated
+// enough that the glass keeps its category colour instead of blowing to white.
 const GLASS_TINTS: Record<BuildingCategory, string[]> = {
-  enterprise: ['#b8cae0', '#c2d2e6', '#aec2da', '#c8d6e8', '#b4c6de'],
-  consumer:   ['#b4d8de', '#bee0e6', '#aad0d8', '#c4e2e8', '#b0d4dc'],
-  spatial:    ['#b6dccc', '#c0e2d4', '#acd4c2', '#c6e4d8', '#b2d8c8'],
-  research:   ['#c0c2e0', '#c8cae6', '#b8badd', '#ccceea', '#bcbee0'],
+  enterprise: ['#6f93bb', '#7a9cc2', '#6589b4', '#8098c0', '#7290b6'],
+  consumer:   ['#5fa0aa', '#6aaab2', '#5896a0', '#72aeb6', '#64a4ac'],
+  spatial:    ['#5fa088', '#6aaa92', '#56987e', '#72ac96', '#64a48c'],
+  research:   ['#7e80b4', '#888aba', '#7476ac', '#8a8cbc', '#8082b6'],
 }
 const GLASS_ROOFS: Record<BuildingCategory, string[]> = {
-  enterprise: ['#7e94b4', '#88a0bc', '#7488ac', '#8298b8'],
-  consumer:   ['#7aaab4', '#84b4be', '#70a0aa', '#80aeb8'],
-  spatial:    ['#7cae9e', '#86b6a8', '#72a494', '#82b2a2'],
-  research:   ['#8486b4', '#8e90ba', '#7c7eac', '#888ab8'],
+  enterprise: ['#4e6e96', '#587498', '#48688e', '#52729a'],
+  consumer:   ['#42808a', '#4c8a92', '#3a767e', '#48868e'],
+  spatial:    ['#42806a', '#4c8a74', '#3a7660', '#488670'],
+  research:   ['#5e6092', '#666896', '#56588c', '#62649a'],
 }
 export function glassFacade(cat: BuildingCategory, hash: number): string {
   const pal = GLASS_TINTS[cat]
