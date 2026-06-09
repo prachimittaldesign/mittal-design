@@ -6,9 +6,13 @@ import { easing } from 'maath'
 import { Label } from './Label'
 import {
   buildingCategory,
+  isGlassTower,
+  facadeColor,
+  stuccoRoof,
   glassFacade,
   glassRoof,
-  WINDOW_COLORS,
+  STUCCO_WINDOW,
+  GLASS_TOWER_WINDOW,
   DIM_GREY,
   layerColor,
   type BuildingCategory,
@@ -223,28 +227,36 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const roofH  = w * 0.5
   const signY  = roofStyle === 'pitched' ? height + roofH + 2.0 : height + crownH + 3.0
 
-  // Category-driven corporate glass facade.
+  // Category drives colour; the tallest enterprise towers go glass, everything
+  // else is warm sunlit Amalfi stucco with a terracotta roof.
   const category = useMemo<BuildingCategory>(() => buildingCategory(project.tags), [project.tags])
-  const facadeHex = useMemo(() => glassFacade(category, idHash(project.id)), [category, project.id])
-  const roofHex   = useMemo(() => glassRoof(category, idHash(project.id)), [category, project.id])
-  const winColor  = WINDOW_COLORS[category]
+  const glass = useMemo(() => isGlassTower(category, height), [category, height])
+  const facadeHex = useMemo(
+    () => (glass ? glassFacade(idHash(project.id)) : facadeColor(category, idHash(project.id))),
+    [glass, category, project.id],
+  )
+  const roofHex = useMemo(
+    () => (glass ? glassRoof(idHash(project.id)) : stuccoRoof(idHash(project.id))),
+    [glass, project.id],
+  )
+  const winColor = glass ? GLASS_TOWER_WINDOW : STUCCO_WINDOW
 
-  // Glass curtain wall — near-mirror smoothness, almost fully metallic so it
-  // mirrors the live sky/clouds env map. Slight emissive keeps the tint visible
-  // when the reflected sky goes dark.
-  const baseEmissive = 0.02
+  // Glass towers: near-mirror curtain wall that reflects the live sky/clouds.
+  // Stucco: matte lime-washed plaster with a faint warm self-glow so the
+  // colours stay vivid and sunlit rather than going muddy.
+  const baseEmissive = glass ? 0.02 : 0.14
   const baseColor = useMemo(() => new Color(facadeHex), [facadeHex])
   const body = useMemo(
     () =>
       new MeshStandardMaterial({
         color: facadeHex,
-        roughness: 0.06,
-        metalness: 0.95,
+        roughness: glass ? 0.06 : 0.7,
+        metalness: glass ? 0.95 : 0.0,
         emissive: facadeHex,
         emissiveIntensity: baseEmissive,
-        envMapIntensity: 1.4,
+        envMapIntensity: glass ? 1.4 : 0.5,
       }),
-    [facadeHex],
+    [facadeHex, glass, baseEmissive],
   )
   useEffect(() => () => body.dispose(), [body])
 
@@ -322,10 +334,16 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       }}
     >
       <group ref={liftRef}>
-        {/* footing — dark polished granite plinth */}
+        {/* footing — polished granite plinth under glass towers, warm stone
+            base under stucco buildings */}
         <mesh position={[0, 0.3, 0]} receiveShadow>
           <boxGeometry args={[baseW * 1.06, 0.6, baseD * 1.06]} />
-          <meshStandardMaterial color="#1c2230" roughness={0.18} metalness={0.7} envMapIntensity={1.2} />
+          <meshStandardMaterial
+            color={glass ? '#1c2230' : '#cbbd9c'}
+            roughness={glass ? 0.18 : 0.92}
+            metalness={glass ? 0.7 : 0.0}
+            envMapIntensity={glass ? 1.2 : 0.4}
+          />
         </mesh>
 
         {/* massing tiers */}
@@ -345,27 +363,28 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
           <WindowStrip key={i} w={baseW} d={baseD} y={y} color={winColor} />
         ))}
 
-        {/* ── Roofline ── */}
+        {/* ── Roofline ── glass towers get a polished cap; stucco gets matte
+            terracotta tile. */}
         {roofStyle === 'pitched' ? (
           <mesh position={[0, height + roofH / 2, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[w * 0.74, roofH, 4]} />
-            <meshStandardMaterial color={roofHex} roughness={0.1} metalness={0.85} envMapIntensity={1.4} />
+            <meshStandardMaterial color={roofHex} roughness={glass ? 0.1 : 0.85} metalness={glass ? 0.85 : 0.0} envMapIntensity={glass ? 1.4 : 0.4} />
           </mesh>
         ) : shape === 'tapered' ? (
           <mesh position={[0, height, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
             <coneGeometry args={[topW * 0.62, w * 0.40, 4]} />
-            <meshStandardMaterial color={roofHex} roughness={0.06} metalness={0.95} envMapIntensity={1.5} />
+            <meshStandardMaterial color={roofHex} roughness={glass ? 0.06 : 0.82} metalness={glass ? 0.95 : 0.0} envMapIntensity={glass ? 1.5 : 0.4} />
           </mesh>
         ) : (
           <>
             <mesh position={[0, height + 0.25, 0]} castShadow>
               <boxGeometry args={[topW * 1.06, 0.5, topD * 1.06]} />
-              <meshStandardMaterial color={roofHex} roughness={0.08} metalness={0.92} envMapIntensity={1.4} />
+              <meshStandardMaterial color={roofHex} roughness={glass ? 0.08 : 0.85} metalness={glass ? 0.92 : 0.0} envMapIntensity={glass ? 1.4 : 0.4} />
             </mesh>
             {height > 20 && shape !== 'slab' && (
               <mesh position={[topW * 0.18, height + 1.3, -topD * 0.12]} castShadow>
                 <boxGeometry args={[topW * 0.4, 1.6, topW * 0.4]} />
-                <meshStandardMaterial color={roofHex} roughness={0.18} metalness={0.7} envMapIntensity={1.2} />
+                <meshStandardMaterial color={glass ? roofHex : '#e7dcc4'} roughness={glass ? 0.18 : 0.85} metalness={glass ? 0.7 : 0.0} envMapIntensity={glass ? 1.2 : 0.4} />
               </mesh>
             )}
           </>
@@ -374,7 +393,7 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
         {shape === 'setback' && height > 28 && (
           <mesh position={[0, height + height * 0.07, 0]} castShadow>
             <cylinderGeometry args={[0.1, 0.16, height * 0.14, 6]} />
-            <meshStandardMaterial color={roofHex} roughness={0.05} metalness={0.95} envMapIntensity={1.5} />
+            <meshStandardMaterial color={roofHex} roughness={glass ? 0.05 : 0.85} metalness={glass ? 0.95 : 0.0} envMapIntensity={glass ? 1.5 : 0.4} />
           </mesh>
         )}
 
@@ -383,7 +402,7 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
             {([-1, 1] as const).map((side) => (
               <mesh key={side} position={[baseW * 0.5 * side, tiers[0].size[1] * 0.5, 0]} castShadow>
                 <boxGeometry args={[0.28, tiers[0].size[1] * 0.98, baseD * 1.1]} />
-                <meshStandardMaterial color={roofHex} roughness={0.1} metalness={0.88} envMapIntensity={1.4} />
+                <meshStandardMaterial color={roofHex} roughness={glass ? 0.1 : 0.85} metalness={glass ? 0.88 : 0.0} envMapIntensity={glass ? 1.4 : 0.4} />
               </mesh>
             ))}
           </>

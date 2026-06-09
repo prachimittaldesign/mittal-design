@@ -5,7 +5,7 @@ import type { District } from './project3d'
 // Atmosphere — SKY stays in the warm paper family so the DayNight system can
 // ease the 3D background/fog from this daytime base toward dusk/night.
 export const SKY = PAPER
-export const GROUND = '#4a5736'   // muted sage-green meadow base
+export const GROUND = '#566b3c'   // lush Mediterranean meadow green
 export const PLAZA = '#3f4a30'    // calm moss circle
 export const ROAD = '#d3cbb9'
 export const ROAD_EDGE = '#bdb4a2'
@@ -55,45 +55,50 @@ export function buildingCategory(tags: string[]): BuildingCategory {
   return 'enterprise'
 }
 
-// Same family of cool steel-blue glass tones across all categories — only the
-// undertone shifts. Hex values intentionally close in luminance so the skyline
-// reads as one piece, not stripes of colour.
-const CORP_ENTERPRISE = ['#4a5e7a', '#52688a', '#3e5474', '#586c8a', '#465e7e', '#4e6280']
-const CORP_CONSUMER   = ['#5a607a', '#4e5470', '#646a82', '#52587a', '#5c627e', '#565c78']
-const CORP_SPATIAL    = ['#42607a', '#3e6478', '#4a6c84', '#3c5e72', '#466880', '#406074']
-const CORP_RESEARCH   = ['#404858', '#444c5e', '#3c4252', '#48506a', '#3e4658', '#464e62']
-
-// Roof / parapet — a couple of shades darker so the silhouette has weight
-// but stays in the same cool family.
-const CORP_ROOF_ENTERPRISE = ['#28344a', '#2a3852', '#243048', '#2c3a52']
-const CORP_ROOF_CONSUMER   = ['#2e3448', '#2a3044', '#322e48', '#28304a']
-const CORP_ROOF_SPATIAL    = ['#243846', '#28404e', '#22364a', '#263846']
-const CORP_ROOF_RESEARCH   = ['#222632', '#262a3a', '#1e2230', '#282c3c']
-
-// Window glow — cool by day, warm-toned only at night when the city lights up.
-// Keep them very close in hue so they don't fight the chic palette.
-export const WINDOW_COLORS: Record<BuildingCategory, string> = {
-  enterprise: '#b8d0ee',
-  consumer:   '#e2cca0',
-  spatial:    '#a8d8d4',
-  research:   '#c0c8d8',
+// Only tall enterprise towers go glass — the "Future" core skyscrapers rising
+// above a warm colourful town.
+export function isGlassTower(cat: BuildingCategory, height: number): boolean {
+  return cat === 'enterprise' && height > 30
 }
 
-export function glassFacade(cat: BuildingCategory, hash: number): string {
+// Warm sunlit stucco families per category — every family vibrant but cohesive,
+// like the pastel houses stacked up the Amalfi cliffs.
+//   consumer  → bold lively waterfront: coral, peach, rose, soft blue
+//   spatial   → garden tones: sage, soft teal, terracotta, butter
+//   research  → calm creams, butter-yellows, warm whites
+//   enterprise→ sunny golds & pale stone (the non-tower ones)
+const STUCCO_CONSUMER   = ['#ec9f7e', '#e9b3a0', '#eec0bb', '#f0c194', '#e8a07a', '#dfa6b0', '#f2cda3', '#e59a86']
+const STUCCO_SPATIAL    = ['#cdd3a8', '#b9cdbf', '#a9c4cc', '#e0a878', '#d8c48a', '#c2cba0', '#a8c0b4', '#e6c78a']
+const STUCCO_RESEARCH   = ['#f4ecdc', '#f2e0b8', '#eed8a4', '#f3e6c8', '#ecdcb0', '#f5ecd2', '#f0e2bc']
+const STUCCO_ENTERPRISE = ['#f2d894', '#eecb78', '#f0dca0', '#ecd28a', '#f4e0a8', '#e8c878']
+
+// Terracotta roof family — shared by all stucco buildings.
+const TERRACOTTA = ['#b5683f', '#a8553a', '#c0703a', '#9c5236', '#c98a52', '#ab5e38']
+
+// Warm lamplit windows for stucco; cool sky-blue for the glass towers.
+export const STUCCO_WINDOW = '#ffd89a'
+export const GLASS_TOWER_WINDOW = '#bcd8f4'
+
+export function facadeColor(cat: BuildingCategory, hash: number): string {
   switch (cat) {
-    case 'consumer': return CORP_CONSUMER[hash % CORP_CONSUMER.length]
-    case 'spatial':  return CORP_SPATIAL[hash % CORP_SPATIAL.length]
-    case 'research': return CORP_RESEARCH[hash % CORP_RESEARCH.length]
-    default:         return CORP_ENTERPRISE[hash % CORP_ENTERPRISE.length]
+    case 'consumer': return STUCCO_CONSUMER[hash % STUCCO_CONSUMER.length]
+    case 'spatial':  return STUCCO_SPATIAL[hash % STUCCO_SPATIAL.length]
+    case 'research': return STUCCO_RESEARCH[hash % STUCCO_RESEARCH.length]
+    default:         return STUCCO_ENTERPRISE[hash % STUCCO_ENTERPRISE.length]
   }
 }
-export function glassRoof(cat: BuildingCategory, hash: number): string {
-  switch (cat) {
-    case 'consumer': return CORP_ROOF_CONSUMER[hash % CORP_ROOF_CONSUMER.length]
-    case 'spatial':  return CORP_ROOF_SPATIAL[hash % CORP_ROOF_SPATIAL.length]
-    case 'research': return CORP_ROOF_RESEARCH[hash % CORP_ROOF_RESEARCH.length]
-    default:         return CORP_ROOF_ENTERPRISE[hash % CORP_ROOF_ENTERPRISE.length]
-  }
+export function stuccoRoof(hash: number): string {
+  return TERRACOTTA[hash % TERRACOTTA.length]
+}
+
+// Sleek glass towers — cool tinted curtain wall, the modern accent.
+const GLASS_TINTS = ['#5a7494', '#647e9c', '#52708e', '#6884a0', '#5c7896']
+const GLASS_ROOFS = ['#3a4e68', '#42566e', '#344862', '#3e526a']
+export function glassFacade(hash: number): string {
+  return GLASS_TINTS[hash % GLASS_TINTS.length]
+}
+export function glassRoof(hash: number): string {
+  return GLASS_ROOFS[hash % GLASS_ROOFS.length]
 }
 
 // ─── Amalfi Coast palette (kept for scenery / CityFill buildings) ────────────

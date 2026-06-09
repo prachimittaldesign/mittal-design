@@ -71,15 +71,18 @@ const WAVE_FRAG = /* glsl */ `
     float w1 = wave(vWorld.xz, uTime);
     float w2 = wave(vWorld.xz * 2.4 + vec2(120.0, -80.0), uTime * 1.3);
 
-    // Slow large-scale tonal variation — turquoise deepens / lightens.
+    // Shallow turquoise near the shore brightening to deeper blue-teal offshore.
+    float shoreBright = 1.0 - smoothstep(uLandR + 20.0, uLandR + 240.0, r);
     float tonal = 0.5 + 0.5 * w1;
-    vec3 deep = vec3(0.05, 0.32, 0.42);   // deep Amalfi teal
-    vec3 shallow = vec3(0.18, 0.55, 0.62); // brighter turquoise crest
-    vec3 sea = mix(deep, shallow, tonal * 0.7);
+    vec3 deep = vec3(0.04, 0.34, 0.46);    // deeper blue-teal offshore
+    vec3 shallow = vec3(0.16, 0.66, 0.70); // vivid Amalfi turquoise
+    vec3 bright = vec3(0.30, 0.82, 0.80);  // bright shallow-water turquoise
+    vec3 sea = mix(deep, shallow, tonal * 0.75);
+    sea = mix(sea, bright, shoreBright * 0.6); // glow turquoise near the coast
 
     // Crisp wave crests — additive highlights, very subtle.
     float crest = smoothstep(0.55, 0.95, w2);
-    sea += vec3(0.35, 0.55, 0.55) * crest * 0.4;
+    sea += vec3(0.45, 0.62, 0.60) * crest * 0.4;
 
     float alpha = landFade * farFade * 0.55;
     gl_FragColor = vec4(sea, alpha);
@@ -183,14 +186,24 @@ function Headland({
 
   return (
     <group position={[x, 0, z]}>
-      {/* Hill silhouette — warm Amalfi limestone cliffs */}
-      <mesh position={[0, 14 * scale, 0]}>
-        <coneGeometry args={[60 * scale, 40 * scale, 14]} />
-        <meshStandardMaterial color="#8a7860" roughness={0.9} />
+      {/* Limestone cliff base — pale grey Amalfi rock rising from the sea */}
+      <mesh position={[0, 11 * scale, 0]}>
+        <coneGeometry args={[62 * scale, 34 * scale, 14]} />
+        <meshStandardMaterial color="#9a9080" roughness={0.95} />
+      </mesh>
+      {/* Lush green vegetated upper slopes — the famous green Amalfi cliffs */}
+      <mesh position={[0, 22 * scale, 0]}>
+        <coneGeometry args={[44 * scale, 34 * scale, 13]} />
+        <meshStandardMaterial color="#4f6b3a" roughness={1} flatShading />
       </mesh>
       <mesh position={[42 * scale, 9 * scale, 6 * scale]}>
-        <coneGeometry args={[40 * scale, 28 * scale, 12]} />
-        <meshStandardMaterial color="#9e8a6e" roughness={0.92} />
+        <coneGeometry args={[40 * scale, 26 * scale, 12]} />
+        <meshStandardMaterial color="#56743f" roughness={1} flatShading />
+      </mesh>
+      {/* A deeper green ridge behind for depth */}
+      <mesh position={[-38 * scale, 16 * scale, -8 * scale]}>
+        <coneGeometry args={[36 * scale, 30 * scale, 11]} />
+        <meshStandardMaterial color="#42603a" roughness={1} flatShading />
       </mesh>
       {/* Warm town lights scattered on the slope */}
       {lights.map((l, i) => (
@@ -289,9 +302,9 @@ export function CoastEnvironment() {
           depthScale={1.1}
           minDepthThreshold={0.3}
           maxDepthThreshold={1.5}
-          color="#0a3e54"
-          roughness={0.7}
-          metalness={0.45}
+          color="#0e5a6e"
+          roughness={0.6}
+          metalness={0.5}
         />
       </mesh>
 
