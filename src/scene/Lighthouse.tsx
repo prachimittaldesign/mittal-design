@@ -38,7 +38,7 @@ const LABEL_Y     = CAP_Y + 6.8    // float label above the finial
 const TWO_PI      = Math.PI * 2
 
 const BEAM_LEN  = 220
-const ROT_SPEED = 0.85   // rad/s ≈ 7 s per revolution
+const ROT_SPEED = 0.42   // rad/s ≈ 15 s per revolution
 
 interface LighthouseProps {
   project: Project
@@ -81,9 +81,9 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
 
     if (beamRef.current) beamRef.current.rotation.y += dt * ROT_SPEED * (lit ? 1 : 0)
 
-    const targetOpa = lit ? lf * 0.11 : 0
+    const targetOpa = lit ? lf * 0.28 : 0
     easing.damp(beamMat,  'opacity', targetOpa,       0.8, dt)
-    easing.damp(beam2Mat, 'opacity', targetOpa * 0.7, 0.8, dt)
+    easing.damp(beam2Mat, 'opacity', targetOpa * 0.65, 0.8, dt)
     if (lampRef.current) easing.damp(lampRef.current, 'intensity', lit ? lf * 10 : 0, 0.8, dt)
     easing.damp(glowMat, 'emissiveIntensity', lit ? lf * 2.8 : 0, 0.8, dt)
 
@@ -238,11 +238,11 @@ export function Lighthouse({ project, hovered, showLabel, onHover, onSelect }: L
 
       <group ref={beamRef} position={[0, LANTERN_H, 0]}>
         <mesh position={[0, -0.4, BEAM_LEN * 0.5]}>
-          <boxGeometry args={[2.2, 1.4, BEAM_LEN]} />
+          <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
           <primitive object={beamMat} />
         </mesh>
         <mesh position={[0, -0.4, -BEAM_LEN * 0.5]}>
-          <boxGeometry args={[2.2, 1.4, BEAM_LEN]} />
+          <boxGeometry args={[3.2, 2.0, BEAM_LEN]} />
           <primitive object={beam2Mat} />
         </mesh>
       </group>

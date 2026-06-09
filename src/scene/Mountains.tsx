@@ -11,6 +11,7 @@ import {
 } from 'three'
 import { easing } from 'maath'
 import { MOUNTAIN_SNOW } from './lib/cityTheme'
+import { getHyderabadTime } from '../lib/sky'
 import type { ViewMode } from '../types'
 
 function mulberry32(seed: number): () => number {
@@ -143,6 +144,17 @@ export function Mountains({ view }: { view: ViewMode }) {
     const target = MathUtils.smoothstep(dir.y, -0.6, -0.44)
     easing.damp(m, 'opacity', target, 0.3, dt)
     m.visible = m.opacity > 0.02
+
+    // Alpenglow — warm orange-pink emissive on the snow caps at golden hour.
+    const { frac } = getHyderabadTime()
+    let gf = 0
+    if (frac >= 16.0 && frac <= 19.0) {
+      if (frac < 17.0) gf = (frac - 16.0)
+      else if (frac <= 17.8) gf = 1.0
+      else gf = Math.max(0, 1 - (frac - 17.8) / 1.2)
+    }
+    m.emissive.setRGB(0.92, 0.38, 0.08)
+    easing.damp(m, 'emissiveIntensity', m.visible ? gf * 0.42 : 0, 0.6, dt)
   })
 
   return (
@@ -156,6 +168,8 @@ export function Mountains({ view }: { view: ViewMode }) {
         side={DoubleSide}
         transparent
         opacity={0}
+        emissive="#eb6114"
+        emissiveIntensity={0}
       />
     </mesh>
   )

@@ -59,34 +59,53 @@ function sunPos(frac: number): [number, number, number] {
   return [azi * 80, elev * 120, 100]
 }
 
+// Golden-hour factor: 0 at normal daytime, peaks at 1.0 during 17:00-17:48 IST,
+// fades to 0 by ~19:00. Drives warm turbidity/rayleigh in the Preetham shader.
+function goldenFactor(frac: number): number {
+  if (frac < 16.0 || frac > 19.0) return 0
+  if (frac < 17.0) return (frac - 16.0)        // 0 → 1 over 1 h
+  if (frac <= 17.8) return 1.0                  // peak golden window
+  return Math.max(0, 1 - (frac - 17.8) / 1.2)  // 1 → 0 over 1.2 h
+}
+
 export function DaySky({ weather }: { weather?: Weather | null }) {
   const cloudTex = useMemo(makeCloudTexture, [])
   const nf = nightFactor()
   if (nf > 0.95) return null
 
   const { frac } = getHyderabadTime()
-  const pos      = sunPos(frac)
-  const turbidity = 7 + nf * 4
+  const pos = sunPos(frac)
+  const gf  = goldenFactor(frac)
+
+  // At golden hour turbidity drops (2–4 → rich orange scattering) and rayleigh
+  // rises (blue sky reddened). Night turbidity lifts again for the thick-haze
+  // look of a city after dark.
+  const baseTurbidity = 7 - gf * 4          // 7 at noon → 3 at golden hour
+  const turbidity     = baseTurbidity + nf * 4
+  const rayleigh      = 1.5 + gf * 2.0      // 1.5 → 3.5 at golden hour
 
   const isRain  = weather?.condition === 'rain'  || weather?.condition === 'storm'
   const isCloud = weather?.condition === 'cloudy' || weather?.condition === 'fog'
 
-  // Cloud tint: white in clear sky → soft grey in rain
-  const cloudNear = isRain  ? '#c0cdd8' : isCloud ? '#d0dae2' : '#f8f8ff'
-  const cloudMid  = isRain  ? '#b4c2cc' : isCloud ? '#c4d0da' : '#f4f6ff'
-  const cloudFar  = isRain  ? '#a8b8c4' : isCloud ? '#b8c6d0' : '#eef2ff'
+  // Cloud tint: white → warm peach/coral at golden hour → grey in rain
+  const warmNear = gf > 0.5 ? '#ffcba8' : gf > 0.2 ? '#ffe8d0' : '#f8f8ff'
+  const warmMid  = gf > 0.5 ? '#ffb880' : gf > 0.2 ? '#ffd8b0' : '#f4f6ff'
+  const warmFar  = gf > 0.5 ? '#ff9860' : gf > 0.2 ? '#ffbf90' : '#eef2ff'
+  const cloudNear = isRain  ? '#c0cdd8' : isCloud ? '#d0dae2' : warmNear
+  const cloudMid  = isRain  ? '#b4c2cc' : isCloud ? '#c4d0da' : warmMid
+  const cloudFar  = isRain  ? '#a8b8c4' : isCloud ? '#b8c6d0' : warmFar
   const cloudOpa  = isRain  ? 0.92      : 0.90
   const cloudSpd  = isRain  ? 0.18      : 0.12
 
   return (
     <>
-      {/* Sky shader — always visible; turbidity rises during rain/cloud for
-          a softer, more diffused look without killing the blue entirely. */}
+      {/* Sky shader — turbidity/rayleigh are time-aware so golden hour produces
+          the Preetham shader's orange/coral tones naturally. */}
       <Sky
         distance={45000}
         sunPosition={pos}
         turbidity={isRain ? turbidity + 8 : isCloud ? turbidity + 4 : turbidity}
-        rayleigh={isRain ? 0.6 : isCloud ? 0.9 : 1.5}
+        rayleigh={isRain ? 0.6 : isCloud ? 0.9 : rayleigh}
         mieCoefficient={0.003}
         mieDirectionalG={0.75}
       />
