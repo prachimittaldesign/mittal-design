@@ -100,6 +100,46 @@ function Balloon({ spec }: { spec: BalloonSpec }) {
   )
 }
 
+// Lightweight balloons rendered INTO the reflection environment map, so the
+// glass facades mirror colourful balloons drifting through the sky. Just the
+// envelope + band (no basket/lines) to keep the per-frame cube render cheap.
+function EnvBalloon({ spec }: { spec: BalloonSpec }) {
+  const ref = useRef<Group>(null)
+  useFrame((state) => {
+    const t = state.clock.elapsedTime
+    const a = spec.phase + t * spec.speed
+    if (ref.current) {
+      ref.current.position.set(
+        Math.cos(a) * spec.r,
+        spec.y + Math.sin(t * 0.5 + spec.phase) * spec.bob,
+        Math.sin(a) * spec.r,
+      )
+    }
+  })
+  return (
+    <group ref={ref} scale={spec.size * 1.6}>
+      <mesh>
+        <sphereGeometry args={[3, 14, 14]} />
+        <meshStandardMaterial color={spec.top} roughness={0.5} emissive={spec.top} emissiveIntensity={0.25} />
+      </mesh>
+      <mesh position={[0, -0.4, 0]} scale={[1.02, 0.34, 1.02]}>
+        <sphereGeometry args={[3, 14, 14]} />
+        <meshStandardMaterial color={spec.band} roughness={0.5} emissive={spec.band} emissiveIntensity={0.2} />
+      </mesh>
+    </group>
+  )
+}
+
+export function EnvBalloons() {
+  return (
+    <group>
+      {BALLOONS.map((spec, i) => (
+        <EnvBalloon key={i} spec={spec} />
+      ))}
+    </group>
+  )
+}
+
 // ─── Festoon-light canopy ────────────────────────────────────────────────────────
 // Strings of warm bulbs from the monument tip out to eight plaza poles, each
 // string sagging in a gentle catenary.

@@ -7,6 +7,7 @@ import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
 import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
 import { DaySky } from './DaySky'
+import { EnvBalloons } from './CityLife'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
 import { useHyderabad } from '../lib/useHyderabad'
@@ -89,12 +90,14 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               visible skybox driven by the main DaySky. */}
           <Environment
             frames={Infinity}
-            resolution={256}
+            resolution={512}
             background={false}
             near={10}
             far={1500}
           >
             <DaySky />
+            {/* colourful balloons drifting in the reflected sky */}
+            <EnvBalloons />
           </Environment>
 
           <Suspense fallback={null}>
