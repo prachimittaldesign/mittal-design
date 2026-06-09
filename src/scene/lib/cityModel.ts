@@ -310,13 +310,13 @@ function buildScenery(): SceneryDef[] {
   const out: SceneryDef[] = []
   for (const parcel of PARCELS) {
     if (parcel.occupied) continue
-    if (rng() < 0.35) continue
-    const count = 1 + Math.floor(rng() * 2) // 1..2 per parcel
+    if (rng() < 0.12) continue
+    const count = 2 + Math.floor(rng() * 3) // 2..4 per parcel — a denser Amalfi town
     for (let i = 0; i < count; i++) {
-      const r = (parcel.rInner + parcel.rOuter) / 2 + (rng() - 0.5) * parcel.approxW * 0.6
-      const theta = parcel.thetaMid + (rng() - 0.5) * ((parcel.approxD * 0.6) / Math.max(parcel.rInner, 1))
+      const r = (parcel.rInner + parcel.rOuter) / 2 + (rng() - 0.5) * parcel.approxW * 0.75
+      const theta = parcel.thetaMid + (rng() - 0.5) * ((parcel.approxD * 0.75) / Math.max(parcel.rInner, 1))
       const p = polar(0, 0, r, theta)
-      const w = 2.2 + rng() * 2.0
+      const w = 2.4 + rng() * 2.4
       const d = w * (0.7 + rng() * 0.3)
       const coreFactor = 1 - parcel.ringIndex * 0.24
       const h = Math.min(24, (4 + rng() * 8) * (0.85 + coreFactor * 0.7))

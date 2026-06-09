@@ -91,14 +91,31 @@ export function stuccoRoof(hash: number): string {
   return TERRACOTTA[hash % TERRACOTTA.length]
 }
 
-// Sleek glass towers — cool tinted curtain wall, the modern accent.
-const GLASS_TINTS = ['#5a7494', '#647e9c', '#52708e', '#6884a0', '#5c7896']
-const GLASS_ROOFS = ['#3a4e68', '#42566e', '#344862', '#3e526a']
-export function glassFacade(hash: number): string {
-  return GLASS_TINTS[hash % GLASS_TINTS.length]
+// Sleek curtain-wall glass, tinted by category so each district reads as its
+// own family while staying cohesive and chic:
+//   enterprise → cool steel blue
+//   consumer   → warm aqua / cyan
+//   spatial    → teal-green
+//   research   → indigo-violet
+const GLASS_TINTS: Record<BuildingCategory, string[]> = {
+  enterprise: ['#5a7494', '#647e9c', '#52708e', '#6884a0', '#5c7896'],
+  consumer:   ['#4e8a9a', '#589aa4', '#46808e', '#5ca0aa', '#4a8694'],
+  spatial:    ['#4f8f7c', '#5a9a86', '#458072', '#5ea088', '#4a8a78'],
+  research:   ['#6a6ea0', '#7478a6', '#5e6498', '#7c80aa', '#646a9c'],
 }
-export function glassRoof(hash: number): string {
-  return GLASS_ROOFS[hash % GLASS_ROOFS.length]
+const GLASS_ROOFS: Record<BuildingCategory, string[]> = {
+  enterprise: ['#3a4e68', '#42566e', '#344862', '#3e526a'],
+  consumer:   ['#2e5460', '#34606a', '#2a4e58', '#385c64'],
+  spatial:    ['#2e5a4c', '#346254', '#2a5246', '#385e50'],
+  research:   ['#3e3e68', '#46466e', '#383862', '#42426a'],
+}
+export function glassFacade(cat: BuildingCategory, hash: number): string {
+  const pal = GLASS_TINTS[cat]
+  return pal[hash % pal.length]
+}
+export function glassRoof(cat: BuildingCategory, hash: number): string {
+  const pal = GLASS_ROOFS[cat]
+  return pal[hash % pal.length]
 }
 
 // ─── Amalfi Coast palette (kept for scenery / CityFill buildings) ────────────
@@ -132,6 +149,17 @@ export function districtTint(q: Quadrant): string {
 // labelled towers still pop. + a dim grey for tag-filtered dimming.
 export const SCENERY_BODY = ['#a8a294', '#b3ac9e', '#9d9788', '#bab3a4', '#a29c8e']
 export const DIM_GREY = '#9a948a'
+
+// Warm Amalfi filler-house palette — sunlit pastel stucco + terracotta roofs,
+// plus the white trim and ironwork shared across the backdrop town.
+export const SCENERY_AMALFI = [
+  '#f4ecdc', '#f2d9b0', '#eec9a0', '#ecb89a', '#e8a99a', '#dfa6b0',
+  '#cdd3a8', '#b9cdbf', '#a9c4cc', '#f0d68a', '#e9b3a0', '#f3e0bc',
+]
+export const SCENERY_ROOFS = ['#b5683f', '#a8553a', '#c0703a', '#9c5236', '#c98a52', '#ab5e38']
+export const SCENERY_TRIM = '#f4eee2'
+export const SCENERY_GLASS = '#3a4a50'
+export const SCENERY_IRON = '#544c42'
 
 // Map layers: recolor project towers by a metric.
 export const EFFORT_RAMP = ['#cfe0c3', '#9cc6a0', '#6fae8a', '#4f8fb0', '#3f6aa0'] // 1..5

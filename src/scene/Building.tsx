@@ -232,12 +232,12 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
   const category = useMemo<BuildingCategory>(() => buildingCategory(project.tags), [project.tags])
   const glass = useMemo(() => isGlassTower(category, height), [category, height])
   const facadeHex = useMemo(
-    () => (glass ? glassFacade(idHash(project.id)) : facadeColor(category, idHash(project.id))),
+    () => (glass ? glassFacade(category, idHash(project.id)) : facadeColor(category, idHash(project.id))),
     [glass, category, project.id],
   )
   const roofHex = useMemo(
-    () => (glass ? glassRoof(idHash(project.id)) : stuccoRoof(idHash(project.id))),
-    [glass, project.id],
+    () => (glass ? glassRoof(category, idHash(project.id)) : stuccoRoof(idHash(project.id))),
+    [glass, category, project.id],
   )
   const winColor = glass ? GLASS_TOWER_WINDOW : STUCCO_WINDOW
 
