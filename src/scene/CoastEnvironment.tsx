@@ -60,8 +60,10 @@ const WAVE_FRAG = /* glsl */ `
 
   void main() {
     float r = length(vWorld.xz);
-    // Don't paint over the land disc; soft fade in past the coastline.
-    float landFade = smoothstep(uLandR - 2.0, uLandR + 28.0, r);
+    // Stay completely off the land/stone/wet rings — fade in past the
+    // outer wet-band edge (LAND_R + 16) so the overlay never z-fights any
+    // opaque ring near the coastline.
+    float landFade = smoothstep(uLandR + 18.0, uLandR + 42.0, r);
     // Atmospheric falloff toward the deep horizon so the wave glints don't
     // tile across the entire 1800u sea.
     float farFade = 1.0 - smoothstep(450.0, 1100.0, r);
@@ -94,7 +96,7 @@ function SeaWaves({ landR }: { landR: number }) {
     if (matRef.current) matRef.current.uniforms.uTime.value = state.clock.elapsedTime
   })
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.55, 0]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.45, 0]} renderOrder={0}>
       <circleGeometry args={[1700, 96]} />
       <shaderMaterial
         ref={matRef}
@@ -140,8 +142,11 @@ function CoastSurf({ landR }: { landR: number }) {
     }
   `
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-      <ringGeometry args={[landR + 6, landR + 22, 128, 1]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} renderOrder={5}>
+      {/* Begins past the stone outer edge (LAND_R + 7) so it never overlaps
+          the stone ring. Sits above the wet band — foam reads on top of the
+          rocks, where waves crash. */}
+      <ringGeometry args={[landR + 8, landR + 22, 128, 1]} />
       <shaderMaterial
         ref={matRef}
         vertexShader={surfVert}
@@ -293,14 +298,18 @@ export function CoastEnvironment() {
       {/* Animated wave overlay — slow turquoise tonal shift + crisp crest glints. */}
       <SeaWaves landR={LAND_R} />
 
-      {/* Pale stone coastline ring at the land's edge */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
+      {/* Pale stone coastline ring at the land's edge. depthWrite:false +
+          renderOrder so it paints cleanly over the ground disc without
+          z-fighting the matte meadow underneath. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} renderOrder={3}>
         <ringGeometry args={[LAND_R - 4, LAND_R + 7, 96]} />
-        <meshStandardMaterial color="#b8a88a" roughness={0.95} />
+        <meshStandardMaterial color="#b8a88a" roughness={0.95} depthWrite={false} />
       </mesh>
-      {/* A darker wet band just below the stone, where the water laps the shore */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
-        <ringGeometry args={[LAND_R + 7, LAND_R + 16, 96]} />
+      {/* Darker wet band just below sea level, past the stone — submerged
+          rocks where the waves lap. No radial overlap with the ground disc
+          (which ends at LAND_R + 6), so no z-fight with the meadow. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]} renderOrder={1}>
+        <ringGeometry args={[LAND_R + 7, LAND_R + 18, 96]} />
         <meshStandardMaterial color="#1d4250" roughness={0.85} metalness={0.2} />
       </mesh>
 
