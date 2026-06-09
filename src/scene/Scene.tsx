@@ -70,13 +70,19 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
     return () => clearTimeout(t)
   }, [])
 
+  // Detect small/touch screens once so the heavier passes (high DPR, the
+  // every-frame reflection cube map) scale down on phones for smoother fps.
+  const [isMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches,
+  )
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-paper animate-[worldFadeIn_900ms_100ms_both]">
       <div className="absolute inset-0">
         <Canvas
           className="scene-canvas"
           shadows
-          dpr={[1, 2]}
+          dpr={isMobile ? [1, 1.5] : [1, 2]}
           camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
           gl={{ toneMappingExposure: 0.6 }}
         >
@@ -84,13 +90,12 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           <DayNight weather={weather} view={view} />
           {/* Visible sky + clouds in the main scene. */}
           <DaySky />
-          {/* Live environment map — captures a second copy of the sky and
-              clouds into a cube map every frame so the glass facades mirror
-              the actual clouds drifting overhead. background=false keeps the
-              visible skybox driven by the main DaySky. */}
+          {/* Live environment map — captures a second copy of the sky, clouds
+              and balloons into a cube map so the glass facades mirror them.
+              Half resolution on mobile (256 vs 512) to cut the per-frame cost. */}
           <Environment
             frames={Infinity}
-            resolution={512}
+            resolution={isMobile ? 256 : 512}
             background={false}
             near={10}
             far={1500}
