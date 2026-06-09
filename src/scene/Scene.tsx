@@ -77,7 +77,6 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           shadows
           dpr={[1, 2]}
           camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
-          gl={{ toneMappingExposure: 0.74 }}
         >
           {/* Lights, fog and time-of-day cycle. */}
           <DayNight weather={weather} view={view} />
@@ -115,9 +114,9 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           <EffectComposer>
             <Bloom
               mipmapBlur
-              luminanceThreshold={0.96}
-              luminanceSmoothing={0.9}
-              intensity={0.3}
+              luminanceThreshold={0.9}
+              luminanceSmoothing={0.85}
+              intensity={0.55}
             />
           </EffectComposer>
         </Canvas>
