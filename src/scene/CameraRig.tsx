@@ -46,6 +46,11 @@ export interface FocusTarget {
 const REF_ASPECT = 1.5
 const FIT_CAP: Record<ViewMode, number> = { '3d': 1.55, iso: 1.5, skyline: 1.85 }
 
+// Google-Earth-style idle orbit: the city drifts slowly on its own until the
+// user touches the canvas, then resumes after this much idle time.
+const IDLE_RESUME_MS = 10_000
+const AUTO_ROTATE_SPEED = 0.4 // OrbitControls units: 2.0 ≈ 30 s/orbit → ~150 s/orbit
+
 export function CameraRig({
   focus,
   cmd,
@@ -76,6 +81,8 @@ export function CameraRig({
   const viewing = useRef(false)
   const viewPos = useRef(new Vector3())
   const lastView = useRef(view)
+  // Negative start time → the idle orbit is already running on first paint.
+  const lastInteract = useRef(-IDLE_RESUME_MS)
 
   useEffect(() => {
     const el = gl.domElement
@@ -83,8 +90,19 @@ export function CameraRig({
       recentering.current = true
       if (ref.current) ref.current.enabled = false
     }
+    const onInteract = () => {
+      lastInteract.current = performance.now()
+    }
     el.addEventListener('dblclick', onDouble)
-    return () => el.removeEventListener('dblclick', onDouble)
+    el.addEventListener('pointerdown', onInteract)
+    el.addEventListener('wheel', onInteract, { passive: true })
+    el.addEventListener('touchstart', onInteract, { passive: true })
+    return () => {
+      el.removeEventListener('dblclick', onDouble)
+      el.removeEventListener('pointerdown', onInteract)
+      el.removeEventListener('wheel', onInteract)
+      el.removeEventListener('touchstart', onInteract)
+    }
   }, [gl])
 
   // Frame the city responsively on first paint — on mobile the fixed opening
@@ -101,6 +119,13 @@ export function CameraRig({
   useFrame((_, dt) => {
     const c = ref.current
     if (!c) return
+
+    // Idle auto-orbit: the city drifts on its own (from first paint) whenever
+    // the user hasn't touched the canvas recently and no programmatic camera
+    // motion is in flight. Skyline locks its cinematic angle, so it's exempt.
+    const busy = flying.current || zooming.current || viewing.current || recentering.current
+    c.autoRotate =
+      view !== 'skyline' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
 
     // Fly-to a searched/recommended place (preserve viewing angle).
     if (focus && focus.nonce !== lastNonce.current) {
@@ -206,6 +231,7 @@ export function CameraRig({
       makeDefault
       enableDamping
       dampingFactor={0.08}
+      autoRotateSpeed={AUTO_ROTATE_SPEED}
       // Skyline locks its cinematic front angle via screen-space pan. 3D and the
       // coastal 2D view both allow free orbit so you can sweep the bay.
       screenSpacePanning={view === 'skyline'}
