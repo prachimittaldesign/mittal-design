@@ -5,10 +5,11 @@ export interface Track {
   artist: string
 }
 
-// Original neo-classical pieces — sustained strings and rolling piano,
-// in the post-minimalist register of Richter / Einaudi.
+// A coastal waves ambience opens the set, followed by original
+// neo-classical pieces — rolling piano in the post-minimalist
+// register of Einaudi.
 export const PLAYLIST: Track[] = [
-  { file: 'daylight-strings.wav',  title: 'Daylight',       artist: 'City Sessions' },
-  { file: 'spring-piano.wav',      title: 'Spring Morning', artist: 'City Sessions' },
-  { file: 'experience-cycle.wav',  title: 'Experience',     artist: 'City Sessions' },
+  { file: 'shoreline-waves.wav',  title: 'Shoreline',      artist: 'City Sessions' },
+  { file: 'spring-piano.wav',     title: 'Spring Morning', artist: 'City Sessions' },
+  { file: 'experience-cycle.wav', title: 'Experience',     artist: 'City Sessions' },
 ]
