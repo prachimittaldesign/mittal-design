@@ -5,12 +5,9 @@ export interface Track {
   artist: string
 }
 
-// Drop real audio files into public/music/ and update each entry.
-// All currently point to the demo placeholder — replace `file` values one by one.
+// Looping ambient tracks — warm pads, soft ocean texture, and gentle chimes.
 export const PLAYLIST: Track[] = [
-  { file: 'demo-loop.wav', title: 'Ambient Sketch',   artist: 'City Sessions' },
-  { file: 'demo-loop.wav', title: 'Blueprint Haze',   artist: 'City Sessions' },
-  { file: 'demo-loop.wav', title: 'Signal Bloom',     artist: 'City Sessions' },
-  { file: 'demo-loop.wav', title: 'Quarter Glass',    artist: 'City Sessions' },
-  { file: 'demo-loop.wav', title: 'Late Horizon',     artist: 'City Sessions' },
+  { file: 'ambient-coastal-morning.wav', title: 'Coastal Morning', artist: 'City Sessions' },
+  { file: 'ambient-evening-tide.wav',    title: 'Evening Tide',    artist: 'City Sessions' },
+  { file: 'ambient-open-sky.wav',        title: 'Open Sky',        artist: 'City Sessions' },
 ]
