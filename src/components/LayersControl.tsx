@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HUD_ICON_BTN } from './hud'
 import type { LayerState, MapLayer } from '../types'
 
 interface LayersControlProps {
@@ -26,7 +27,7 @@ export function LayersControl({ layers, onChange, layer, onLayerChange }: Layers
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+48px)] left-3 z-20 sm:bottom-[70px] sm:left-4">
+    <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+56px)] left-3 z-20 sm:bottom-[70px] sm:left-4">
       {open && (
         <div className="hud-strong absolute bottom-[calc(100%+10px)] left-0 w-[200px] rounded-[14px] border p-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)] backdrop-blur-md sm:bottom-0 sm:left-[calc(100%+10px)]">
           <div className="hud-soft mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.18em]">
@@ -66,18 +67,13 @@ export function LayersControl({ layers, onChange, layer, onLayerChange }: Layers
 
       <button
         onClick={() => setOpen((o) => !o)}
-        className={[
-          'hud hud-hover flex h-[52px] w-[52px] flex-col items-center justify-center gap-[3px] rounded-[12px] border',
-          'shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors',
-          open ? 'hud-bd-on' : '',
-        ].join(' ')}
+        className={[HUD_ICON_BTN, open ? 'hud-bd-on' : ''].join(' ')}
         aria-label="Map layers"
       >
-        <svg viewBox="0 0 24 24" fill="none" className="hud-text h-[18px] w-[18px]">
+        <svg viewBox="0 0 24 24" fill="none" className="hud-text h-[20px] w-[20px]">
           <path d="M12 4l8 4-8 4-8-4 8-4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
           <path d="M4 12l8 4 8-4M4 16l8 4 8-4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
         </svg>
-        <span className="hud-soft text-[8px] font-semibold uppercase tracking-[0.12em]">Layers</span>
       </button>
     </div>
   )

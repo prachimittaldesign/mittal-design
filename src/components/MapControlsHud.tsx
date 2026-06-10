@@ -1,3 +1,4 @@
+import { HUD_ICON_BTN } from './hud'
 import type { CameraCmd, ViewMode } from '../types'
 
 interface MapControlsHudProps {
@@ -22,8 +23,7 @@ function PegmanIcon() {
 }
 
 export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) {
-  const btn =
-    'hud hud-hover flex h-[44px] w-[44px] items-center justify-center rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md transition-colors'
+  const btn = HUD_ICON_BTN
 
   return (
     <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-20 flex flex-col items-center gap-3 sm:bottom-4 sm:right-4">
