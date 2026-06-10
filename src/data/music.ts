@@ -5,9 +5,10 @@ export interface Track {
   artist: string
 }
 
-// Looping ambient tracks — warm pads, soft ocean texture, and gentle chimes.
+// Original neo-classical pieces — sustained strings and rolling piano,
+// in the post-minimalist register of Richter / Einaudi.
 export const PLAYLIST: Track[] = [
-  { file: 'ambient-coastal-morning.wav', title: 'Coastal Morning', artist: 'City Sessions' },
-  { file: 'ambient-evening-tide.wav',    title: 'Evening Tide',    artist: 'City Sessions' },
-  { file: 'ambient-open-sky.wav',        title: 'Open Sky',        artist: 'City Sessions' },
+  { file: 'daylight-strings.wav',  title: 'Daylight',       artist: 'City Sessions' },
+  { file: 'spring-piano.wav',      title: 'Spring Morning', artist: 'City Sessions' },
+  { file: 'experience-cycle.wav',  title: 'Experience',     artist: 'City Sessions' },
 ]
