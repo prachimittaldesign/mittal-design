@@ -26,7 +26,7 @@ export function LayersControl({ layers, onChange, layer, onLayerChange }: Layers
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-3 z-20 sm:bottom-4 sm:left-4">
+    <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+48px)] left-3 z-20 sm:bottom-[70px] sm:left-4">
       {open && (
         <div className="hud-strong absolute bottom-[calc(100%+10px)] left-0 w-[200px] rounded-[14px] border p-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)] backdrop-blur-md sm:bottom-0 sm:left-[calc(100%+10px)]">
           <div className="hud-soft mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.18em]">

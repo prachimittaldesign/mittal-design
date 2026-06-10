@@ -67,7 +67,7 @@ export function MusicPlayer() {
       {/* ── Mobile: icon-only controls at the bottom-left.
            Tap the note icon → skip to next track and play.
            Stop button (×) appears only while playing. ── */}
-      <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+68px)] left-3 z-20 flex items-center gap-[6px] sm:hidden">
+      <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-3 z-20 flex items-center gap-[6px] sm:hidden">
         <button
           onClick={mobileNext}
           aria-label="Next track"
@@ -91,7 +91,7 @@ export function MusicPlayer() {
       </div>
 
       {/* ── Desktop: full pill with track info + stop + next ── */}
-      <div className="pointer-events-auto absolute bottom-[80px] left-4 z-20 hidden sm:block">
+      <div className="pointer-events-auto absolute bottom-4 left-4 z-20 hidden sm:block">
         <div className="hud flex max-w-[260px] items-center gap-[8px] rounded-full border px-[10px] py-[7px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
           <button
             onClick={toggleDesktop}
