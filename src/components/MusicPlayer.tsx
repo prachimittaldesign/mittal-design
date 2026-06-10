@@ -11,6 +11,7 @@ export function MusicPlayer() {
   useEffect(() => {
     const a = new Audio()
     a.preload = 'metadata'
+    a.volume = 0.55 // keep the ambience subtle under the scene
     audioRef.current = a
     const onEnded = () => setIndex((n) => (n + 1) % PLAYLIST.length)
     a.addEventListener('ended', onEnded)
