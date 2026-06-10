@@ -43,6 +43,9 @@ function makeBeamTexture(): CanvasTexture {
   }
   ctx.putImageData(img, 0, 0)
   const tex = new CanvasTexture(c)
+  // flipY would invert the gradient: canvas row 0 carries the far-end fade and
+  // must land at cone V=0 (the base), so the bright peak stays at the lamp.
+  tex.flipY = false
   tex.needsUpdate = true
   return tex
 }

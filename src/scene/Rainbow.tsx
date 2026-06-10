@@ -12,18 +12,26 @@ import { easing } from 'maath'
 import { getHyderabadTime } from '../lib/sky'
 import type { Weather } from '../lib/weather'
 
+const INNER_R = 260
+const OUTER_R = 308
+
+// RingGeometry's built-in UVs are planar, not radial — so the band coordinate
+// (inner→outer) and arc angle are derived from the local vertex position here.
 const VERT = /* glsl */ `
-  varying vec2 vUv;
+  varying float vBand;
+  varying float vAng;
   void main() {
-    vUv = uv;
+    vBand = (length(position.xy) - ${INNER_R.toFixed(1)}) / ${(OUTER_R - INNER_R).toFixed(1)};
+    vAng  = atan(position.y, position.x) / 3.14159265;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `
 
-// vUv.y goes 0 at the inner edge of the ring to 1 at the outer edge — we map
+// vBand goes 0 at the inner edge of the ring to 1 at the outer edge — we map
 // it across the visible spectrum (violet inside → red outside, as in the sky).
 const FRAG = /* glsl */ `
-  varying vec2 vUv;
+  varying float vBand;
+  varying float vAng;
   uniform float uOpacity;
 
   vec3 spectrum(float t) {
@@ -37,12 +45,12 @@ const FRAG = /* glsl */ `
   }
 
   void main() {
-    float t = vUv.y;
+    float t = clamp(vBand, 0.0, 1.0);
     vec3 c = spectrum(t);
     // Soften the inner and outer band edges so the arc doesn't look like a
     // stamp; same for the two angular tips so it gently dissolves into the sky.
     float edgeFade = smoothstep(0.0, 0.10, t) * smoothstep(1.0, 0.90, t);
-    float angFade  = smoothstep(0.0, 0.14, vUv.x) * smoothstep(1.0, 0.86, vUv.x);
+    float angFade  = smoothstep(0.0, 0.14, vAng) * smoothstep(1.0, 0.86, vAng);
     gl_FragColor = vec4(c, uOpacity * edgeFade * angFade * 0.5);
   }
 `
@@ -83,7 +91,7 @@ export function Rainbow({ weather }: { weather: Weather | null }) {
   // top half above the horizon.
   return (
     <mesh position={[-220, 30, -360]} rotation={[0, Math.PI * 0.35, 0]}>
-      <ringGeometry args={[260, 308, 96, 1, 0, Math.PI]} />
+      <ringGeometry args={[INNER_R, OUTER_R, 96, 1, 0, Math.PI]} />
       <primitive object={mat} attach="material" />
     </mesh>
   )
