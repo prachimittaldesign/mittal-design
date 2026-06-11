@@ -19,6 +19,9 @@ import { FutureBridge } from './FutureBridge'
 import { Billboards } from './Billboards'
 import { CityLife } from './CityLife'
 import { CoastEnvironment } from './CoastEnvironment'
+import { Outskirts } from './Outskirts'
+import { Marina } from './Marina'
+import { Beach } from './Beach'
 import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
@@ -111,6 +114,11 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
         <Constellations />
         <Roads />
         <Props />
+        {/* The countryside belt + waterfront keep the island honest from every
+            angle except the skyline lineup, which wants a clean stage. */}
+        {view !== 'skyline' && <Outskirts />}
+        {view !== 'skyline' && <Marina />}
+        {view !== 'skyline' && <Beach />}
         <StreetFurniture />
         <StreetDecor />
         <Campfires />

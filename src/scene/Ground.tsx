@@ -5,6 +5,7 @@ import { ROAD_SEGS_DRAW, CONNECTOR_SEGS, RING_RADII, RING_ROAD_W } from './lib/c
 import { LOT, pointToSegDist } from './lib/project3d'
 import { POND_CENTER, POND_CLEAR } from './Pond'
 import { LAND_R } from './CoastEnvironment'
+import { isOutskirtsOccupied } from './lib/outskirts'
 
 // ─── Road exclusion for grass ─────────────────────────────────────────────────
 // Grass tufts and flowers must not spawn on road or sidewalk surfaces.
@@ -32,7 +33,9 @@ const TERRACE_R = 27
 // cohesive (Bruno-Simon-like) palette. Tufts reach out to the fog distance so
 // the field's edge dissolves into the horizon rather than ending in a hard ring.
 const TUFT_GREENS = ['#5c6b45', '#697a50', '#52613c', '#5f7048', '#737f5a']
-const TUFT_COUNT  = 6000
+// 4200 (was 6000): with the outskirts hamlets/orchards now filling the belt,
+// the meadow needs less speckle — fewer tufts read calmer from altitude.
+const TUFT_COUNT  = 4200
 const PLAZA_CLEAR = TERRACE_R + 2   // 2-unit grass buffer beyond the stone terrace edge
 const FIELD_R     = LAND_R - 36     // keep all greenery inside the coastline (LAND_R)
 
@@ -57,6 +60,7 @@ function GrassTufts() {
       const pdz = z - POND_CENTER[1]
       if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
       if (isOnRoad(x, z)) continue
+      if (isOutskirtsOccupied(x, z)) continue
 
       // Short and soft — gentle bumps of turf, not tall spikes.
       const h = 0.28 + Math.random() * 0.55
@@ -113,6 +117,7 @@ function Wildflowers() {
       const pdz = z - POND_CENTER[1]
       if (pdx * pdx + pdz * pdz < POND_CLEAR * POND_CLEAR) continue
       if (isOnRoad(x, z)) continue
+      if (isOutskirtsOccupied(x, z)) continue
 
       dummy.position.set(x, 0.5, z)
       dummy.rotation.set(0, Math.random() * Math.PI * 2, 0)
