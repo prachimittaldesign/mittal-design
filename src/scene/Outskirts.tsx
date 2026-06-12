@@ -99,8 +99,13 @@ export function Outskirts() {
         </mesh>
       ))}
 
-      {/* ── Hamlet houses — pastel stucco, terracotta pyramid roofs ── */}
-      <Instances limit={Math.max(OUTSKIRT_HOUSES.length, 1)} castShadow>
+      {/* ── Hamlet houses — pastel stucco, terracotta pyramid roofs ──
+          frustumCulled=false: drei's auto bounding sphere is computed on the
+          first frame (before instance transforms are registered), caching an
+          empty sphere at the origin. That sphere only happens to intersect
+          the frustum while the camera looks at the origin, so these houses
+          (out at r≈120-150) would vanish the moment you pan toward them. */}
+      <Instances limit={Math.max(OUTSKIRT_HOUSES.length, 1)} castShadow frustumCulled={false}>
         <boxGeometry args={[3.4, 2.6, 3]} />
         <meshStandardMaterial roughness={0.95} />
         {OUTSKIRT_HOUSES.map((h) => (
@@ -113,7 +118,7 @@ export function Outskirts() {
           />
         ))}
       </Instances>
-      <Instances limit={Math.max(OUTSKIRT_HOUSES.length, 1)} castShadow>
+      <Instances limit={Math.max(OUTSKIRT_HOUSES.length, 1)} castShadow frustumCulled={false}>
         <coneGeometry args={[2.6, 1.7, 4]} />
         <meshStandardMaterial roughness={0.95} />
         {OUTSKIRT_HOUSES.map((h) => (
@@ -127,8 +132,9 @@ export function Outskirts() {
         ))}
       </Instances>
 
-      {/* ── Countryside trees: hamlet greens, orchard rows, belt scatter ── */}
-      <Instances limit={Math.max(OUTSKIRT_TREES.length, 1)} castShadow>
+      {/* ── Countryside trees: hamlet greens, orchard rows, belt scatter ──
+          Same frustumCulled=false fix as the houses above. */}
+      <Instances limit={Math.max(OUTSKIRT_TREES.length, 1)} castShadow frustumCulled={false}>
         <sphereGeometry args={[1.6, 8, 7]} />
         <meshStandardMaterial roughness={0.95} />
         {OUTSKIRT_TREES.map((t, i) => (
@@ -140,7 +146,7 @@ export function Outskirts() {
           />
         ))}
       </Instances>
-      <Instances limit={Math.max(OUTSKIRT_TREES.length, 1)}>
+      <Instances limit={Math.max(OUTSKIRT_TREES.length, 1)} frustumCulled={false}>
         <cylinderGeometry args={[0.18, 0.24, 3.2, 6]} />
         <meshStandardMaterial color={TRUNK} roughness={1} />
         {OUTSKIRT_TREES.map((t) => (

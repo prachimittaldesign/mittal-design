@@ -151,8 +151,10 @@ export function Marina() {
         <meshStandardMaterial color={WOOD_DARK} roughness={0.9} depthWrite={false} />
       </mesh>
 
-      {/* Boardwalk pilings */}
-      <Instances limit={pilings.length}>
+      {/* Boardwalk pilings. frustumCulled=false: see Outskirts.tsx — drei's
+          cached bounding sphere starts empty at the origin, so this far-out
+          ring of instances would vanish once the camera pans toward it. */}
+      <Instances limit={pilings.length} frustumCulled={false}>
         <cylinderGeometry args={[0.28, 0.32, 2.4, 6]} />
         <meshStandardMaterial color={WOOD_DARK} roughness={1} />
         {pilings.map((p, i) => (

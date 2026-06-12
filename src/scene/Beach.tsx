@@ -80,8 +80,10 @@ export function Beach() {
         <meshStandardMaterial color={SAND_WET} roughness={0.85} depthWrite={false} />
       </mesh>
 
-      {/* Parasol poles */}
-      <Instances limit={spots.length}>
+      {/* Parasol poles. frustumCulled=false: see Outskirts.tsx — drei's
+          cached bounding sphere starts empty at the origin, so this far-out
+          beach scatter would vanish once the camera pans toward it. */}
+      <Instances limit={spots.length} frustumCulled={false}>
         <cylinderGeometry args={[0.06, 0.08, 2.6, 5]} />
         <meshStandardMaterial color="#e9e2cf" roughness={0.9} />
         {spots.map((s, i) => (
@@ -89,7 +91,7 @@ export function Beach() {
         ))}
       </Instances>
       {/* Parasol canopies */}
-      <Instances limit={spots.length} castShadow>
+      <Instances limit={spots.length} castShadow frustumCulled={false}>
         <coneGeometry args={[1.7, 0.8, 8]} />
         <meshStandardMaterial roughness={0.9} />
         {spots.map((s, i) => (
@@ -97,7 +99,7 @@ export function Beach() {
         ))}
       </Instances>
       {/* Towels beside each parasol */}
-      <Instances limit={spots.length}>
+      <Instances limit={spots.length} frustumCulled={false}>
         <boxGeometry args={[1.1, 0.06, 2.0]} />
         <meshStandardMaterial roughness={0.95} />
         {spots.map((s, i) => (
