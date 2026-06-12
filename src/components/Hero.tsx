@@ -6,6 +6,7 @@ import { getHyderabadTime } from '../lib/sky'
 
 const LINKS = [
   { label: 'hello@', href: 'mailto:hello@prachimittal.com', solid: true },
+  { label: 'About', href: '/about.html', solid: false, external: true },
   { label: 'Resume', href: '#', solid: false },
   { label: 'LinkedIn', href: '#', solid: false },
   { label: 'Dribbble', href: '#', solid: false },
@@ -107,7 +108,12 @@ export function Hero({ docked }: { docked: boolean }) {
               <p className="hud-soft mb-3 text-[13px] leading-[1.55]">{BLURB}</p>
               <div className="flex flex-wrap gap-[6px]">
                 {LINKS.map((link) => (
-                  <a key={link.label} href={link.href} className={linkClass(link.solid)}>
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className={linkClass(link.solid)}
+                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
                     {link.label}
                   </a>
                 ))}
