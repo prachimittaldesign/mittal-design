@@ -83,7 +83,13 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           className="scene-canvas"
           shadows
           dpr={isMobile ? [1, 1.5] : [1, 2]}
-          camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 0.5, far: 2000 }}
+          // near=2 (was 0.5): the ground/road layers are stacked only
+          // 0.01-0.02 apart in y. With a 24-bit depth buffer those gaps fall
+          // below the buffer's resolution once the camera is ~150+ units
+          // away, causing the road network to z-fight/flicker on zoom-out.
+          // A larger near plane (still well inside minDistance=26) quarters
+          // that error at typical viewing distances.
+          camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 2, far: 2000 }}
           gl={{ toneMappingExposure: 0.6 }}
         >
           {/* Lights, fog and time-of-day cycle. */}

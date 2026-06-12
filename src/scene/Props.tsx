@@ -44,7 +44,13 @@ export function Props() {
   return (
     <group>
       {/* Tree canopies — round spheres, Bruno-Simon style */}
-      <Instances limit={Math.max(TREES.length, 1)} castShadow>
+      {/* frustumCulled=false on every group here: drei's auto bounding
+          sphere is computed on the first frame before instance transforms
+          are registered, caching an empty sphere at the origin. That sphere
+          only intersects the frustum while the camera looks at the origin,
+          so this scenery would vanish the moment you pan/zoom toward the
+          edge of the urban core. */}
+      <Instances limit={Math.max(TREES.length, 1)} castShadow frustumCulled={false}>
         <sphereGeometry args={[1.6, 8, 7]} />
         <meshStandardMaterial roughness={0.95} />
         {TREES.map((t) => (
@@ -58,7 +64,7 @@ export function Props() {
       </Instances>
 
       {/* Tree trunks */}
-      <Instances limit={Math.max(TREES.length, 1)}>
+      <Instances limit={Math.max(TREES.length, 1)} frustumCulled={false}>
         <cylinderGeometry args={[0.18, 0.24, 3.2, 6]} />
         <meshStandardMaterial color={TRUNK} roughness={1} />
         {TREES.map((t) => (
@@ -67,7 +73,7 @@ export function Props() {
       </Instances>
 
       {/* Rocks */}
-      <Instances limit={Math.max(ROCKS.length, 1)}>
+      <Instances limit={Math.max(ROCKS.length, 1)} frustumCulled={false}>
         <dodecahedronGeometry args={[0.8, 0]} />
         <meshStandardMaterial color={ROCK} roughness={1} flatShading />
         {ROCKS.map((r) => (
@@ -81,7 +87,7 @@ export function Props() {
       </Instances>
 
       {/* House bodies */}
-      <Instances limit={Math.max(HOUSES.length, 1)} castShadow>
+      <Instances limit={Math.max(HOUSES.length, 1)} castShadow frustumCulled={false}>
         <boxGeometry args={[3, 2.2, 3]} />
         <meshStandardMaterial roughness={0.95} />
         {HOUSES.map((h) => (
@@ -96,7 +102,7 @@ export function Props() {
       </Instances>
 
       {/* House roofs */}
-      <Instances limit={Math.max(HOUSES.length, 1)} castShadow>
+      <Instances limit={Math.max(HOUSES.length, 1)} castShadow frustumCulled={false}>
         <coneGeometry args={[2.3, 1.6, 4]} />
         <meshStandardMaterial color="#b6764f" roughness={0.95} />
         {HOUSES.map((h) => (
@@ -110,7 +116,7 @@ export function Props() {
       </Instances>
 
       {/* Cars */}
-      <Instances limit={Math.max(cars.length, 1)} castShadow>
+      <Instances limit={Math.max(cars.length, 1)} castShadow frustumCulled={false}>
         <boxGeometry args={[1.7, 0.7, 0.95]} />
         <meshStandardMaterial roughness={0.6} metalness={0.1} />
         {cars.map((c) => (

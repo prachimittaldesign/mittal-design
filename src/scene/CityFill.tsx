@@ -26,8 +26,14 @@ export function CityFill() {
 
   return (
     <group>
+      {/* frustumCulled=false on every group here: drei's auto bounding
+          sphere is computed on the first frame before instance transforms
+          are registered, caching an empty sphere at the origin. That sphere
+          only intersects the frustum while the camera looks at the origin,
+          so this backdrop town would vanish the moment you pan/zoom toward
+          the edge of the urban core. */}
       {/* Pastel stucco bodies */}
-      <Instances limit={n} castShadow receiveShadow>
+      <Instances limit={n} castShadow receiveShadow frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial roughness={0.88} />
         {SCENERY.map((s) => (
@@ -42,7 +48,7 @@ export function CityFill() {
       </Instances>
 
       {/* Terracotta pyramid roofs */}
-      <Instances limit={n} castShadow>
+      <Instances limit={n} castShadow frustumCulled={false}>
         <coneGeometry args={[0.72, 1, 4]} />
         <meshStandardMaterial roughness={0.85} />
         {SCENERY.map((s) => (
@@ -57,7 +63,7 @@ export function CityFill() {
       </Instances>
 
       {/* White cornice crowning the wall under the roof */}
-      <Instances limit={n}>
+      <Instances limit={n} frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color={SCENERY_TRIM} roughness={0.85} />
         {SCENERY.map((s) => (
@@ -71,7 +77,7 @@ export function CityFill() {
       </Instances>
 
       {/* Dark window band (architrave-framed glazing read at a distance) */}
-      <Instances limit={n}>
+      <Instances limit={n} frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial
           color={SCENERY_GLASS}
@@ -91,7 +97,7 @@ export function CityFill() {
       </Instances>
 
       {/* White juliet balcony ledge */}
-      <Instances limit={n} castShadow>
+      <Instances limit={n} castShadow frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color={SCENERY_TRIM} roughness={0.9} />
         {SCENERY.map((s) => (
@@ -105,7 +111,7 @@ export function CityFill() {
       </Instances>
 
       {/* Iron balcony rail above the ledge */}
-      <Instances limit={n}>
+      <Instances limit={n} frustumCulled={false}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color={SCENERY_IRON} roughness={0.6} metalness={0.4} />
         {SCENERY.map((s) => (

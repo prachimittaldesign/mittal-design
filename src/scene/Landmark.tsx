@@ -127,14 +127,20 @@ function Silhouette({
     case 'stadium':
       return (
         <group scale={[1, 1, 0.72]}>
+          {/* Lower stand ring */}
           <mesh position={[0, 1.6, 0]} rotation={[Math.PI / 2, 0, 0]} material={grey} castShadow receiveShadow>
             <torusGeometry args={[w * 0.42, w * 0.12, 10, 28]} />
           </mesh>
-          <mesh position={[0, 2.6, 0]} rotation={[Math.PI / 2, 0, 0]} material={grey} castShadow>
-            <torusGeometry args={[w * 0.3, w * 0.08, 10, 28]} />
+          {/* Upper stand ring — raised and slimmed so its tube can't cross the
+              lower ring's (the two tori previously intersected, z-fighting
+              wherever their surfaces overlapped). */}
+          <mesh position={[0, 3.3, 0]} rotation={[Math.PI / 2, 0, 0]} material={grey} castShadow>
+            <torusGeometry args={[w * 0.3, w * 0.05, 10, 28]} />
           </mesh>
+          {/* Pitch — sits just below the platform top (y=0.5) so it no
+              longer shares a coplanar face with the base box. */}
           <mesh position={[0, 0.3, 0]}>
-            <cylinderGeometry args={[w * 0.34, w * 0.34, 0.4, 28]} />
+            <cylinderGeometry args={[w * 0.34, w * 0.34, 0.36, 28]} />
             <meshStandardMaterial color={accent} roughness={0.85} />
           </mesh>
         </group>
