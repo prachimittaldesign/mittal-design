@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bundled Page</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -138,6 +139,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
     document.documentElement.replaceWith(doc.documentElement);
+
+    // This design is a fixed 1080px desktop spec sheet with no mobile
+    // breakpoints. `zoom` scales layout + content together (unlike
+    // `transform: scale`, it doesn't leave empty space below), so on
+    // narrower viewports the whole sheet shrinks to fit instead of
+    // overflowing/forcing horizontal scroll.
+    const responsiveStyle = document.createElement('style');
+    responsiveStyle.textContent =
+      '@media (max-width: 1080px) { div[style*="width: 1080px"] { zoom: calc(100vw / 1080px); } }';
+    document.head.appendChild(responsiveStyle);
     const dead = Array.from(document.scripts);
     for (const old of dead) {
       const s = document.createElement('script');
