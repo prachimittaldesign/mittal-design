@@ -116,7 +116,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
         <Props />
         {/* The countryside belt + waterfront keep the island honest from every
             angle except the skyline lineup, which wants a clean stage. */}
-        {view !== 'skyline' && <Outskirts />}
+        {layers.showScenery && view !== 'skyline' && <Outskirts />}
         {view !== 'skyline' && <Marina />}
         {view !== 'skyline' && <Beach />}
         <StreetFurniture />
