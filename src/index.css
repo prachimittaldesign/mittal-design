@@ -172,3 +172,5 @@ body.night {
 @keyframes eqBar1 { from { transform: scaleY(0.3); } to { transform: scaleY(1.0); } }
 @keyframes eqBar2 { from { transform: scaleY(0.5); } to { transform: scaleY(0.2); } }
 @keyframes eqBar3 { from { transform: scaleY(0.2); } to { transform: scaleY(0.9); } }
+
+@keyframes carousel-fade { from { opacity: 0; } to { opacity: 1; } }

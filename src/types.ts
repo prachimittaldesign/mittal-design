@@ -42,8 +42,6 @@ export interface CaseStudy {
   impact: string[]
   /** Hero stat callout. */
   metric?: { value: string; label: string }
-  /** Screenshots with optional captions (paths served from public/). Shown full-width in sequence. */
-  images?: Array<{ src: string; caption?: string }>
 }
 
 export interface Project {
@@ -68,6 +66,8 @@ export interface Project {
   /** Hero projects get a floating star marker + a full case-study overlay. */
   featured?: boolean
   caseStudy?: CaseStudy
+  /** Screenshots shown as a carousel in the project overlay. Paths served from public/. */
+  images?: Array<{ src: string; caption?: string }>
 }
 
 export interface FillerTile {
