@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { DoubleSide, Group, MeshStandardMaterial } from 'three'
+import { Color, DoubleSide, Group, MeshStandardMaterial } from 'three'
 import { easing } from 'maath'
 import { CLOCK_TOWER } from './lib/cityModel'
 import { getHyderabadTime } from '../lib/sky'
@@ -10,20 +10,26 @@ const STONE    = '#d2c4a8'   // warm Mediterranean limestone
 const STONE_D  = '#bab09a'   // quoins / pilasters / base steps
 const CORNICE  = '#9a8a72'   // string courses / trim / cornice
 const OPENING  = '#18140e'   // belfry arch voids
-const FACE_COL = '#faf4e4'   // clock dial cream
-const INK      = '#1a1410'   // hands / tick markers
+const FACE_COL = '#fbf6e8'   // clock dial cream
+const INK      = '#161009'   // hands / tick markers
+const BRASS    = '#b89150'   // bezel / hands centre / finial
 const SPIRE    = '#6a5440'   // terracotta spire
 const STEM     = '#3a5425'   // vine stems
 const LEAVES   = ['#4a8c3a','#548a3e','#3d7830','#5c9042','#487228','#72a848','#3e6a28','#4e7f32']
 
 // ── Dimensions ───────────────────────────────────────────────────────────────
-const TW     = 5.4          // tower footprint width
-const HW     = TW / 2
-const BW     = TW * 0.92    // belfry section width (slightly narrower)
-const BHW    = BW / 2
-const FACE_Y = 13           // clock face centre height
-const FACE_R = 2.4          // clock face radius
-const FACE_Z = HW + 0.02    // clock face z offset
+const TW      = 5.4               // tower footprint width
+const HW      = TW / 2
+const BW      = TW * 0.92         // belfry section width (slightly narrower)
+const BHW     = BW / 2
+
+const CW      = TW * 1.16         // clock-stage width (projects past the shaft)
+const CHW     = CW / 2
+const STAGE_Y = 14                // clock-stage centre height
+const STAGE_H = 6                 // clock-stage height
+const FACE_R  = 2.5               // clock dial radius
+const FACE_LOCAL_Z = CHW + 0.05   // dial stands proud of the stage face
+
 const TWO_PI = Math.PI * 2
 
 // ── Vine creepers ────────────────────────────────────────────────────────────
@@ -90,12 +96,13 @@ function Creepers() {
   const tracks = useMemo(() => {
     const arr: Array<{ face: number; tx: number; maxH: number }> = []
     const offsets = [-1.55, 0.05, 1.60]
-    // Vary heights per face so vines look organic, not mirrored
+    // Keep ivy on the LOWER shaft only — below the clock stage (y ≈ 11) — so the
+    // creepers frame the base and never grow across the clock faces.
     const maxHTable = [
-      [18, 21, 17],
-      [20, 16, 22],
-      [19, 23, 18],
-      [22, 17, 20],
+      [9.5, 8.0, 10.0],
+      [8.5, 10.0, 7.5],
+      [10.0, 9.0, 8.0],
+      [7.5, 8.5, 9.5],
     ]
     for (let f = 0; f < 4; f++) {
       offsets.forEach((tx, ti) => arr.push({ face: f, tx, maxH: maxHTable[f][ti] }))
@@ -106,21 +113,138 @@ function Creepers() {
   return <>{tracks.map((t, i) => <VineTrack key={i} {...t} />)}</>
 }
 
+// ── A single clock face (built facing local +Z) ──────────────────────────────
+function ClockFace({
+  faceIndex,
+  dialMat,
+  hourRefs,
+  minRefs,
+}: {
+  faceIndex: number
+  dialMat: MeshStandardMaterial
+  hourRefs: React.MutableRefObject<(Group | null)[]>
+  minRefs: React.MutableRefObject<(Group | null)[]>
+}) {
+  return (
+    <group rotation={[0, (faceIndex * Math.PI) / 2, 0]}>
+      <group position={[0, STAGE_Y, FACE_LOCAL_Z]}>
+        {/* recessed square stone aedicule that frames the dial */}
+        <mesh position={[0, 0, -0.22]} castShadow>
+          <boxGeometry args={[FACE_R * 2 + 1.0, FACE_R * 2 + 1.0, 0.42]} />
+          <meshStandardMaterial color={STONE_D} roughness={0.94} />
+        </mesh>
+        {/* moulded frame ring around the recess */}
+        <mesh position={[0, 0, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[FACE_R + 0.28, 0.16, 10, 40]} />
+          <meshStandardMaterial color={CORNICE} roughness={0.8} />
+        </mesh>
+
+        {/* cream dial (shared material → night glow animates on every face) */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} material={dialMat}>
+          <cylinderGeometry args={[FACE_R, FACE_R, 0.24, 48]} />
+        </mesh>
+        {/* polished brass bezel */}
+        <mesh position={[0, 0, 0.05]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[FACE_R, 0.2, 12, 48]} />
+          <meshStandardMaterial color={BRASS} roughness={0.42} metalness={0.6} />
+        </mesh>
+
+        {/* 12 tick marks — majors at 12/3/6/9, minors at the rest */}
+        {Array.from({ length: 12 }).map((_, k) => {
+          const ang   = (k / 12) * TWO_PI
+          const major = k % 3 === 0
+          return (
+            <mesh
+              key={k}
+              position={[
+                Math.sin(ang) * FACE_R * 0.84,
+                Math.cos(ang) * FACE_R * 0.84,
+                0.16,
+              ]}
+            >
+              <boxGeometry args={major ? [0.26, 0.5, 0.1] : [0.12, 0.3, 0.08]} />
+              <meshStandardMaterial color={INK} roughness={0.7} />
+            </mesh>
+          )
+        })}
+        {/* 60 fine minute pips around the rim */}
+        {Array.from({ length: 60 }).map((_, k) => {
+          if (k % 5 === 0) return null
+          const ang = (k / 60) * TWO_PI
+          return (
+            <mesh
+              key={`p${k}`}
+              position={[
+                Math.sin(ang) * FACE_R * 0.93,
+                Math.cos(ang) * FACE_R * 0.93,
+                0.16,
+              ]}
+            >
+              <boxGeometry args={[0.045, 0.12, 0.05]} />
+              <meshStandardMaterial color={INK} roughness={0.8} />
+            </mesh>
+          )
+        })}
+
+        {/* hour hand — stout, with a short counterweight tail */}
+        <group ref={(el) => { hourRefs.current[faceIndex] = el }} position={[0, 0, 0.2]}>
+          <mesh position={[0, FACE_R * 0.28, 0]}>
+            <boxGeometry args={[0.24, FACE_R * 0.62, 0.11]} />
+            <meshStandardMaterial color={INK} roughness={0.6} />
+          </mesh>
+          <mesh position={[0, -FACE_R * 0.13, 0]}>
+            <boxGeometry args={[0.18, FACE_R * 0.26, 0.11]} />
+            <meshStandardMaterial color={INK} roughness={0.6} />
+          </mesh>
+        </group>
+        {/* minute hand — slimmer and longer, with its own tail */}
+        <group ref={(el) => { minRefs.current[faceIndex] = el }} position={[0, 0, 0.26]}>
+          <mesh position={[0, FACE_R * 0.47, 0]}>
+            <boxGeometry args={[0.14, FACE_R * 0.96, 0.09]} />
+            <meshStandardMaterial color={INK} roughness={0.6} />
+          </mesh>
+          <mesh position={[0, -FACE_R * 0.15, 0]}>
+            <boxGeometry args={[0.11, FACE_R * 0.3, 0.09]} />
+            <meshStandardMaterial color={INK} roughness={0.6} />
+          </mesh>
+        </group>
+        {/* brass centre cap */}
+        <mesh position={[0, 0, 0.32]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.24, 0.24, 0.16, 16]} />
+          <meshStandardMaterial color={BRASS} roughness={0.4} metalness={0.6} />
+        </mesh>
+      </group>
+    </group>
+  )
+}
+
 // ── Main clock tower ─────────────────────────────────────────────────────────
 export function ClockTower() {
-  const hour    = useRef<Group>(null)
-  const minute  = useRef<Group>(null)
-  const faceRef = useRef<MeshStandardMaterial>(null)
+  const hourRefs = useRef<(Group | null)[]>([])
+  const minRefs  = useRef<(Group | null)[]>([])
+
+  // One dial material shared across all four faces so the night glow drives them together.
+  const dialMat = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: new Color(FACE_COL),
+        emissive: new Color('#ffe8b0'),
+        emissiveIntensity: 0,
+        roughness: 0.7,
+      }),
+    [],
+  )
 
   useFrame((_, dt) => {
     const { hour: h, minute: m, frac } = getHyderabadTime()
     // Clockwise sweep as seen from +Z (camera side) → negative Z rotation.
-    if (minute.current) minute.current.rotation.z = -(m / 60) * TWO_PI
-    if (hour.current)   hour.current.rotation.z   = -(((h % 12) + m / 60) / 12) * TWO_PI
-    if (faceRef.current) {
-      const night = frac < 6.8 || frac >= 18.3
-      easing.damp(faceRef.current, 'emissiveIntensity', night ? 0.65 : 0, 0.5, dt)
-    }
+    const minRot = -(m / 60) * TWO_PI
+    const hrRot  = -(((h % 12) + m / 60) / 12) * TWO_PI
+    for (const g of minRefs.current)  if (g) g.rotation.z = minRot
+    for (const g of hourRefs.current) if (g) g.rotation.z = hrRot
+
+    const night = frac < 6.8 || frac >= 18.3
+    easing.damp(dialMat, 'emissiveIntensity', night ? 0.7 : 0, 0.5, dt)
   })
 
   const corners: [number, number][] = [[-HW, -HW], [HW, -HW], [HW, HW], [-HW, HW]]
@@ -156,15 +280,46 @@ export function ClockTower() {
         </mesh>
       ))}
 
-      {/* ── String course at y = 7.8 ──────────────────────────────────── */}
-      <mesh position={[0, 8.0, 0]}>
-        <boxGeometry args={[TW * 1.08, 0.5, TW * 1.08]} />
-        <meshStandardMaterial color={CORNICE} roughness={0.88} />
-      </mesh>
-      <mesh position={[0, 7.68, 0]}>
-        <boxGeometry args={[TW * 1.12, 0.2, TW * 1.12]} />
+      {/* ── String course low on the shaft ────────────────────────────── */}
+      <mesh position={[0, 6.0, 0]}>
+        <boxGeometry args={[TW * 1.08, 0.4, TW * 1.08]} />
         <meshStandardMaterial color={CORNICE} roughness={0.9} />
       </mesh>
+
+      {/* ── Clock stage — projecting band that houses the 4 dials ─────── */}
+      {/* lower cornice */}
+      <mesh position={[0, STAGE_Y - STAGE_H / 2 - 0.2, 0]}>
+        <boxGeometry args={[CW + 0.3, 0.5, CW + 0.3]} />
+        <meshStandardMaterial color={CORNICE} roughness={0.86} />
+      </mesh>
+      {/* stage body */}
+      <mesh position={[0, STAGE_Y, 0]} castShadow receiveShadow>
+        <boxGeometry args={[CW, STAGE_H, CW]} />
+        <meshStandardMaterial color={STONE} roughness={0.88} />
+      </mesh>
+      {/* stage corner pilasters */}
+      {corners.map(([cx, cz], i) => (
+        <mesh key={`sp${i}`} position={[cx * (CW / TW), STAGE_Y, cz * (CW / TW)]} castShadow>
+          <boxGeometry args={[0.6, STAGE_H + 0.05, 0.6]} />
+          <meshStandardMaterial color={STONE_D} roughness={0.88} />
+        </mesh>
+      ))}
+      {/* upper cornice */}
+      <mesh position={[0, STAGE_Y + STAGE_H / 2 + 0.2, 0]}>
+        <boxGeometry args={[CW + 0.3, 0.5, CW + 0.3]} />
+        <meshStandardMaterial color={CORNICE} roughness={0.86} />
+      </mesh>
+
+      {/* ── Four clock faces, one per side ────────────────────────────── */}
+      {[0, 1, 2, 3].map((f) => (
+        <ClockFace
+          key={`face${f}`}
+          faceIndex={f}
+          dialMat={dialMat}
+          hourRefs={hourRefs}
+          minRefs={minRefs}
+        />
+      ))}
 
       {/* ── Belfry section (y = 18 → 24) ──────────────────────────────── */}
       <mesh position={[0, 21, 0]} castShadow receiveShadow>
@@ -226,67 +381,10 @@ export function ClockTower() {
       </mesh>
       <mesh position={[0, 32.2, 0]} castShadow>
         <coneGeometry args={[0.14, 1.2, 6]} />
-        <meshStandardMaterial color={CORNICE} roughness={0.62} metalness={0.38} />
+        <meshStandardMaterial color={BRASS} roughness={0.5} metalness={0.5} />
       </mesh>
 
-      {/* ── Clock face (+Z, camera side) ──────────────────────────────── */}
-      <group position={[0, FACE_Y, FACE_Z]}>
-        {/* cream dial */}
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[FACE_R, FACE_R, 0.22, 44]} />
-          <meshStandardMaterial
-            ref={faceRef}
-            color={FACE_COL}
-            emissive="#ffe8b0"
-            emissiveIntensity={0}
-            roughness={0.72}
-          />
-        </mesh>
-        {/* ornate bezel ring */}
-        <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[FACE_R, 0.18, 10, 44]} />
-          <meshStandardMaterial color={CORNICE} roughness={0.62} metalness={0.18} />
-        </mesh>
-        {/* 12 tick marks — majors at 12/3/6/9, minors at the rest */}
-        {Array.from({ length: 12 }).map((_, k) => {
-          const ang   = (k / 12) * TWO_PI
-          const major = k % 3 === 0
-          return (
-            <mesh
-              key={k}
-              position={[
-                Math.sin(ang) * FACE_R * 0.82,
-                Math.cos(ang) * FACE_R * 0.82,
-                0.14,
-              ]}
-            >
-              <boxGeometry args={major ? [0.22, 0.46, 0.09] : [0.11, 0.28, 0.07]} />
-              <meshStandardMaterial color={INK} roughness={0.72} />
-            </mesh>
-          )
-        })}
-        {/* hour hand */}
-        <group ref={hour} position={[0, 0, 0.17]}>
-          <mesh position={[0, FACE_R * 0.27, 0]}>
-            <boxGeometry args={[0.2, FACE_R * 0.56, 0.1]} />
-            <meshStandardMaterial color={INK} roughness={0.68} />
-          </mesh>
-        </group>
-        {/* minute hand */}
-        <group ref={minute} position={[0, 0, 0.22]}>
-          <mesh position={[0, FACE_R * 0.43, 0]}>
-            <boxGeometry args={[0.12, FACE_R * 0.87, 0.08]} />
-            <meshStandardMaterial color={INK} roughness={0.68} />
-          </mesh>
-        </group>
-        {/* brass centre cap */}
-        <mesh position={[0, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.22, 0.22, 0.14, 14]} />
-          <meshStandardMaterial color={CORNICE} roughness={0.52} metalness={0.45} />
-        </mesh>
-      </group>
-
-      {/* ── Vertical creeper vines on all 4 faces ─────────────────────── */}
+      {/* ── Vertical creeper vines on the lower shaft ─────────────────── */}
       <Creepers />
 
     </group>
