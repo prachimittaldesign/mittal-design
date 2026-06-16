@@ -187,7 +187,7 @@ function CaseStudyBody({
       </Section>
 
       {/* Introducing — the solution / what I designed */}
-      <Section title="Introducing Mo & Revee">
+      <Section title="The solution">
         <div className="grid grid-cols-2 gap-x-12 gap-y-7 max-[760px]:grid-cols-1 max-[760px]:gap-y-6">
           {cs.approach.map((h, i) => (
             <div key={i} className="border-t border-black/[0.08] pt-4">
