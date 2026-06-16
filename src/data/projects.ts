@@ -150,7 +150,7 @@ export const PROJECTS: Project[] = [
         'Competitive edge: no direct iPaaS rival (MuleSoft, Boomi, Workato) offers dual-navigation or task-based browsing',
       ],
       metric: { value: '40%', label: 'fewer clicks to target' },
-      figmaPrototype: 'https://www.figma.com/proto/qUNEgh3HEwSTNdyB5F5QlF/Folio?page-id=0%3A1&node-id=55-24278&viewport=-173%2C-1618%2C0.11&t=xIXVc6zzZpdgmPYY-1&scaling=min-zoom&content-scaling=fixed',
+      figmaPrototype: 'https://embed.figma.com/proto/qUNEgh3HEwSTNdyB5F5QlF/Folio?page-id=0%3A1&node-id=55-24278&viewport=-173%2C-1618%2C0.11&scaling=min-zoom&content-scaling=fixed&embed-host=share',
     },
   },
   // Q2 — Enterprise + Simple

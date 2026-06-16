@@ -245,12 +245,11 @@ function CaseStudyBody({
 }
 
 function FigmaEmbed({ url, accent }: { url: string; accent: string }) {
-  const embedUrl = `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`
   return (
     <Section title="Prototype">
       <div className="overflow-hidden rounded-[14px] border border-black/[0.08]" style={{ aspectRatio: '16 / 10' }}>
         <iframe
-          src={embedUrl}
+          src={url}
           allowFullScreen
           className="h-full w-full"
           title="Figma prototype"
