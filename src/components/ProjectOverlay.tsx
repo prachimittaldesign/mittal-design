@@ -45,14 +45,34 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
         <SimpleBody desc={project.desc} tags={project.tags} qLabel={qLabel} />
       )}
 
-      {/* Image placeholders */}
-      <div className="mt-16 grid grid-cols-1 gap-[14px]">
-        <Placeholder className="aspect-[16/9]">↗&nbsp;&nbsp;Project screenshots</Placeholder>
-      </div>
-      <div className="mt-[14px] grid grid-cols-2 gap-[14px]">
-        <Placeholder className="aspect-[4/3]">↗&nbsp; Flows</Placeholder>
-        <Placeholder className="aspect-[4/3]">↗&nbsp; Prototype</Placeholder>
-      </div>
+      {/* Project images */}
+      {(project.caseStudy?.images?.hero || project.caseStudy?.images?.secondary?.some(Boolean)) && (
+        <div className="mt-16 space-y-[14px]">
+          {project.caseStudy.images.hero && (
+            <img
+              src={project.caseStudy.images.hero}
+              alt={`${project.label} screenshot`}
+              className="w-full rounded-[10px] object-cover aspect-[16/9]"
+            />
+          )}
+          {project.caseStudy.images.secondary?.some(Boolean) && (
+            <div className="grid grid-cols-2 gap-[14px]">
+              {project.caseStudy.images.secondary.map((src, i) =>
+                src ? (
+                  <img
+                    key={i}
+                    src={src}
+                    alt={`${project.label} detail ${i + 1}`}
+                    className="w-full rounded-[10px] object-cover aspect-[4/3]"
+                  />
+                ) : (
+                  <Placeholder key={i} className="aspect-[4/3]">↗&nbsp; Add image</Placeholder>
+                )
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </TakeoverShell>
   )
 }
