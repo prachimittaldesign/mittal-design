@@ -152,6 +152,18 @@ export const PROJECTS: Project[] = [
       metric: { value: '40%', label: 'fewer clicks to target' },
       figmaPrototype: 'https://embed.figma.com/proto/qUNEgh3HEwSTNdyB5F5QlF/Folio?page-id=0%3A1&node-id=55-24278&viewport=-173%2C-1618%2C0.11&scaling=min-zoom&content-scaling=fixed&embed-host=share',
     },
+    imageGroups: [
+      {
+        title: 'The portal',
+        aspect: '16 / 9',
+        images: [
+          {
+            src: '/IMAGES/Snaplogic-2026-internal page.png',
+            caption: 'Internal documentation page — the dual-navigation system in context. Product taxonomy on the left, task-based browse on the right; both modes serve the same content without duplication.',
+          },
+        ],
+      },
+    ],
   },
   // Q2 — Enterprise + Simple
   {
