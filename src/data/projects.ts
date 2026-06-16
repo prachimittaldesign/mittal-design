@@ -278,7 +278,7 @@ export const PROJECTS: Project[] = [
         'Mo serves as the platform layer driving adoption of the entire 12-app MIAs ecosystem',
       ],
       metric: { value: 'CES 2024', label: 'showcased in Las Vegas' },
-      images: { hero: '/Revee 01.png' },
+      images: { hero: '/Revee-2024-epg', secondary: ['/Revee-2024-Banner.png', '/Revee-2024-Interactiv Ad.png'] },
     },
   },
   // Easter egg — Architecture
