@@ -82,6 +82,22 @@ export const PROJECTS: Project[] = [
       ],
       metric: { value: '3-in-1', label: 'authoring · AI · monetization' },
     },
+    imageGroups: [
+      {
+        title: 'The canvas',
+        aspect: '16 / 9',
+        images: [
+          {
+            src: '/IMAGES/CMS-2025-DITA.png',
+            caption: 'DITA Builder canvas — a three-panel workspace with outline tree, WYSIWYG editor, and drag-and-drop content blocks. Author / XML / Relationship view toggling abstracts the XML without losing structural validity.',
+          },
+          {
+            src: '/IMAGES/CMS-2025-DITA2.png',
+            caption: 'Prompt-as-a-Service layer — prompts surface as versioned, quality-scored assets alongside the document, governed with the same rigor as content. The "Ask Kya" inline chat sessions are saved, reusable, and entity-linked.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'snaplogic',
@@ -285,11 +301,11 @@ export const PROJECTS: Project[] = [
         aspect: '4 / 3',
         images: [
           {
-            src: '/Mo- 2024- Home.png',
+            src: '/IMAGES/Mo- 2024- Home.png',
             caption: 'Home screen — a personalised daily hub: community greeting, real-time local updates, and cross-app "pick up where you left off" continuity.',
           },
           {
-            src: '/Mo-2024-Map.png',
+            src: '/IMAGES/Mo-2024-Map.png',
             caption: 'Map view — location-aware discovery of nearby community events, venues, and services, navigable with the TV remote.',
           },
         ],
@@ -299,15 +315,15 @@ export const PROJECTS: Project[] = [
         aspect: '16 / 9',
         images: [
           {
-            src: '/Revee-2024-epg',
+            src: '/IMAGES/Revee-2024-epg',
             caption: 'EPG — the Electronic Programme Guide surfaces live, catch-up, and on-demand content in a single lean-back scroll. Focus states scale the active tile so it reads clearly from 10 feet.',
           },
           {
-            src: '/Revee-2024-Banner.png',
+            src: '/IMAGES/Revee-2024-Banner.png',
             caption: 'Companion banner ad — thematically matched creative sits beside the video stream, not over it. Viewers can engage or dismiss without the playback ever pausing.',
           },
           {
-            src: '/Revee-2024-Interactiv Ad.png',
+            src: '/IMAGES/Revee-2024-Interactiv Ad.png',
             caption: 'Interactive ad unit — an opt-in overlay that lets brands go deeper (product details, save-to-wishlist, QR to phone) while content continues in the background.',
           },
         ],
