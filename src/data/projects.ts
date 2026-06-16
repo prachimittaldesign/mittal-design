@@ -278,7 +278,20 @@ export const PROJECTS: Project[] = [
         'Mo serves as the platform layer driving adoption of the entire 12-app MIAs ecosystem',
       ],
       metric: { value: 'CES 2024', label: 'showcased in Las Vegas' },
-      images: { hero: '/Revee-2024-epg', secondary: ['/Revee-2024-Banner.png', '/Revee-2024-Interactiv Ad.png'] },
+      images: [
+        {
+          src: '/Revee-2024-epg',
+          caption: 'EPG — the Electronic Programme Guide surfaces live, catch-up, and on-demand content in a single lean-back scroll. Channel rows are navigable with the d-pad; focus states scale up the active tile so it reads clearly from 10 feet.',
+        },
+        {
+          src: '/Revee-2024-Banner.png',
+          caption: 'Companion banner ad — thematically matched creative sits beside the video stream, not over it. Viewers can engage or dismiss without the playback ever pausing.',
+        },
+        {
+          src: '/Revee-2024-Interactiv Ad.png',
+          caption: 'Interactive ad unit — an opt-in overlay that lets brands go deeper (product details, save-to-wishlist, QR to phone) while the content continues in the background.',
+        },
+      ],
     },
   },
   // Easter egg — Architecture

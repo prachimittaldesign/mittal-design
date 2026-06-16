@@ -40,44 +40,15 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
       </div>
 
       {project.caseStudy ? (
-        <CaseStudyBody cs={project.caseStudy} accent={accent} tags={project.tags} />
+        <CaseStudyBody cs={project.caseStudy} accent={accent} tags={project.tags} label={project.label} />
       ) : (
         <SimpleBody desc={project.desc} tags={project.tags} qLabel={qLabel} />
-      )}
-
-      {/* Project images */}
-      {(project.caseStudy?.images?.hero || project.caseStudy?.images?.secondary?.some(Boolean)) && (
-        <div className="mt-16 space-y-[14px]">
-          {project.caseStudy.images.hero && (
-            <img
-              src={project.caseStudy.images.hero}
-              alt={`${project.label} screenshot`}
-              className="w-full rounded-[10px] object-cover aspect-[16/9]"
-            />
-          )}
-          {project.caseStudy.images.secondary?.some(Boolean) && (
-            <div className="grid grid-cols-2 gap-[14px]">
-              {project.caseStudy.images.secondary.map((src, i) =>
-                src ? (
-                  <img
-                    key={i}
-                    src={src}
-                    alt={`${project.label} detail ${i + 1}`}
-                    className="w-full rounded-[10px] object-cover aspect-[4/3]"
-                  />
-                ) : (
-                  <Placeholder key={i} className="aspect-[4/3]">↗&nbsp; Add image</Placeholder>
-                )
-              )}
-            </div>
-          )}
-        </div>
       )}
     </TakeoverShell>
   )
 }
 
-function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; tags: string[] }) {
+function CaseStudyBody({ cs, accent, tags, label }: { cs: CaseStudy; accent: string; tags: string[]; label: string }) {
   return (
     <>
       {/* Metadata row */}
@@ -121,6 +92,28 @@ function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; ta
           ))}
         </div>
       </Section>
+
+      {/* Screens */}
+      {cs.images && cs.images.length > 0 && (
+        <Section title="Screens">
+          <div className="space-y-10">
+            {cs.images.map((img, i) => (
+              <figure key={i}>
+                <img
+                  src={img.src}
+                  alt={img.caption ?? `${label} screen ${i + 1}`}
+                  className="w-full rounded-[12px] object-cover"
+                />
+                {img.caption && (
+                  <figcaption className="mt-3 text-[13px] leading-[1.55] text-ink-soft">
+                    {img.caption}
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* Impact */}
       <Section title="Impact">
@@ -209,17 +202,3 @@ function Meta({ label, value }: { label: string; value: string }) {
   )
 }
 
-function Placeholder({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <div
-      className={[
-        'flex items-center justify-center rounded-[10px]',
-        'border border-black/[0.06] bg-black/[0.04]',
-        'font-mono text-[10px] uppercase tracking-[0.14em] text-black/20',
-        className ?? '',
-      ].join(' ')}
-    >
-      {children}
-    </div>
-  )
-}

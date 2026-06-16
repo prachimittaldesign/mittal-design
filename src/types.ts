@@ -42,8 +42,8 @@ export interface CaseStudy {
   impact: string[]
   /** Hero stat callout. */
   metric?: { value: string; label: string }
-  /** Screenshot paths (served from public/). hero = wide 16:9 slot; secondary = two 4:3 slots. */
-  images?: { hero?: string; secondary?: [string?, string?] }
+  /** Screenshots with optional captions (paths served from public/). Shown full-width in sequence. */
+  images?: Array<{ src: string; caption?: string }>
 }
 
 export interface Project {
