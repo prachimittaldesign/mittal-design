@@ -13,7 +13,8 @@ const OPENING  = '#18140e'   // belfry arch voids
 const FACE_COL = '#fbf6e8'   // clock dial cream
 const INK      = '#161009'   // hands / tick markers
 const BRASS    = '#b89150'   // bezel / hands centre / finial
-const SPIRE    = '#6a5440'   // terracotta spire
+const BELL     = '#8a6a3c'   // bronze belfry bells
+const SPIRE    = '#7d4a32'   // terracotta spire
 const STEM     = '#3a5425'   // vine stems
 const LEAVES   = ['#4a8c3a','#548a3e','#3d7830','#5c9042','#487228','#72a848','#3e6a28','#4e7f32']
 
@@ -125,18 +126,36 @@ function ClockFace({
   hourRefs: React.MutableRefObject<(Group | null)[]>
   minRefs: React.MutableRefObject<(Group | null)[]>
 }) {
+  const FRAME = FACE_R + 0.5   // half-size of the square stone surround
+
   return (
     <group rotation={[0, (faceIndex * Math.PI) / 2, 0]}>
       <group position={[0, STAGE_Y, FACE_LOCAL_Z]}>
-        {/* recessed square stone aedicule that frames the dial */}
-        <mesh position={[0, 0, -0.22]} castShadow>
-          <boxGeometry args={[FACE_R * 2 + 1.0, FACE_R * 2 + 1.0, 0.42]} />
-          <meshStandardMaterial color={STONE_D} roughness={0.94} />
+        {/* square stone surround block the dial is set into */}
+        <mesh position={[0, 0, -0.26]} castShadow>
+          <boxGeometry args={[FRAME * 2, FRAME * 2, 0.5]} />
+          <meshStandardMaterial color={STONE} roughness={0.93} />
         </mesh>
-        {/* moulded frame ring around the recess */}
-        <mesh position={[0, 0, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[FACE_R + 0.28, 0.16, 10, 40]} />
-          <meshStandardMaterial color={CORNICE} roughness={0.8} />
+        {/* projecting moulded frame border (four bars forming a clean square) */}
+        {([
+          [0,  FRAME, FRAME * 2 + 0.3, 0.34],
+          [0, -FRAME, FRAME * 2 + 0.3, 0.34],
+        ] as const).map(([x, y, w, h], i) => (
+          <mesh key={`fh${i}`} position={[x, y, 0.04]} castShadow>
+            <boxGeometry args={[w, h, 0.34]} />
+            <meshStandardMaterial color={STONE_D} roughness={0.88} />
+          </mesh>
+        ))}
+        {([-FRAME, FRAME] as const).map((x, i) => (
+          <mesh key={`fv${i}`} position={[x, 0, 0.04]} castShadow>
+            <boxGeometry args={[0.34, FRAME * 2 + 0.3, 0.34]} />
+            <meshStandardMaterial color={STONE_D} roughness={0.88} />
+          </mesh>
+        ))}
+        {/* projecting cornice lintel above the dial */}
+        <mesh position={[0, FRAME + 0.4, 0.18]} castShadow>
+          <boxGeometry args={[FRAME * 2 + 0.8, 0.34, 0.7]} />
+          <meshStandardMaterial color={CORNICE} roughness={0.84} />
         </mesh>
 
         {/* cream dial (shared material → night glow animates on every face) */}
@@ -335,31 +354,89 @@ export function ClockTower() {
         </mesh>
       ))}
 
-      {/* Arched belfry openings — all 4 faces */}
+      {/* Arched belfry windows — all 4 faces, fully detailed with bells */}
       {[0, 1, 2, 3].map((f) => {
         const ang = (f * Math.PI) / 2
         const px  = Math.sin(ang) * (BHW + 0.02)
         const pz  = Math.cos(ang) * (BHW + 0.02)
-        const ow  = BW * 0.44   // opening width
-        const oh  = 3.2         // rect part height
+        const ow  = BW * 0.42   // opening width
+        const oh  = 3.4         // rect part height
         const ar  = ow / 2      // arch radius
         return (
           <group key={`arch${f}`} position={[px, 21, pz]} rotation={[0, ang, 0]}>
-            {/* rectangular dark void */}
-            <mesh>
-              <boxGeometry args={[ow, oh, 0.3]} />
+            {/* recessed rectangular dark void */}
+            <mesh position={[0, 0, -0.2]}>
+              <boxGeometry args={[ow, oh, 0.4]} />
               <meshStandardMaterial color={OPENING} roughness={1} />
             </mesh>
             {/* semicircular arch void */}
-            <mesh position={[0, oh / 2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[ar, ar, 0.3, 20, 1, false, 0, Math.PI]} />
+            <mesh position={[0, oh / 2, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[ar, ar, 0.4, 20, 1, false, 0, Math.PI]} />
               <meshStandardMaterial color={OPENING} roughness={1} />
             </mesh>
-            {/* stone arch surround ring */}
-            <mesh position={[0, oh / 2, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[ar, 0.14, 8, 22, Math.PI]} />
+
+            {/* stone jambs flanking the opening */}
+            {([-1, 1] as const).map((s) => (
+              <mesh key={`j${s}`} position={[s * (ar + 0.18), -0.2, 0.06]} castShadow>
+                <boxGeometry args={[0.36, oh + 0.4, 0.55]} />
+                <meshStandardMaterial color={STONE_D} roughness={0.9} />
+              </mesh>
+            ))}
+            {/* projecting sill */}
+            <mesh position={[0, -oh / 2 - 0.12, 0.16]} castShadow>
+              <boxGeometry args={[ow + 1.0, 0.32, 0.66]} />
+              <meshStandardMaterial color={CORNICE} roughness={0.85} />
+            </mesh>
+            {/* voussoir arch hood */}
+            <mesh position={[0, oh / 2, 0.04]} rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[ar + 0.12, 0.22, 10, 26, Math.PI]} />
+              <meshStandardMaterial color={STONE_D} roughness={0.88} />
+            </mesh>
+            {/* keystone at the apex */}
+            <mesh position={[0, oh / 2 + ar + 0.06, 0.1]} castShadow>
+              <boxGeometry args={[0.42, 0.6, 0.6]} />
               <meshStandardMaterial color={CORNICE} roughness={0.82} />
             </mesh>
+
+            {/* hanging bronze bell inside the opening */}
+            <group position={[0, oh / 2 - 0.45, -0.18]}>
+              {/* yoke beam across the opening */}
+              <mesh position={[0, 0.62, 0]}>
+                <boxGeometry args={[ow * 0.78, 0.18, 0.18]} />
+                <meshStandardMaterial color={SPIRE} roughness={0.7} />
+              </mesh>
+              {/* crown / canon */}
+              <mesh position={[0, 0.2, 0]}>
+                <cylinderGeometry args={[0.09, 0.2, 0.26, 12]} />
+                <meshStandardMaterial color={BELL} roughness={0.5} metalness={0.6} />
+              </mesh>
+              {/* bell body */}
+              <mesh position={[0, -0.42, 0]} castShadow>
+                <cylinderGeometry args={[0.2, 0.56, 1.05, 18]} />
+                <meshStandardMaterial color={BELL} roughness={0.48} metalness={0.62} />
+              </mesh>
+              {/* flared lip */}
+              <mesh position={[0, -0.95, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                <torusGeometry args={[0.52, 0.08, 8, 18]} />
+                <meshStandardMaterial color={BELL} roughness={0.48} metalness={0.62} />
+              </mesh>
+            </group>
+
+            {/* stone balustrade across the base of the opening */}
+            <mesh position={[0, -oh / 2 + 0.28, 0.14]}>
+              <boxGeometry args={[ow, 0.22, 0.2]} />
+              <meshStandardMaterial color={STONE} roughness={0.9} />
+            </mesh>
+            <mesh position={[0, -oh / 2 + 0.78, 0.14]}>
+              <boxGeometry args={[ow, 0.16, 0.2]} />
+              <meshStandardMaterial color={STONE} roughness={0.9} />
+            </mesh>
+            {[-0.78, -0.39, 0, 0.39, 0.78].map((t, i) => (
+              <mesh key={`bal${i}`} position={[t * ar, -oh / 2 + 0.53, 0.14]}>
+                <cylinderGeometry args={[0.06, 0.08, 0.5, 8]} />
+                <meshStandardMaterial color={STONE} roughness={0.9} />
+              </mesh>
+            ))}
           </group>
         )
       })}
@@ -374,14 +451,37 @@ export function ClockTower() {
         <meshStandardMaterial color={CORNICE} roughness={0.82} />
       </mesh>
 
+      {/* ── Corner pinnacles around the spire base (Italian acroteria) ─── */}
+      {corners.map(([cx, cz], i) => (
+        <group key={`pin${i}`} position={[cx * 0.97, 25.4, cz * 0.97]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.56, 1.1, 0.56]} />
+            <meshStandardMaterial color={STONE_D} roughness={0.86} />
+          </mesh>
+          <mesh position={[0, 0.62, 0]} castShadow>
+            <boxGeometry args={[0.66, 0.18, 0.66]} />
+            <meshStandardMaterial color={CORNICE} roughness={0.82} />
+          </mesh>
+          <mesh position={[0, 1.05, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+            <coneGeometry args={[0.36, 0.95, 4]} />
+            <meshStandardMaterial color={SPIRE} roughness={0.8} />
+          </mesh>
+        </group>
+      ))}
+
       {/* ── Octagonal terracotta spire + finial ───────────────────────── */}
-      <mesh position={[0, 28.5, 0]} rotation={[0, Math.PI / 8, 0]} castShadow>
-        <coneGeometry args={[TW * 0.70, 7, 8]} />
+      <mesh position={[0, 29.6, 0]} rotation={[0, Math.PI / 8, 0]} castShadow>
+        <coneGeometry args={[2.7, 8.6, 8]} />
         <meshStandardMaterial color={SPIRE} roughness={0.82} />
       </mesh>
-      <mesh position={[0, 32.2, 0]} castShadow>
-        <coneGeometry args={[0.14, 1.2, 6]} />
-        <meshStandardMaterial color={BRASS} roughness={0.5} metalness={0.5} />
+      {/* gilt ball + spike finial */}
+      <mesh position={[0, 34.2, 0]} castShadow>
+        <sphereGeometry args={[0.3, 14, 14]} />
+        <meshStandardMaterial color={BRASS} roughness={0.42} metalness={0.62} />
+      </mesh>
+      <mesh position={[0, 34.95, 0]}>
+        <coneGeometry args={[0.12, 0.8, 8]} />
+        <meshStandardMaterial color={BRASS} roughness={0.42} metalness={0.62} />
       </mesh>
 
       {/* ── Vertical creeper vines on the lower shaft ─────────────────── */}
