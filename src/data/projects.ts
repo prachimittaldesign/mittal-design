@@ -150,12 +150,11 @@ export const PROJECTS: Project[] = [
         'Competitive edge: no direct iPaaS rival (MuleSoft, Boomi, Workato) offers dual-navigation or task-based browsing',
       ],
       metric: { value: '40%', label: 'fewer clicks to target' },
-      figmaPrototype: 'https://embed.figma.com/proto/qUNEgh3HEwSTNdyB5F5QlF/Folio?page-id=0%3A1&node-id=55-24278&viewport=-173%2C-1618%2C0.11&scaling=min-zoom&content-scaling=fixed&embed-host=share',
     },
     imageGroups: [
       {
         title: 'The portal',
-        aspect: '16 / 9',
+        aspect: '1440 / 1024',
         images: [
           {
             src: '/IMAGES/Snaplogic-2026-internal page.png',
