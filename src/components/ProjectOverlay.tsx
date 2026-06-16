@@ -38,20 +38,13 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
       </div>
 
       {project.caseStudy ? (
-        <CaseStudyBody cs={project.caseStudy} accent={accent} tags={project.tags} />
+        <CaseStudyBody cs={project.caseStudy} accent={accent} tags={project.tags} imageGroups={project.imageGroups} />
       ) : (
-        <SimpleBody desc={project.desc} tags={project.tags} qLabel={qLabel} />
+        <>
+          <SimpleBody desc={project.desc} tags={project.tags} qLabel={qLabel} />
+          <Carousels groups={project.imageGroups} accent={accent} />
+        </>
       )}
-
-      {/* One carousel per image group */}
-      {project.imageGroups?.map((group) => (
-        <section key={group.title} className="mt-14">
-          <h2 className="mb-5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft">
-            {group.title}
-          </h2>
-          <ImageCarousel images={group.images} label={group.title} accent={accent} />
-        </section>
-      ))}
     </TakeoverShell>
   )
 }
@@ -60,10 +53,12 @@ function ImageCarousel({
   images,
   label,
   accent,
+  aspect,
 }: {
   images: Array<{ src: string; caption?: string }>
   label: string
   accent: string
+  aspect?: string
 }) {
   const [idx, setIdx] = useState(0)
   const prev = () => setIdx((i) => (i - 1 + images.length) % images.length)
@@ -73,30 +68,46 @@ function ImageCarousel({
 
   return (
     <div>
-      <div className="relative overflow-hidden rounded-[12px] bg-black/[0.03]">
-        <img
-          key={idx}
-          src={current.src}
-          alt={current.caption ?? `${label} screen ${idx + 1}`}
-          className="w-full object-cover"
-          style={{ animation: 'carousel-fade 220ms ease' }}
-        />
+      {/* Fixed-aspect viewport: the box height is set by the container's
+          aspect-ratio, NOT by the current image, so switching slides (even
+          between differently-proportioned screenshots) never changes the
+          height — no vertical jump. All frames stay mounted and absolutely
+          stacked; only opacity crossfades. object-contain keeps every
+          screenshot fully visible (letterboxed rather than cropped). */}
+      <div
+        className="relative overflow-hidden rounded-[12px] bg-black/[0.04]"
+        style={{ aspectRatio: aspect ?? '16 / 9' }}
+      >
+        {images.map((img, i) => (
+          <img
+            key={i}
+            src={img.src}
+            alt={img.caption ?? `${label} screen ${i + 1}`}
+            draggable={false}
+            className={[
+              'absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ease-out',
+              i === idx ? 'opacity-100' : 'pointer-events-none opacity-0',
+            ].join(' ')}
+          />
+        ))}
 
         {multi && (
           <>
             <button
+              type="button"
               onClick={prev}
               aria-label="Previous screen"
-              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
+              className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
             >
               <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 text-ink">
                 <path d="M13 4l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
             <button
+              type="button"
               onClick={next}
               aria-label="Next screen"
-              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
+              className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
             >
               <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 text-ink">
                 <path d="M7 4l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -116,6 +127,7 @@ function ImageCarousel({
             {images.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => setIdx(i)}
                 aria-label={`Go to screen ${i + 1}`}
                 className="h-[6px] rounded-full transition-all duration-200"
@@ -132,7 +144,21 @@ function ImageCarousel({
   )
 }
 
-function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; tags: string[] }) {
+// The case study follows the narrative arc of the reference folio
+// (adityasalunkhe.com): metadata → overview ("What") → "Why it needed a
+// rethink" (the problem) → "Introducing" the solution → the screens woven
+// in right after → the outcome → disciplines.
+function CaseStudyBody({
+  cs,
+  accent,
+  tags,
+  imageGroups,
+}: {
+  cs: CaseStudy
+  accent: string
+  tags: string[]
+  imageGroups?: Project['imageGroups']
+}) {
   return (
     <>
       {/* Metadata row */}
@@ -142,7 +168,7 @@ function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; ta
         <Meta label="Platform" value={cs.platform} />
       </div>
 
-      {/* Lead summary + hero metric */}
+      {/* Overview — the "What" — lead summary + hero metric */}
       <div className="mt-10 grid grid-cols-[1fr_auto] items-start gap-12 max-[800px]:grid-cols-1 max-[800px]:gap-8">
         <p className="max-w-[62ch] text-[clamp(18px,2.1vw,23px)] leading-[1.6] text-[#2a2622]">{cs.summary}</p>
         {cs.metric && (
@@ -155,13 +181,13 @@ function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; ta
         )}
       </div>
 
-      {/* The problem */}
-      <Section title="The problem">
+      {/* Why it needed a rethink — the problem */}
+      <Section title="Why it needed a rethink">
         <p className="max-w-[72ch] text-[16px] leading-[1.75] text-[#2a2622]">{cs.problem}</p>
       </Section>
 
-      {/* What I designed */}
-      <Section title="What I designed">
+      {/* Introducing — the solution / what I designed */}
+      <Section title="Introducing Mo & Revee">
         <div className="grid grid-cols-2 gap-x-12 gap-y-7 max-[760px]:grid-cols-1 max-[760px]:gap-y-6">
           {cs.approach.map((h, i) => (
             <div key={i} className="border-t border-black/[0.08] pt-4">
@@ -177,8 +203,11 @@ function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; ta
         </div>
       </Section>
 
-      {/* Impact */}
-      <Section title="Impact">
+      {/* The screens — woven in right after the solution, like the reference */}
+      <Carousels groups={imageGroups} accent={accent} />
+
+      {/* The outcome — impact */}
+      <Section title="The outcome">
         <ul className="grid max-w-[80ch] grid-cols-1 gap-[14px]">
           {cs.impact.map((it, i) => (
             <li key={i} className="flex items-start gap-[12px] text-[15px] leading-[1.6] text-[#2a2622]">
@@ -208,6 +237,20 @@ function CaseStudyBody({ cs, accent, tags }: { cs: CaseStudy; accent: string; ta
           ))}
         </div>
       </Section>
+    </>
+  )
+}
+
+// Renders one labelled carousel per image group (e.g. "Mo", then "Revee").
+function Carousels({ groups, accent }: { groups?: Project['imageGroups']; accent: string }) {
+  if (!groups || groups.length === 0) return null
+  return (
+    <>
+      {groups.map((group) => (
+        <Section key={group.title} title={group.title}>
+          <ImageCarousel images={group.images} label={group.title} accent={accent} aspect={group.aspect} />
+        </Section>
+      ))}
     </>
   )
 }

@@ -282,6 +282,7 @@ export const PROJECTS: Project[] = [
     imageGroups: [
       {
         title: 'Mo',
+        aspect: '4 / 3',
         images: [
           {
             src: '/Mo- 2024- Home.png',
@@ -295,6 +296,7 @@ export const PROJECTS: Project[] = [
       },
       {
         title: 'Revee',
+        aspect: '16 / 9',
         images: [
           {
             src: '/Revee-2024-epg',

@@ -69,6 +69,9 @@ export interface Project {
   /** One or more named carousels shown in the project overlay. Each group gets its own heading + carousel. */
   imageGroups?: Array<{
     title: string
+    /** CSS aspect-ratio for the carousel viewport (e.g. '16 / 9'). Fixes the box
+        height so slides of differing dimensions don't jump. Defaults to '16 / 9'. */
+    aspect?: string
     images: Array<{ src: string; caption?: string }>
   }>
 }
