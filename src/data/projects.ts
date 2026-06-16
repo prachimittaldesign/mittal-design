@@ -211,7 +211,7 @@ export const PROJECTS: Project[] = [
     gx: -2,
     gy: -2,
     scale: 1.0,
-    label: 'Mo',
+    label: 'Circlehealth',
     sub: 'MOBILE · HEALTHCARE',
     glyph: 'heart',
     desc: 'Information architecture and UX/UI prototyping for a consumer healthcare app. Internal pilot — attended CEO and Head of Design reviews, supported QA handoff.',
