@@ -280,11 +280,31 @@ function Carousels({ groups, accent }: { groups?: Project['imageGroups']; accent
   if (!groups || groups.length === 0) return null
   return (
     <>
-      {groups.map((group) => (
-        <Section key={group.title} title={group.title}>
-          <ImageCarousel images={group.images} label={group.title} accent={accent} aspect={group.aspect} />
-        </Section>
-      ))}
+      {groups.map((group) =>
+        group.layout === 'stack' ? (
+          <Section key={group.title} title={group.title}>
+            <div className="flex flex-col gap-8">
+              {group.images.map((img, i) => (
+                <div key={i}>
+                  <img
+                    src={img.src}
+                    alt={img.caption ?? `${group.title} screen ${i + 1}`}
+                    draggable={false}
+                    className="w-full rounded-[12px] object-contain"
+                  />
+                  {img.caption && (
+                    <p className="mt-3 text-[13px] leading-[1.55] text-ink-soft">{img.caption}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Section>
+        ) : (
+          <Section key={group.title} title={group.title}>
+            <ImageCarousel images={group.images} label={group.title} accent={accent} aspect={group.aspect} />
+          </Section>
+        )
+      )}
     </>
   )
 }

@@ -74,6 +74,8 @@ export interface Project {
     /** CSS aspect-ratio for the carousel viewport (e.g. '16 / 9'). Fixes the box
         height so slides of differing dimensions don't jump. Defaults to '16 / 9'. */
     aspect?: string
+    /** 'carousel' (default) or 'stack' — renders images one below the other. */
+    layout?: 'carousel' | 'stack'
     images: Array<{ src: string; caption?: string }>
   }>
 }

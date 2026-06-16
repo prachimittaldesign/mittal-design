@@ -85,7 +85,7 @@ export const PROJECTS: Project[] = [
     imageGroups: [
       {
         title: 'The canvas',
-        aspect: '16 / 9',
+        layout: 'stack',
         images: [
           {
             src: '/IMAGES/CMS-2025-DITA.png',
