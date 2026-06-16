@@ -216,16 +216,6 @@ export const PROJECTS: Project[] = [
     glyph: 'heart',
     desc: 'Information architecture and UX/UI prototyping for a consumer healthcare app. Internal pilot — attended CEO and Head of Design reviews, supported QA handoff.',
     tags: ['Consumer', 'Mobile', 'Healthcare'],
-    images: [
-      {
-        src: '/Mo- 2024- Home.png',
-        caption: 'Home screen — a personalised daily health dashboard surfacing reminders, vitals, and community updates in one glanceable view.',
-      },
-      {
-        src: '/Mo-2024-Map.png',
-        caption: 'Map view — location-aware discovery of nearby clinics, pharmacies, and community health events.',
-      },
-    ],
   },
   {
     id: 'clink',
@@ -289,18 +279,36 @@ export const PROJECTS: Project[] = [
       ],
       metric: { value: 'CES 2024', label: 'showcased in Las Vegas' },
     },
-    images: [
+    imageGroups: [
       {
-        src: '/Revee-2024-epg',
-        caption: 'EPG — the Electronic Programme Guide surfaces live, catch-up, and on-demand content in a single lean-back scroll. Channel rows are d-pad navigable; focus states scale up the active tile so it reads clearly from 10 feet.',
+        title: 'Mo',
+        images: [
+          {
+            src: '/Mo- 2024- Home.png',
+            caption: 'Home screen — a personalised daily hub: community greeting, real-time local updates, and cross-app "pick up where you left off" continuity.',
+          },
+          {
+            src: '/Mo-2024-Map.png',
+            caption: 'Map view — location-aware discovery of nearby community events, venues, and services, navigable with the TV remote.',
+          },
+        ],
       },
       {
-        src: '/Revee-2024-Banner.png',
-        caption: 'Companion banner ad — thematically matched creative sits beside the video stream, not over it. Viewers can engage or dismiss without the playback ever pausing.',
-      },
-      {
-        src: '/Revee-2024-Interactiv Ad.png',
-        caption: 'Interactive ad unit — an opt-in overlay that lets brands go deeper (product details, save-to-wishlist, QR to phone) while content continues in the background.',
+        title: 'Revee',
+        images: [
+          {
+            src: '/Revee-2024-epg',
+            caption: 'EPG — the Electronic Programme Guide surfaces live, catch-up, and on-demand content in a single lean-back scroll. Focus states scale the active tile so it reads clearly from 10 feet.',
+          },
+          {
+            src: '/Revee-2024-Banner.png',
+            caption: 'Companion banner ad — thematically matched creative sits beside the video stream, not over it. Viewers can engage or dismiss without the playback ever pausing.',
+          },
+          {
+            src: '/Revee-2024-Interactiv Ad.png',
+            caption: 'Interactive ad unit — an opt-in overlay that lets brands go deeper (product details, save-to-wishlist, QR to phone) while content continues in the background.',
+          },
+        ],
       },
     ],
   },

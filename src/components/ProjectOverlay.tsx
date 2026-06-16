@@ -43,15 +43,15 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
         <SimpleBody desc={project.desc} tags={project.tags} qLabel={qLabel} />
       )}
 
-      {/* Carousel — shown for any project that has images */}
-      {project.images && project.images.length > 0 && (
-        <section className="mt-14">
+      {/* One carousel per image group */}
+      {project.imageGroups?.map((group) => (
+        <section key={group.title} className="mt-14">
           <h2 className="mb-5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft">
-            Screens
+            {group.title}
           </h2>
-          <ImageCarousel images={project.images} label={project.label} accent={accent} />
+          <ImageCarousel images={group.images} label={group.title} accent={accent} />
         </section>
-      )}
+      ))}
     </TakeoverShell>
   )
 }

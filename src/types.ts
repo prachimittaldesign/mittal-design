@@ -66,8 +66,11 @@ export interface Project {
   /** Hero projects get a floating star marker + a full case-study overlay. */
   featured?: boolean
   caseStudy?: CaseStudy
-  /** Screenshots shown as a carousel in the project overlay. Paths served from public/. */
-  images?: Array<{ src: string; caption?: string }>
+  /** One or more named carousels shown in the project overlay. Each group gets its own heading + carousel. */
+  imageGroups?: Array<{
+    title: string
+    images: Array<{ src: string; caption?: string }>
+  }>
 }
 
 export interface FillerTile {
