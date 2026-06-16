@@ -206,6 +206,9 @@ function CaseStudyBody({
       {/* The screens — woven in right after the solution, like the reference */}
       <Carousels groups={imageGroups} accent={accent} />
 
+      {/* Figma prototype embed */}
+      {cs.figmaPrototype && <FigmaEmbed url={cs.figmaPrototype} accent={accent} />}
+
       {/* The outcome — impact */}
       <Section title="The outcome">
         <ul className="grid max-w-[80ch] grid-cols-1 gap-[14px]">
@@ -238,6 +241,38 @@ function CaseStudyBody({
         </div>
       </Section>
     </>
+  )
+}
+
+function FigmaEmbed({ url, accent }: { url: string; accent: string }) {
+  const embedUrl = `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`
+  return (
+    <Section title="Prototype">
+      <div className="overflow-hidden rounded-[14px] border border-black/[0.08]" style={{ aspectRatio: '16 / 10' }}>
+        <iframe
+          src={embedUrl}
+          allowFullScreen
+          className="h-full w-full"
+          title="Figma prototype"
+        />
+      </div>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 inline-flex items-center gap-[7px] text-[13px] font-semibold"
+        style={{ color: accent }}
+      >
+        <svg viewBox="0 0 38 57" fill="none" className="h-[14px] w-[10px] flex-shrink-0" aria-hidden>
+          <path d="M19 28.5A9.5 9.5 0 1 1 28.5 19 9.5 9.5 0 0 1 19 28.5z" fill={accent} />
+          <path d="M9.5 57A9.5 9.5 0 0 1 9.5 38H19v9.5A9.5 9.5 0 0 1 9.5 57z" fill="#0ACF83" />
+          <path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v-9.5H9.5a9.5 9.5 0 0 1 0-19H19V0H9.5a9.5 9.5 0 0 0 0 19H19v9.5H9.5A9.5 9.5 0 0 0 0 47.5z" fill="#F24E1E" />
+          <path d="M19 0h9.5a9.5 9.5 0 0 1 0 19H19V0z" fill="#FF7262" />
+          <path d="M38 28.5A9.5 9.5 0 1 1 28.5 19 9.5 9.5 0 0 1 38 28.5z" fill="#1ABCFE" />
+        </svg>
+        Open in Figma
+      </a>
+    </Section>
   )
 }
 

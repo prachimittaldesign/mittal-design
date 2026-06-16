@@ -42,6 +42,8 @@ export interface CaseStudy {
   impact: string[]
   /** Hero stat callout. */
   metric?: { value: string; label: string }
+  /** Figma prototype URL — shown as an embedded iframe in the case study. */
+  figmaPrototype?: string
 }
 
 export interface Project {
