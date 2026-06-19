@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { quadrant, BIOME } from '../lib/iso'
 import type { CaseStudy, Project } from '../types'
 import { TakeoverShell } from './TakeoverShell'
@@ -185,6 +185,50 @@ function CaseStudyBody({
       <Section title="Why it needed a rethink">
         <p className="max-w-[72ch] text-[16px] leading-[1.75] text-[#2a2622]">{cs.problem}</p>
       </Section>
+
+      {/* Design process — phases between problem and solution */}
+      {cs.process && cs.process.length > 0 && (
+        <Section title="Process">
+          {/* Horizontal phase arc */}
+          <div className="mb-8 flex items-center overflow-x-auto pb-1">
+            {cs.process.map((p, i) => (
+              <Fragment key={i}>
+                <div className="flex flex-shrink-0 flex-col items-center gap-[6px]">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm"
+                    style={{ background: accent }}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink">
+                    {p.phase}
+                  </span>
+                </div>
+                {i < cs.process!.length - 1 && (
+                  <div
+                    className="mx-2 h-[2px] min-w-[24px] flex-1 rounded-full"
+                    style={{ background: `${accent}35` }}
+                  />
+                )}
+              </Fragment>
+            ))}
+          </div>
+          {/* Phase detail cards */}
+          <div className="grid grid-cols-2 gap-x-12 gap-y-7 max-[760px]:grid-cols-1 max-[760px]:gap-y-6">
+            {cs.process.map((p, i) => (
+              <div key={i} className="border-t border-black/[0.08] pt-4">
+                <div className="mb-[6px] flex items-baseline gap-[10px]">
+                  <span className="font-mono text-[12px] font-bold tabular-nums" style={{ color: accent }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-[15px] font-bold tracking-[-0.01em] text-ink">{p.phase}</h3>
+                </div>
+                <p className="text-[14px] leading-[1.6] text-[#3a352f]">{p.body}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* Introducing — the solution / what I designed */}
       <Section title="The solution">

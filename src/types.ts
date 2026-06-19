@@ -44,6 +44,8 @@ export interface CaseStudy {
   metric?: { value: string; label: string }
   /** Figma prototype URL — shown as an embedded iframe in the case study. */
   figmaPrototype?: string
+  /** Design process phases shown between problem and solution. */
+  process?: Array<{ phase: string; body: string }>
 }
 
 export interface Project {

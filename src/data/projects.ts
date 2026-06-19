@@ -52,6 +52,32 @@ export const PROJECTS: Project[] = [
         'Ved is a DITA-enabled CMS that bundles structured authoring, enterprise compliance, AI-assisted writing, and content monetization in one stack. I designed the core authoring canvas and the Prompt-as-a-Service conversational layer — a combination no competitor offers.',
       problem:
         "DITA gives enterprise teams reusable, multi-channel publishing — but its complexity is a steep authoring wall: writers must think in components, manage conditional logic and metadata, and navigate XML validation, all while trying to write clearly. A newer problem compounds it: as AI enters content operations, enterprises need to govern prompts with the same rigor as documentation — versioning, access control, quality scoring — yet no tool treats prompts as first-class content.",
+      process: [
+        {
+          phase: 'Audit',
+          body: 'Mapped the competitive landscape — AEM Guides, Heretto, Paligo, IXIASOFT — across six dimensions: authoring model, AI capability, governance layer, publishing targets, team collaboration, and pricing. Identified the universal gap: none treat prompts as governed content.',
+        },
+        {
+          phase: 'Research',
+          body: 'Ran JTBD sessions with enterprise tech writers and content managers. The recurring friction points: XML validation anxiety blocks non-technical authors, conditional logic requires a developer, and AI-generated content is ungoverned — pasted in, then immediately lost.',
+        },
+        {
+          phase: 'Define',
+          body: 'Defined two non-negotiable personas: the DITA-native tech writer who needs full XML fidelity, and the department author who needs WYSIWYG-first with XML hidden until needed. Scoped V2 to serve both from the same canvas without compromise or hidden mode-switches.',
+        },
+        {
+          phase: 'Explore',
+          body: 'Wireframed three canvas layouts — single-pane, floating palette, and three-panel split. Tested internally against real authoring tasks. The three-panel (outline tree + WYSIWYG editor + block palette) resolved context-switching friction the fastest and matched existing DITA tool muscle memory.',
+        },
+        {
+          phase: 'Design',
+          body: 'Built the full component library in Figma against the existing design system. Designed the Author / XML / Relationship view toggle, the "Ask Kya" inline AI chat with sessionized prompt chips, the Prompt-as-a-Service canvas, and the Non-Mandatory Variable four-step conditional wizard with live canvas preview.',
+        },
+        {
+          phase: 'Handoff',
+          body: 'Annotated every component with its DITA semantic mapping (topic, task, concept, reference). Dev handoff included a token map, a full interaction spec for every state, and a written IA rationale document — not just Figma links — so engineering understood the why behind every structural decision.',
+        },
+      ],
       approach: [
         {
           title: 'DITA Builder canvas',
