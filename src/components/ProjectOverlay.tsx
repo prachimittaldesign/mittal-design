@@ -205,6 +205,9 @@ function CaseStudyBody({
         ))}
       </Section>
 
+      {/* The screens — surfaced early so the product is visible without a long scroll */}
+      <Carousels groups={imageGroups} accent={accent} />
+
       {/* Competitive matrix — the differentiation infographic */}
       {cs.comparison && <ComparisonMatrix data={cs.comparison} accent={accent} />}
 
@@ -311,9 +314,6 @@ function CaseStudyBody({
 
       {/* Before/after concept diagram */}
       {cs.beforeAfter && <BeforeAfter data={cs.beforeAfter} accent={accent} />}
-
-      {/* The screens — woven in right after the solution, like the reference */}
-      <Carousels groups={imageGroups} accent={accent} />
 
       {/* Figma prototype embed */}
       {cs.figmaPrototype && <FigmaEmbed url={cs.figmaPrototype} accent={accent} />}
