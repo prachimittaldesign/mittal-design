@@ -162,7 +162,7 @@ export const PROJECTS: Project[] = [
           },
           {
             src: '/IMAGES/CMS-2025-DITA2.png',
-            caption: 'Flexible layout system — a 2×1 layout block with drag-and-drop placement, alongside the full Content palette: five DITA topic types (Concept, Task, Reference, Map, Basic) for enriched metadata, content blocks (Text, Video, Image, Table, Watermark, Tag, Code, URL), and four layout options (Full Width, 2×1, 3×1, 2×2) for richly structured authoring.',
+            caption: 'Variety of Topics to choose from for enriched metadata — Concept, Task, Reference, Map, and Basic topic types paired with flexible layout options (Full Width, 2×1, 3×1, 2×2) for richly structured DITA authoring.',
           },
         ],
       },
