@@ -162,7 +162,7 @@ export const PROJECTS: Project[] = [
           },
           {
             src: '/IMAGES/CMS-2025-DITA2.png',
-            caption: 'Prompt-as-a-Service layer — prompts surface as versioned, quality-scored assets alongside the document, governed with the same rigor as content. The "Ask Kya" inline chat sessions are saved, reusable, and entity-linked.',
+            caption: 'Flexible layout system — a 2×1 layout block with drag-and-drop placement, alongside the full Content palette: five DITA topic types (Concept, Task, Reference, Map, Basic) for enriched metadata, content blocks (Text, Video, Image, Table, Watermark, Tag, Code, URL), and four layout options (Full Width, 2×1, 3×1, 2×2) for richly structured authoring.',
           },
         ],
       },
