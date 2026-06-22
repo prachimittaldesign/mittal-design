@@ -382,7 +382,7 @@ export const PROJECTS: Project[] = [
         aspect: '4 / 3',
         images: [
           {
-            src: '/IMAGES/Mo- 2024- Home.png',
+            src: '/IMAGES/Mo-2024-Home.png',
             caption: 'Home screen — a personalised daily hub: community greeting, real-time local updates, and cross-app "pick up where you left off" continuity.',
           },
           {
@@ -396,7 +396,7 @@ export const PROJECTS: Project[] = [
         aspect: '16 / 9',
         images: [
           {
-            src: '/IMAGES/Revee-2024-epg',
+            src: '/IMAGES/Revee-2024-epg.png',
             caption: 'EPG — the Electronic Programme Guide surfaces live, catch-up, and on-demand content in a single lean-back scroll. Focus states scale the active tile so it reads clearly from 10 feet.',
           },
           {
@@ -404,7 +404,7 @@ export const PROJECTS: Project[] = [
             caption: 'Companion banner ad — thematically matched creative sits beside the video stream, not over it. Viewers can engage or dismiss without the playback ever pausing.',
           },
           {
-            src: '/IMAGES/Revee-2024-Interactiv Ad.png',
+            src: '/IMAGES/Revee-2024-Interactive-Ad.png',
             caption: 'Interactive ad unit — an opt-in overlay that lets brands go deeper (product details, save-to-wishlist, QR to phone) while content continues in the background.',
           },
         ],
