@@ -161,7 +161,7 @@ export const PROJECTS: Project[] = [
             caption: 'DITA Builder canvas — a three-panel workspace with outline tree, WYSIWYG editor, and drag-and-drop content blocks. Author / XML / Relationship view toggling abstracts the XML without losing structural validity.',
           },
           {
-            src: '/IMAGES/CMS-2025-DITA2.png',
+            src: '/IMAGES/CMS-2025-DITA2 .png',
             caption: 'Flexible layout system — a 2×1 layout block with drag-and-drop placement, alongside the full Content palette: five DITA topic types (Concept, Task, Reference, Map, Basic) for enriched metadata, content blocks (Text, Video, Image, Table, Watermark, Tag, Code, URL), and four layout options (Full Width, 2×1, 3×1, 2×2) for richly structured authoring.',
           },
         ],
