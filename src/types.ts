@@ -46,6 +46,12 @@ export interface CaseStudy {
   figmaPrototype?: string
   /** Design process phases shown between problem and solution. */
   process?: Array<{ phase: string; body: string }>
+  /** Discovery & research findings — competitive audit, user research insights. */
+  research?: Array<{ label: string; body: string }>
+  /** User personas — who this product is for. */
+  users?: Array<{ role: string; description: string; needs: string }>
+  /** Closing reflection — what I learned, what was hardest, what I'd revisit. */
+  reflection?: string
 }
 
 export interface Project {

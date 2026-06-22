@@ -183,8 +183,44 @@ function CaseStudyBody({
 
       {/* Why it needed a rethink — the problem */}
       <Section title="Why it needed a rethink">
-        <p className="max-w-[72ch] text-[16px] leading-[1.75] text-[#2a2622]">{cs.problem}</p>
+        {cs.problem.split('\n\n').map((para, i) => (
+          <p key={i} className="mt-4 max-w-[72ch] text-[16px] leading-[1.75] text-[#2a2622] first:mt-0">{para}</p>
+        ))}
       </Section>
+
+      {/* Discovery & Research */}
+      {cs.research && cs.research.length > 0 && (
+        <Section title="Discovery & Research">
+          <div className="grid grid-cols-2 gap-5 max-[760px]:grid-cols-1">
+            {cs.research.map((r, i) => (
+              <div key={i} className="rounded-[10px] p-5" style={{ background: `${accent}10` }}>
+                <h3 className="mb-[8px] text-[13px] font-bold tracking-[-0.01em] text-ink">{r.label}</h3>
+                <p className="text-[13px] leading-[1.65] text-[#3a352f]">{r.body}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Who it's for — personas */}
+      {cs.users && cs.users.length > 0 && (
+        <Section title="Who it's for">
+          <div className="grid grid-cols-3 gap-8 max-[760px]:grid-cols-1">
+            {cs.users.map((u, i) => (
+              <div key={i} className="flex flex-col gap-3 border-t-2 pt-5" style={{ borderColor: accent }}>
+                <h3 className="text-[15px] font-bold tracking-[-0.01em] text-ink">{u.role}</h3>
+                <p className="flex-1 text-[13px] leading-[1.6] text-[#3a352f]">{u.description}</p>
+                <div>
+                  <div className="mb-[5px] font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-ink-soft">
+                    Primary need
+                  </div>
+                  <p className="text-[13px] font-medium leading-[1.5] text-ink">{u.needs}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* Design process — phases between problem and solution */}
       {cs.process && cs.process.length > 0 && (
@@ -284,6 +320,13 @@ function CaseStudyBody({
           ))}
         </div>
       </Section>
+
+      {/* Reflection */}
+      {cs.reflection && (
+        <Section title="Reflection">
+          <p className="max-w-[68ch] text-[15px] italic leading-[1.8] text-[#3a352f]">{cs.reflection}</p>
+        </Section>
+      )}
     </>
   )
 }
