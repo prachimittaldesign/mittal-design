@@ -49,107 +49,147 @@ export const PROJECTS: Project[] = [
       platform: 'Web Application',
       context: 'V2 in development',
       summary:
-        'Ved is a DITA-enabled CMS that unites structured authoring, AI-assisted writing, content governance, and marketplace monetization in one stack — a combination no competitor offers. I designed the core authoring canvas, the Prompt-as-a-Service conversational layer, the dynamic content system, the Media Library, and the DRM & compliance surface. The full V2 design was reviewed by design leadership and the CEO before engineering handoff.',
+        'A DITA CMS that makes structured authoring feel like writing a document — with AI assistance, content governance, and monetization built into one stack no competitor matches.',
+      tldr: {
+        what: 'Ved — an enterprise DITA CMS pairing structured authoring with AI-assisted writing, governance, and a content marketplace.',
+        who: 'Two opposed authors on one canvas: DITA-native tech writers and non-technical department SMEs.',
+        how: 'I owned the authoring canvas, the "Ask Kya" conversational layer, the dynamic-content system, Media Library, and DRM — CEO-approved before handoff.',
+      },
+      stats: [
+        { value: '~60%', label: 'less prompt-recreation overhead' },
+        { value: '2-in-1', label: 'expert + non-technical authors, one canvas' },
+        { value: 'days → <1hr', label: 'conditional content, no developer' },
+        { value: 'V2', label: 'CEO-approved, now in engineering' },
+      ],
       problem:
-        'Enterprise documentation teams managing large-scale, multi-product content ecosystems face two compounding tensions. First: DITA provides the structural power needed for reusable, conditional, multi-channel publishing — but its complexity creates a steep authoring barrier. Writers must think in components rather than documents, manage conditional logic and metadata, understand reuse dependencies, and navigate XML validation, all while trying to write clearly. Non-technical authors are excluded entirely; even experienced DITA writers context-switch constantly between writing and structural management.\n\nSecond: as AI becomes central to content operations, enterprises need to manage prompts with the same governance rigor applied to documentation — versioning, access control, quality scoring, reuse tracking, compliance. No existing tool treats prompts as first-class content assets. They remain disposable: pasted in, used once, immediately lost from the content lifecycle.',
+        'DITA gives enterprise teams reusable, multi-channel publishing — but its complexity is a wall. Writers must think in components, manage metadata and conditional logic, and fight XML validation. Non-technical authors are locked out entirely.\n\nA second gap is newer: as AI enters content ops, prompts need the same governance as docs — versioning, scoring, reuse. No tool treats them as first-class content. They get pasted in once, then lost.',
+      comparison: {
+        title: "Why it's different",
+        columns: ['Ved', 'AEM Guides', 'Heretto', 'Paligo', 'IXIASOFT'],
+        rows: [
+          { label: 'Structured DITA authoring', cells: [true, true, true, true, true] },
+          { label: 'WYSIWYG for non-technical authors', cells: [true, false, false, false, false] },
+          { label: 'Conversational AI authoring', cells: [true, false, false, false, false] },
+          { label: 'Governed prompts (Prompt-as-a-Service)', cells: [true, false, false, false, false] },
+          { label: 'No-code conditional content', cells: [true, false, false, false, false] },
+          { label: 'Content marketplace / monetization', cells: [true, false, false, false, false] },
+        ],
+        caption:
+          'Structured authoring is table stakes. The combination of conversational AI, governed prompts, no-code conditionals, and monetization is unmatched across AEM Guides, Heretto, Paligo, and IXIASOFT.',
+      },
       research: [
         {
-          label: 'Competitive audit — DITA CMS landscape',
-          body: 'Mapped AEM Guides, Heretto, Paligo, and IXIASOFT across six dimensions: authoring model, AI capability, governance layer, publishing targets, team collaboration, and pricing. Universal gap: none treat prompts as governed content, all require developer involvement for conditional logic, and none bundle monetization into the authoring workflow.',
+          label: 'Competitive audit',
+          body: 'Benchmarked AEM Guides, Heretto, Paligo & IXIASOFT. None govern prompts, all need a developer for conditional logic, none bundle monetization.',
         },
         {
-          label: 'AI authoring benchmarks — Oxygen XML, Scalenut, Quillbot',
-          body: "Scalenut's micro-interaction patterns (Write / Command / Rephrase / Simplify) showed how AI assistance can manifest as contextual, discrete actions within a writing surface. Quillbot's paraphrasing-in-context approach directly informed the inline variable token chip design — surfacing template parameters as visible, tappable tokens rather than hiding them behind syntax.",
+          label: 'AI authoring patterns',
+          body: 'Scalenut and Quillbot showed how to surface AI as contextual, in-line micro-actions — and template variables as visible, tappable tokens, not hidden syntax.',
         },
         {
-          label: 'JTBD sessions — enterprise content teams',
-          body: 'Three friction categories surfaced universally: XML validation anxiety blocks non-technical authors entirely; conditional content exclusions require developer turnaround even for trivial changes; AI-generated content is ungoverned — pasted into documents with no version history, quality tracking, or reuse path back into the content lifecycle.',
+          label: 'JTBD with content teams',
+          body: 'Three frictions recurred: XML anxiety locks out SMEs, conditionals need dev turnaround, and AI output is ungoverned the moment it lands.',
         },
         {
-          label: 'Core insight — the prompt governance gap',
-          body: 'No tool in the market versions, scores, or governs AI prompts. In enterprise content operations, a well-crafted prompt for generating DITA-compliant topics is as valuable as a reusable content fragment — possibly more so. Prompts and content are structurally analogous. They should both be authored, versioned, quality-scored, and governed.',
+          label: 'The core insight',
+          body: 'A good prompt is as reusable as a content fragment. Prompts and content are structurally analogous — so both should be versioned, scored, and governed.',
         },
       ],
       users: [
         {
           role: 'DITA-native tech writer',
-          description: 'Expert in DITA semantics and XML structure. Manages large, multi-version topic libraries and complex map hierarchies. Author / XML / Relationship view toggling — including the radial map graph — is designed for this user.',
-          needs: 'Full XML access, relationship visualization, real-time collaboration, and validation feedback without switching to a separate XML editor.',
+          description: 'Lives in XML and complex map hierarchies. The Author / XML / Relationship toggle and radial map graph are built for them.',
+          needs: 'Full XML fidelity, relationship views, and validation without leaving the canvas.',
         },
         {
           role: 'Department author',
-          description: 'Subject-matter expert writing in their domain but untrained in DITA or XML. Their mental model is a document editor — they write, format, and structure, and the system should maintain validity without their awareness.',
-          needs: 'WYSIWYG-first experience where XML complexity is invisible. Drag-and-drop content blocks, no conditional code, and inline AI assistance for drafting.',
+          description: 'A domain SME who thinks in documents, not DITA. The system keeps structure valid without their awareness.',
+          needs: 'WYSIWYG-first, drag-and-drop blocks, no conditional code, inline AI.',
         },
         {
-          role: 'Content manager / admin',
-          description: 'Owns the governance layer: access control, version history, compliance auditing, and the content lifecycle across the team. Tracks what is published, licensed, and shared externally.',
-          needs: 'DRM controls, license management, GDPR-compliant audit logs, retention policies, and marketplace integration to monetize the team\'s content assets.',
+          role: 'Content manager',
+          description: 'Owns governance: access, versions, compliance, and the publish/license lifecycle across the team.',
+          needs: 'DRM, license management, GDPR audit logs, and marketplace monetization.',
         },
       ],
       process: [
-        {
-          phase: 'Audit',
-          body: 'Mapped the competitive landscape — AEM Guides, Heretto, Paligo, IXIASOFT — across six dimensions: authoring model, AI capability, governance layer, publishing targets, team collaboration, and pricing. Benchmarked AI authoring tools (Oxygen XML, Scalenut, Quillbot) for interaction patterns that could make AI feel native to a structured authoring workflow. Identified the universal blind spot: no tool governs prompts, and all require developer involvement for conditional logic.',
-        },
-        {
-          phase: 'Research',
-          body: 'Ran JTBD sessions with enterprise tech writers and content managers. Three friction categories emerged universally: XML validation anxiety blocks non-technical authors; conditional content exclusions require developer turnaround even for simple changes; AI-generated content is pasted in and immediately disconnected from the content lifecycle. Secondary insight: structured content fragments are already treated as reusable assets — prompts are structurally analogous and should be governed the same way.',
-        },
-        {
-          phase: 'Define',
-          body: 'Defined two non-negotiable personas that must co-exist on the same canvas: the DITA-native tech writer who needs full XML fidelity, and the department author who needs WYSIWYG-first with XML abstracted away entirely. Scoped V2 to serve both from a single three-panel workspace — not via a "simple mode" that strips features, but through progressive disclosure that reveals depth on demand. Also defined the prompt governance mandate: prompts must be versionable, quality-scored, and governed at the same level as DITA topics.',
-        },
-        {
-          phase: 'Explore',
-          body: 'Wireframed three canvas architectures: single-pane with floating tools, split-view with persistent palette, and three-panel with full-width editor. Tested each against four real authoring tasks: creating a DITA topic, inserting a conditional variable, running an AI rewrite, and organizing a multi-topic map. The three-panel layout (DITA outline tree + WYSIWYG editor + content/variable palette) resolved context-switching friction fastest and matched existing DITA tool muscle memory.',
-        },
-        {
-          phase: 'Design',
-          body: 'Built the full component library in Figma. Designed: Author / XML / Relationship view toggle with radial tree graph for DITA map visualization; "Ask Kya" sessionized AI chat with inline variable token chips; Prompt-as-a-Service canvas with session quality ratings and artifact tracking; the Non-Mandatory Variable five-step canvas selection flow with live preview; the Media Library with Holocracy marketplace sidebar widget; and the DRM compliance surface covering encryption, watermarking, license management, and retention policies. CEO review and design leadership approval secured before handoff.',
-        },
-        {
-          phase: 'Handoff',
-          body: 'Every component annotated with its DITA semantic mapping (topic, task, concept, reference, map). Dev handoff included a full token map, interaction specs for every state transition, a written IA rationale document explaining structural decisions — not just Figma artboards. Participated in scrum calls with engineering throughout, resolving implementation questions in real time. V2 design shipped to engineering; active build is now underway.',
-        },
+        { phase: 'Audit', body: 'Mapped 4 DITA CMS competitors + AI tools. Found the blind spot: ungoverned prompts, dev-gated conditionals.' },
+        { phase: 'Research', body: 'JTBD sessions surfaced 3 frictions and the prompt-governance insight.' },
+        { phase: 'Define', body: 'Two opposed personas, one canvas — progressive disclosure, not a stripped "simple mode."' },
+        { phase: 'Explore', body: 'Wireframed 3 canvas architectures against 4 real tasks; three-panel won.' },
+        { phase: 'Design', body: 'Full Figma library: canvas, Ask Kya, PaaS, no-code conditionals, Media Library, DRM.' },
+        { phase: 'Handoff', body: 'Annotated DITA semantics, token map, IA rationale doc; embedded in eng scrum.' },
       ],
+      anatomy: {
+        title: 'Anatomy of the canvas',
+        toggles: ['Author', 'XML', 'Relationship'],
+        panels: [
+          { label: 'DITA Outline', role: 'Left — structure', items: ['Topic tree', 'Drag to reorder', 'Expand / collapse', 'Live topic count'] },
+          { label: 'WYSIWYG Editor', role: 'Center — writing', items: ['Document-like surface', 'Formatting toolbar', 'XML stays valid underneath', 'Auto-save + presence'] },
+          { label: 'Content Palette', role: 'Right — building blocks', items: ['Topic blocks', 'Content & layout blocks', 'Variable tokens', 'Integrations'] },
+        ],
+        caption:
+          'One workspace, two mental models. The view toggle lets a writer stay visual or drop to raw XML — the structure never breaks.',
+      },
       approach: [
         {
           title: 'DITA Builder canvas',
-          body: 'Three-panel workspace: DITA outline tree (left, drag-to-reorder, expand/collapse, topic count), distraction-free WYSIWYG editor (center, formatting toolbar), and a Content / Variable / Integrate palette (right, drag-and-drop blocks). Author / XML / Relationship view toggle — Relationship view renders a radial tree graph of map connections with hover-to-reveal metadata. Auto-save with visible timestamp. Real-time collaborator presence indicators.',
+          body: 'Three-panel workspace with Author / XML / Relationship toggle. The Relationship view renders a radial graph of map connections; auto-save and live presence built in.',
         },
         {
           title: '"Ask Kya" conversational authoring',
-          body: 'Sessionized AI chat with inline variable token chips (Input Value, Specified Workflow, Instructions) — parameters surface as interactive, tappable tokens rather than syntax, drawn from Scalenut\'s parameterized content patterns. AI responses include embedded entity links back to CMS objects. Suggested follow-up actions ("Create campaign," "validate team structure") turn conversation into workflow triggers. Model selection dropdown supports multiple AI backends.',
+          body: 'Sessionized AI chat with tappable variable token chips, entity-linked responses, and suggested follow-up actions that turn a conversation into a workflow.',
         },
         {
           title: 'Prompt-as-a-Service',
-          body: 'Elevated prompts from disposable inputs to versioned, quality-scored, reusable content assets. Each session shows: title, author, quality rating (e.g. 4.5/5), artifacts-produced count, and quality dimension trend indicators. Sessions are pinnable, rateable, and fully governable — the same content lifecycle applied to DITA topics, now applied to AI prompts for the first time. Published to the Holocracy marketplace for cross-product reuse.',
+          body: 'Prompts become versioned, quality-scored, reusable assets — title, author, rating, artifact count — and publish to the marketplace for cross-product reuse.',
         },
         {
-          title: 'Non-Mandatory Variable flow',
-          body: 'A five-step visual interaction for conditional content exclusion without writing code: (1) mark variable as Non-Mandatory, (2) Content Selection Panel appears, (3) Canvas Content Selection mode highlights blocks for selection, (4) author clicks to select what to exclude, (5) Live Preview confirms the configuration in real time. What previously required a developer turnaround now takes a non-technical author under a minute.',
+          title: 'No-code conditional content',
+          body: 'A five-step canvas-selection flow lets non-technical authors exclude conditional content visually — no DITA conditional code, with live preview.',
         },
         {
           title: 'Media Library',
-          body: 'Multi-format asset system (Video, Audio, 3D Model, Image, Fonts, DITA Document, HTML) with grid/list toggle, search, sort, and asset cards showing thumbnail preview, filename, format tags (e.g. mp4, 720p), and contextual menu. Breadcrumb navigation (Dashboard → Media Library → Videos). Holocracy marketplace sidebar widget surfaces purchasable content libraries directly within the authoring workflow.',
+          body: 'Multi-format assets (video, audio, 3D, fonts, DITA, HTML) with grid/list, search, and a marketplace widget surfacing purchasable libraries in-workflow.',
         },
         {
-          title: 'DRM & compliance surface',
-          body: 'Content governance built into the lifecycle from the ground up: encryption workflows (at rest and in transit) integrated into the upload flow; dynamic watermarking with user-ID + timestamp injection; pre-signed time-limited URL generation with auto-copy; license management UI (CC / Proprietary / Time-Limited, create/renew/revoke); GDPR-compliant audit logging for ownership transfer; retention policies with automated archiving and asset expiration notifications.',
+          title: 'DRM & compliance',
+          body: 'Encryption, dynamic watermarking, time-limited URLs, license management, GDPR audit logs, and retention policies — built into the lifecycle, not bolted on.',
         },
       ],
+      flow: {
+        title: 'Signature interaction — conditional content without code',
+        steps: [
+          { title: 'Mark non-mandatory', detail: 'Author flags a variable as optional via checkbox.' },
+          { title: 'Selection panel', detail: 'A Content Selection Panel opens on the canvas.' },
+          { title: 'Canvas select mode', detail: 'Editor highlights blocks; author clicks what to exclude.' },
+          { title: 'Live preview', detail: 'Excluded content previews in real time.' },
+          { title: 'Confirm', detail: 'Selection finalizes the conditional rule.' },
+        ],
+        caption: 'What used to require a developer now takes a non-technical author under a minute.',
+      },
+      beforeAfter: {
+        title: 'Reframing the prompt',
+        before: {
+          label: 'Prompt as disposable input',
+          points: ['Pasted into a box', 'Used once, then lost', 'No version or owner', 'No quality signal', 'No reuse path'],
+        },
+        after: {
+          label: 'Prompt as governed asset',
+          points: ['Authored & titled', 'Versioned & owned', 'Quality-scored (e.g. 4.5/5)', 'Sessionized & reusable', 'Publishable to marketplace'],
+        },
+        caption: 'Prompt-as-a-Service applies the content lifecycle to AI prompts — a new governed category inside the CMS.',
+      },
       impact: [
-        'V2 design complete and in active engineering development — approved through CEO review and design system validation before handoff',
-        'Unique market positioning: the only CMS combining structured DITA authoring + AI governance + content monetization — no direct competitor (AEM Guides, Heretto, Paligo, IXIASOFT) offers all three',
-        'Non-Mandatory Variable flow replaces developer dependency for conditional content — estimated to cut conditional logic turnaround from days to under an hour for non-technical authors',
-        'Prompt-as-a-Service creates a new governed content category, projected to reduce prompt recreation overhead by ~60% in teams managing five or more concurrent authors',
-        'Holocracy marketplace integration positions the CMS as a revenue channel, not a cost center — authored content and prompt libraries publishable directly from the authoring canvas',
-        'Enterprise compliance surface (GDPR, ISO 27001, NIST) designed into the content lifecycle from the ground up — eliminating the compliance retrofitting that burdens teams using general-purpose tools',
+        'V2 design complete and in active engineering build — approved through CEO and design-system review before handoff.',
+        'Only CMS to combine structured DITA authoring + AI governance + monetization; no direct competitor offers all three.',
+        'No-code conditional flow cuts conditional-content turnaround from days to under an hour, with zero developer dependency.',
+        'Prompt-as-a-Service is projected to cut prompt-recreation overhead ~60% on teams of five or more authors.',
+        'Compliance (GDPR, ISO 27001, NIST) designed into the lifecycle — no retrofitting.',
       ],
-      metric: { value: 'V2', label: 'CEO-approved · in engineering' },
+      metric: { value: '3-in-1', label: 'authoring · AI · monetization' },
       reflection:
-        "The most significant challenge was not the canvas itself — it was designing for two audiences with fundamentally different mental models who must share the same workspace without either feeling compromised. Progressive disclosure, not dual modes, was the answer: one canvas that reveals structural depth on demand rather than forcing a choice between two versions. The Non-Mandatory Variable flow was the most rewarding individual contribution: turning what required developer involvement into a visual, point-and-click canvas selection experience genuinely changes who can author conditional content in a DITA environment — and that felt like the kind of friction worth solving.",
+        "The hard part wasn't the canvas — it was making two opposite authors share one workspace without either feeling shortchanged. Progressive disclosure, not dual modes, was the answer. The no-code conditional flow was the most rewarding piece: turning developer work into a point-and-click interaction genuinely changes who gets to author in DITA.",
     },
     imageGroups: [
       {

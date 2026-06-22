@@ -46,6 +46,37 @@ export interface CaseStudy {
   figmaPrototype?: string
   /** Design process phases shown between problem and solution. */
   process?: Array<{ phase: string; body: string }>
+  /** Scannable What / Who / How overview block (shown under the summary). */
+  tldr?: { what: string; who: string; how: string }
+  /** Big-number stat band — scannable headline metrics. */
+  stats?: Array<{ value: string; label: string }>
+  /** Capability comparison matrix — the differentiation infographic. cells align to columns. */
+  comparison?: {
+    title?: string
+    columns: string[]
+    rows: Array<{ label: string; cells: boolean[] }>
+    caption?: string
+  }
+  /** Numbered horizontal step-flow diagram for a signature interaction. */
+  flow?: {
+    title: string
+    caption?: string
+    steps: Array<{ title: string; detail?: string }>
+  }
+  /** Labeled anatomy diagram — breaks a core surface into named panels. */
+  anatomy?: {
+    title: string
+    caption?: string
+    toggles?: string[]
+    panels: Array<{ label: string; role: string; items?: string[] }>
+  }
+  /** Before/after concept diagram — explains a reframing in two columns. */
+  beforeAfter?: {
+    title: string
+    caption?: string
+    before: { label: string; points: string[] }
+    after: { label: string; points: string[] }
+  }
   /** Discovery & research findings — competitive audit, user research insights. */
   research?: Array<{ label: string; body: string }>
   /** User personas — who this product is for. */

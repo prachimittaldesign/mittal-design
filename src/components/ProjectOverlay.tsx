@@ -181,12 +181,32 @@ function CaseStudyBody({
         )}
       </div>
 
+      {/* What / Who / How — scannable overview */}
+      {cs.tldr && (
+        <div className="mt-8 grid grid-cols-3 gap-4 max-[760px]:grid-cols-1">
+          {([['What', cs.tldr.what], ['Who', cs.tldr.who], ['How', cs.tldr.how]] as const).map(([k, v]) => (
+            <div key={k} className="rounded-[12px] border border-black/[0.07] p-[18px]">
+              <div className="mb-[9px] font-mono text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: accent }}>
+                {k}
+              </div>
+              <p className="text-[13.5px] leading-[1.55] text-[#2a2622]">{v}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Stat band */}
+      {cs.stats && cs.stats.length > 0 && <StatBand stats={cs.stats} accent={accent} />}
+
       {/* Why it needed a rethink — the problem */}
       <Section title="Why it needed a rethink">
         {cs.problem.split('\n\n').map((para, i) => (
           <p key={i} className="mt-4 max-w-[72ch] text-[16px] leading-[1.75] text-[#2a2622] first:mt-0">{para}</p>
         ))}
       </Section>
+
+      {/* Competitive matrix — the differentiation infographic */}
+      {cs.comparison && <ComparisonMatrix data={cs.comparison} accent={accent} />}
 
       {/* Discovery & Research */}
       {cs.research && cs.research.length > 0 && (
@@ -266,8 +286,11 @@ function CaseStudyBody({
         </Section>
       )}
 
+      {/* Canvas anatomy — labeled breakdown that explains the core surface */}
+      {cs.anatomy && <CanvasAnatomy data={cs.anatomy} accent={accent} />}
+
       {/* Introducing — the solution / what I designed */}
-      <Section title="The solution">
+      <Section title="What I designed">
         <div className="grid grid-cols-2 gap-x-12 gap-y-7 max-[760px]:grid-cols-1 max-[760px]:gap-y-6">
           {cs.approach.map((h, i) => (
             <div key={i} className="border-t border-black/[0.08] pt-4">
@@ -282,6 +305,12 @@ function CaseStudyBody({
           ))}
         </div>
       </Section>
+
+      {/* Signature interaction flow diagram */}
+      {cs.flow && <FlowDiagram flow={cs.flow} accent={accent} />}
+
+      {/* Before/after concept diagram */}
+      {cs.beforeAfter && <BeforeAfter data={cs.beforeAfter} accent={accent} />}
 
       {/* The screens — woven in right after the solution, like the reference */}
       <Carousels groups={imageGroups} accent={accent} />
@@ -328,6 +357,209 @@ function CaseStudyBody({
         </Section>
       )}
     </>
+  )
+}
+
+// ---- Infographic primitives ------------------------------------------------
+
+function CheckMark({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className="inline-block h-[17px] w-[17px] flex-shrink-0 align-middle" fill="none" aria-label="yes">
+      <circle cx="10" cy="10" r="9" fill={color} />
+      <path d="M6 10.5l2.5 2.5L14 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+function DashMark() {
+  return (
+    <svg viewBox="0 0 20 20" className="inline-block h-[17px] w-[17px] align-middle" fill="none" aria-label="no">
+      <circle cx="10" cy="10" r="9" fill="rgba(0,0,0,0.06)" />
+      <path d="M6.5 10h7" stroke="rgba(0,0,0,0.32)" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// Big-number callout row. Equal columns, hairline dividers between cells.
+function StatBand({ stats, accent }: { stats: NonNullable<CaseStudy['stats']>; accent: string }) {
+  return (
+    <div
+      className="mt-8 grid gap-3 max-[760px]:grid-cols-2"
+      style={{ gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))` }}
+    >
+      {stats.map((s, i) => (
+        <div key={i} className="rounded-[12px] px-4 py-[18px]" style={{ background: `${accent}12` }}>
+          <div className="text-[clamp(22px,2.6vw,30px)] font-extrabold leading-none tracking-[-0.02em] text-ink">
+            {s.value}
+          </div>
+          <div className="mt-[8px] text-[12px] leading-[1.4] text-ink-soft">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Capability comparison matrix — the differentiation infographic.
+function ComparisonMatrix({ data, accent }: { data: NonNullable<CaseStudy['comparison']>; accent: string }) {
+  return (
+    <Section title={data.title ?? "Why it's different"}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[560px] border-collapse">
+          <thead>
+            <tr>
+              <th className="w-[40%] p-[10px]" />
+              {data.columns.map((c, i) => (
+                <th key={c} className="p-[10px] align-bottom">
+                  {i === 0 ? (
+                    <span
+                      className="inline-block rounded-full px-[12px] py-[5px] text-[12px] font-bold text-white"
+                      style={{ background: accent }}
+                    >
+                      {c}
+                    </span>
+                  ) : (
+                    <span className="text-[12px] font-semibold text-ink-soft">{c}</span>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.rows.map((r) => (
+              <tr key={r.label} className="border-t border-black/[0.08]">
+                <td className="py-[12px] pr-3 text-[13.5px] font-semibold leading-[1.4] text-ink">{r.label}</td>
+                {r.cells.map((on, i) => (
+                  <td
+                    key={i}
+                    className="py-[12px] text-center"
+                    style={i === 0 ? { background: `${accent}0d` } : undefined}
+                  >
+                    {on ? <CheckMark color={i === 0 ? accent : '#9a948c'} /> : <DashMark />}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {data.caption && <p className="mt-4 max-w-[80ch] text-[13px] leading-[1.6] text-ink-soft">{data.caption}</p>}
+    </Section>
+  )
+}
+
+// Labeled anatomy diagram — breaks a core surface into named panels.
+function CanvasAnatomy({ data, accent }: { data: NonNullable<CaseStudy['anatomy']>; accent: string }) {
+  return (
+    <Section title={data.title}>
+      {data.toggles && data.toggles.length > 0 && (
+        <div className="mb-4 inline-flex rounded-[10px] border border-black/[0.1] p-[3px]">
+          {data.toggles.map((t, i) => (
+            <span
+              key={t}
+              className={[
+                'rounded-[7px] px-[14px] py-[6px] text-[12px] font-semibold',
+                i === 0 ? 'text-white' : 'text-ink-soft',
+              ].join(' ')}
+              style={i === 0 ? { background: accent } : undefined}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="grid grid-cols-3 gap-3 max-[760px]:grid-cols-1">
+        {data.panels.map((p, i) => (
+          <div key={i} className="rounded-[12px] border border-black/[0.1] bg-black/[0.015] p-[18px]">
+            <div className="mb-[3px] text-[15px] font-bold tracking-[-0.01em] text-ink">{p.label}</div>
+            <div className="mb-[14px] font-mono text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
+              {p.role}
+            </div>
+            <ul className="flex flex-col gap-[8px]">
+              {p.items?.map((it, j) => (
+                <li key={j} className="flex items-center gap-[9px] text-[13px] text-[#3a352f]">
+                  <span className="h-[5px] w-[5px] flex-shrink-0 rounded-full" style={{ background: accent }} />
+                  {it}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      {data.caption && <p className="mt-4 max-w-[80ch] text-[13px] leading-[1.6] text-ink-soft">{data.caption}</p>}
+    </Section>
+  )
+}
+
+// Numbered horizontal step-flow diagram with connecting arrows.
+function FlowDiagram({ flow, accent }: { flow: NonNullable<CaseStudy['flow']>; accent: string }) {
+  return (
+    <Section title={flow.title}>
+      <div className="flex items-stretch overflow-x-auto pb-2">
+        {flow.steps.map((s, i) => (
+          <Fragment key={i}>
+            <div className="flex min-w-[150px] flex-1 flex-col rounded-[12px] border border-black/[0.1] p-[16px]">
+              <div
+                className="mb-[10px] flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-bold text-white"
+                style={{ background: accent }}
+              >
+                {i + 1}
+              </div>
+              <h4 className="mb-[5px] text-[13.5px] font-bold leading-[1.3] tracking-[-0.01em] text-ink">{s.title}</h4>
+              {s.detail && <p className="text-[12px] leading-[1.5] text-ink-soft">{s.detail}</p>}
+            </div>
+            {i < flow.steps.length - 1 && (
+              <div className="flex flex-shrink-0 items-center px-[6px]" aria-hidden>
+                <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">
+                  <path d="M3 8h9M9 4l4 4-4 4" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
+      {flow.caption && <p className="mt-3 max-w-[80ch] text-[13px] leading-[1.6] text-ink-soft">{flow.caption}</p>}
+    </Section>
+  )
+}
+
+// Before/after concept diagram — two columns with an arrow between.
+function BeforeAfter({ data, accent }: { data: NonNullable<CaseStudy['beforeAfter']>; accent: string }) {
+  const Col = ({ col, after }: { col: { label: string; points: string[] }; after: boolean }) => (
+    <div
+      className="flex-1 rounded-[14px] border p-5"
+      style={after ? { borderColor: accent, background: `${accent}0d` } : { borderColor: 'rgba(0,0,0,0.1)' }}
+    >
+      <div
+        className="mb-[14px] font-mono text-[10px] font-bold uppercase tracking-[0.16em]"
+        style={{ color: after ? accent : '#9a948c' }}
+      >
+        {after ? 'After' : 'Before'}
+      </div>
+      <div className="mb-[12px] text-[15px] font-bold tracking-[-0.01em] text-ink">{col.label}</div>
+      <ul className="flex flex-col gap-[8px]">
+        {col.points.map((p, i) => (
+          <li key={i} className="flex items-center gap-[9px] text-[13px] text-[#3a352f]">
+            {after ? (
+              <CheckMark color={accent} />
+            ) : (
+              <span className="h-[5px] w-[5px] flex-shrink-0 rounded-full bg-black/25" />
+            )}
+            {p}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+  return (
+    <Section title={data.title}>
+      <div className="flex items-center gap-3 max-[760px]:flex-col max-[760px]:items-stretch">
+        <Col col={data.before} after={false} />
+        <svg viewBox="0 0 24 24" className="h-6 w-6 flex-shrink-0 max-[760px]:rotate-90" fill="none" aria-hidden>
+          <path d="M4 12h14M13 6l6 6-6 6" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <Col col={data.after} after={true} />
+      </div>
+      {data.caption && <p className="mt-4 max-w-[80ch] text-[13px] leading-[1.6] text-ink-soft">{data.caption}</p>}
+    </Section>
   )
 }
 
