@@ -7,7 +7,7 @@ import { getHyderabadTime } from '../lib/sky'
 const LINKS = [
   { label: 'hello@', href: 'mailto:hello@prachimittal.com', solid: true },
   { label: 'About', href: '/about.html', solid: false, external: true },
-  { label: 'Resume', href: '/Prachi-Mittal-Resume.pdf', solid: false, external: true },
+  { label: 'Resume', href: '/Prachi-Mittal-Resume-2026.pdf', solid: false, external: true },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/prachi15mittal', solid: false, external: true },
   { label: 'Behance', href: 'https://www.behance.net/prachimittal2', solid: false, external: true },
 ]
