@@ -429,8 +429,9 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       </group>
 
       {/* Floating star marks the featured hero projects — "enter these first".
-          3D view only; the iso flatten would squash it. */}
-      {project.featured && view === '3d' && <StarMarker y={signY + (showLabel ? 4.5 : 2.5)} />}
+          Shows in 3D and 2D (the world keeps full height in both now); only
+          the skyline lineup stays a clean stage without markers. */}
+      {project.featured && view !== 'skyline' && <StarMarker y={signY + (showLabel ? 4.5 : 2.5)} />}
     </group>
   )
 }
