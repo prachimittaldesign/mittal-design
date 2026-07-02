@@ -429,9 +429,8 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
       </group>
 
       {/* Floating star marks the featured hero projects — "enter these first".
-          Shows in 3D and 2D (the world keeps full height in both now); only
-          the skyline lineup stays a clean stage without markers. */}
-      {project.featured && view !== 'skyline' && <StarMarker y={signY + (showLabel ? 4.5 : 2.5)} />}
+          Shown in every view: 3D, the top-down 2D map, and the skyline lineup. */}
+      {project.featured && <StarMarker y={signY + (showLabel ? 4.5 : 2.5)} />}
     </group>
   )
 }

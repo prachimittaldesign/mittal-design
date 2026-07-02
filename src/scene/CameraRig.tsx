@@ -14,10 +14,11 @@ const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   // 3D: a scenic coastal overview — pitched ~30° so the sea around the town and
   // the dusk horizon read behind it, while the city layout stays legible.
   '3d':      new Vector3(0,  125, 215),
-  // 2D ("bird's-eye"): a high, steeply-angled overhead view (~52° below
-  // horizontal) — clearly looking down on the town and its coastline, with the
-  // sea ring fading to the dusk horizon around it.
-  iso:       new Vector3(0,  235, 185),
+  // 2D ("map"): a near-top-down view (~6° off vertical) — a Google-Maps-style
+  // plan of the island. Orientation is locked north-up (no orbit) so the map
+  // stays stable and readable; roads, quadrant colours and water read like a
+  // real map layer while the buildings keep a faint bit of dimensionality.
+  iso:       new Vector3(0,  360, 38),
   // Street view: a low eye, pushed OUT over the water (past the LAND_R≈206
   // coastline) so shimmering reflections fill the foreground and the lit town
   // rises across the bay against the dusk sky — the closest match to Amalfi.
@@ -122,10 +123,11 @@ export function CameraRig({
 
     // Idle auto-orbit: the city drifts on its own (from first paint) whenever
     // the user hasn't touched the canvas recently and no programmatic camera
-    // motion is in flight. Skyline locks its cinematic angle, so it's exempt.
+    // motion is in flight. Only the 3D scenic view idles — the 2D map stays
+    // north-up and the skyline locks its cinematic angle.
     const busy = flying.current || zooming.current || viewing.current || recentering.current
     c.autoRotate =
-      view !== 'skyline' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
+      view === '3d' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
 
     // Fly-to a searched/recommended place (preserve viewing angle).
     if (focus && focus.nonce !== lastNonce.current) {
@@ -232,18 +234,20 @@ export function CameraRig({
       enableDamping
       dampingFactor={0.08}
       autoRotateSpeed={AUTO_ROTATE_SPEED}
-      // Skyline locks its cinematic front angle via screen-space pan. 3D and the
-      // coastal 2D view both allow free orbit so you can sweep the bay.
-      screenSpacePanning={view === 'skyline'}
-      enableRotate={view !== 'skyline'}
+      // Only the 3D scenic view allows free orbit. The 2D map and the skyline
+      // both lock their angle: the map stays north-up (like Google Maps 2D),
+      // the skyline holds its cinematic front. Both pan in screen space so a
+      // drag slides the frame without changing the locked angle.
+      screenSpacePanning={view !== '3d'}
+      enableRotate={view === '3d'}
       // 3D: allow getting right down near street level (26) so the headland
       //   hills behind the town can be admired from a low, dramatic angle.
-      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 120 : 26}
-      maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 520 : 345 * fit(view)}
-      // 2D bird's-eye stays steeply overhead; 3D can drop almost to the horizon
+      minDistance={view === 'skyline' ? 90 : view === 'iso' ? 90 : 26}
+      maxDistance={view === 'skyline' ? 480 : view === 'iso' ? 560 : 345 * fit(view)}
+      // 2D map locks near top-down (~6°); 3D can drop almost to the horizon
       // (1.46 ≈ 84°) for that low waterfront angle, or rise to a high aerial.
-      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0.32 : 0.3}
-      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 1.0 : 1.46}
+      minPolarAngle={view === 'skyline' ? 1.18 : view === 'iso' ? 0.06 : 0.3}
+      maxPolarAngle={view === 'skyline' ? 1.45 : view === 'iso' ? 0.18 : 1.46}
     />
   )
 }
