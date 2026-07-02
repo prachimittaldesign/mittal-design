@@ -65,6 +65,9 @@ export function Hero({ docked }: { docked: boolean }) {
     const hide = setTimeout(() => {
       setOpen(false)
       localStorage.setItem('pm-about-peek-v1', '1')
+      // Hand the stage to the coachmark tour — it waits for this so the two
+      // popups never share the screen.
+      window.dispatchEvent(new Event('pm:peek-done'))
     }, 5600)
     return () => {
       clearTimeout(show)
