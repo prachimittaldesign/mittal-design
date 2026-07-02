@@ -8,7 +8,6 @@ import {
   districtFor,
   resolveRoofStyle,
   polar,
-  pointToSegDist,
   sampleCatmullRom,
   LOT,
   type District,
@@ -133,8 +132,11 @@ function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   // Avenues — the named cardinals. Split around the central roundabout so they
   // FEED it from four sides instead of crossing straight through the monument
   // (which left two coplanar road slabs fighting over the plaza centre).
-  roads.push({ id: 'ave-x-w', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: -OUTER, z: 0 }, { x: -PLAZA_R, z: 0 }] })
-  roads.push({ id: 'ave-x-e', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: PLAZA_R, z: 0 }, { x: OUTER, z: 0 }] })
+  // East/west avenues terminate ON the outer ring (junction), not past it;
+  // the north/south pair runs to OUTER where the gateway fades take over.
+  const RING_END = 92
+  roads.push({ id: 'ave-x-w', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: -RING_END, z: 0 }, { x: -PLAZA_R, z: 0 }] })
+  roads.push({ id: 'ave-x-e', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: PLAZA_R, z: 0 }, { x: RING_END, z: 0 }] })
   roads.push({ id: 'ave-z-n', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: 0, z: -OUTER }, { x: 0, z: -PLAZA_R }] })
   roads.push({ id: 'ave-z-s', kind: 'avenue', width: AVENUE_W, closed: false, pts: [{ x: 0, z: PLAZA_R }, { x: 0, z: OUTER }] })
 
@@ -155,9 +157,12 @@ function buildRoadNetwork(): { roads: RoadPath[]; parcels: Parcel[] } {
   diagonalAngles.forEach((base, si) => {
     const pts: Pt[] = []
     const steps = 12
+    // End exactly on the outer ring so each boulevard terminates in a proper
+    // junction instead of a stub trailing into the grass.
+    const DIAG_END = 92
     for (let s = 0; s <= steps; s++) {
       const t = s / steps
-      const r = PLAZA_R + t * (OUTER - PLAZA_R)
+      const r = PLAZA_R + t * (DIAG_END - PLAZA_R)
       pts.push(polar(0, 0, r, base))
     }
     roads.push({ id: `diag-${si}`, kind: 'spoke', width: AVENUE_W, closed: false, pts })
@@ -209,26 +214,63 @@ function pathToSegs(p: RoadPath): RoadSeg[] {
   return segs
 }
 
-function segClearsAnchors(s: RoadSeg): boolean {
+// Clip a segment against the plot-clearance discs. The old behaviour DROPPED
+// any segment that grazed a plot, which punched visible holes in the diagonal
+// boulevards — roads that just stopped and restarted mid-field. Instead, keep
+// the parts of each segment that lie OUTSIDE every disc, so the carriageway
+// runs right up to the building's forecourt and ends there deliberately (the
+// walkway/apron layer bridges the last few metres to the entrance).
+function clipSegToAnchors(s: RoadSeg): RoadSeg[] {
+  const dx = s.bx - s.ax
+  const dz = s.bz - s.az
+  const len2 = dx * dx + dz * dz || 1
+  const len = Math.sqrt(len2)
+  const holes: Array<[number, number]> = []
   for (const a of ANCHORS) {
-    if (pointToSegDist(a.x, a.z, s.ax, s.az, s.bx, s.bz) < a.clearance + s.width * 0.5) return false
+    const r = a.clearance + s.width * 0.5
+    const t = ((a.x - s.ax) * dx + (a.z - s.az) * dz) / len2
+    const d = Math.hypot(a.x - (s.ax + dx * t), a.z - (s.az + dz * t))
+    if (d >= r) continue // segment's line misses this disc
+    const half = Math.sqrt(r * r - d * d) / len
+    const t0 = t - half
+    const t1 = t + half
+    if (t1 <= 0 || t0 >= 1) continue
+    holes.push([Math.max(0, t0), Math.min(1, t1)])
   }
-  return true
+  if (holes.length === 0) return [s]
+  holes.sort((h1, h2) => h1[0] - h2[0])
+  const merged: Array<[number, number]> = []
+  for (const h of holes) {
+    const last = merged[merged.length - 1]
+    if (last && h[0] <= last[1]) last[1] = Math.max(last[1], h[1])
+    else merged.push([h[0], h[1]])
+  }
+  const out: RoadSeg[] = []
+  const MIN_LEN = 1.6 // drop unreadable slivers
+  let cur = 0
+  for (const [h0, h1] of merged) {
+    if ((h0 - cur) * len >= MIN_LEN)
+      out.push({ ax: s.ax + dx * cur, az: s.az + dz * cur, bx: s.ax + dx * h0, bz: s.az + dz * h0, width: s.width })
+    cur = Math.max(cur, h1)
+  }
+  if ((1 - cur) * len >= MIN_LEN)
+    out.push({ ax: s.ax + dx * cur, az: s.az + dz * cur, bx: s.bx, bz: s.bz, width: s.width })
+  return out
 }
 
 const NETWORK = buildRoadNetwork()
 export const ROADS: RoadPath[] = NETWORK.roads
 export const PARCELS: Parcel[] = NETWORK.parcels
-export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).filter(segClearsAnchors)
+export const ROAD_SEGS: RoadSeg[] = ROADS.flatMap(pathToSegs).flatMap(clipSegToAnchors)
 // Non-ring segments only — rings are rendered as flat ringGeometry in Roads.tsx for smooth circles.
-export const ROAD_SEGS_DRAW: RoadSeg[] = ROADS.filter((r) => r.kind !== 'ring').flatMap(pathToSegs).filter(segClearsAnchors)
+export const ROAD_SEGS_DRAW: RoadSeg[] = ROADS.filter((r) => r.kind !== 'ring').flatMap(pathToSegs).flatMap(clipSegToAnchors)
 
 // --- Connector driveways: tie every building & landmark to the road network ---
 // Buildings live on a square grid; the roads are a polar ring/spoke system, so
 // most plots don't sit on a road. For each plot we drop a short footpath from
 // its edge to the closest point on the nearest road, so nothing reads as
 // "floating" and the network visibly reaches every door.
-const CONNECTOR_W = 2.2
+const CONNECTOR_W = 2.8
 
 function nearestPointOnSegs(px: number, pz: number, segs: RoadSeg[]): { x: number; z: number; dist: number } {
   let bx = 0
@@ -264,7 +306,7 @@ function buildConnectors(): RoadSeg[] {
     const dz = near.z - p.z
     const d = Math.hypot(dx, dz)
     if (d < p.r + 1) continue // already meets a road
-    if (d > 40) continue // unreachably far — don't draw a runway across the map
+    if (d > 52) continue // unreachably far — don't draw a runway across the map
     const ux = dx / d
     const uz = dz / d
     out.push({

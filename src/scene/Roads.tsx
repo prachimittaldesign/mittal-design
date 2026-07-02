@@ -3,8 +3,11 @@ import { InstancedMesh, MeshStandardMaterial, Object3D } from 'three'
 import { ROAD } from './lib/cityTheme'
 import { ROAD_SEGS_DRAW, RING_RADII, RING_ROAD_W, GATEWAY_SEGS, CONNECTOR_SEGS, type RoadSeg } from './lib/cityModel'
 
-// Avenues + connectors as box segments; ring roads rendered separately as flat circles.
-const ALL_SEGS = [...ROAD_SEGS_DRAW, ...CONNECTOR_SEGS]
+// Avenues/spokes as box segments; ring roads rendered separately as flat circles.
+// Connectors are NOT part of the carriageway — they render as paved pedestrian
+// walkways (below) that bridge the gap between each road end and its building
+// entrance, finishing every route to the door.
+const ALL_SEGS = ROAD_SEGS_DRAW
 
 // Split each gateway into N steps with linearly decreasing opacity so the road
 // dissolves naturally into the fog at the horizon.
@@ -183,6 +186,52 @@ export function Roads() {
       <instancedMesh ref={roadPadRef} args={[undefined, undefined, junctions.length]} material={roadMat} renderOrder={ORDER_ROAD} receiveShadow>
         <circleGeometry args={[1, 32]} />
       </instancedMesh>
+
+      {/* ── Entrance walkways ── paved stone paths from each road end to each
+          building's door, finished with a forecourt apron at the entrance and
+          a blending pad where the path meets the sidewalk. Every plot gets a
+          completed, deliberate route — no road just stops in the grass. */}
+      {CONNECTOR_SEGS.map((s, i) => {
+        const dx = s.bx - s.ax
+        const dz = s.bz - s.az
+        const len = Math.hypot(dx, dz)
+        const angle = Math.atan2(-dz, dx)
+        const tone = paveMats[i % paveMats.length]
+        return (
+          <group key={`walk-${i}`}>
+            {/* the path itself */}
+            <mesh
+              material={tone}
+              position={[(s.ax + s.bx) / 2, 0.03, (s.az + s.bz) / 2]}
+              rotation={[0, angle, 0]}
+              renderOrder={ORDER_PAVE}
+              receiveShadow
+            >
+              <boxGeometry args={[len + s.width * 0.5, 0.05, s.width]} />
+            </mesh>
+            {/* forecourt apron at the building entrance (segment start) */}
+            <mesh
+              material={tone}
+              position={[s.ax, 0.035, s.az]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              renderOrder={ORDER_PAVE}
+              receiveShadow
+            >
+              <circleGeometry args={[s.width * 1.05, 28]} />
+            </mesh>
+            {/* blending pad where the walkway meets the road's sidewalk */}
+            <mesh
+              material={tone}
+              position={[s.bx, 0.03, s.bz]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              renderOrder={ORDER_PAVE}
+              receiveShadow
+            >
+              <circleGeometry args={[s.width * 0.7, 24]} />
+            </mesh>
+          </group>
+        )
+      })}
 
       {/* ── Gateway avenues: fade to horizon ──
           Rendered as individual transparent segments so the road dissolves
