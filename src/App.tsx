@@ -8,6 +8,7 @@ import { LayersControl } from './components/LayersControl'
 import { MapControlsHud } from './components/MapControlsHud'
 import { MusicPlayer } from './components/MusicPlayer'
 import { Legend } from './components/Legend'
+import { Coachmarks } from './components/Coachmarks'
 import type { FocusTarget } from './scene/CameraRig'
 import type { Place } from './scene/lib/places'
 import { useIsNight } from './lib/useIsNight'
@@ -66,6 +67,7 @@ export default function App() {
       />
       <MusicPlayer />
       {layer && <Legend layer={layer} />}
+      <Coachmarks suppressed={overlay !== null} />
 
       {overlay?.type === 'project' && (
         <ProjectOverlay
