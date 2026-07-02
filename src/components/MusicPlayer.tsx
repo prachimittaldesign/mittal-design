@@ -73,7 +73,7 @@ export function MusicPlayer() {
         <button
           onClick={playing ? stop : mobileNext}
           aria-label={playing ? 'Stop music' : 'Play music'}
-          className={HUD_ICON_BTN}
+          className={`${HUD_ICON_BTN} hud-text`}
         >
           {playing ? <EqualizerIcon /> : <NoteIcon />}
         </button>
