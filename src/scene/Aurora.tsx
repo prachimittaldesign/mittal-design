@@ -92,18 +92,24 @@ const fragmentShader = /* glsl */ `
     // Vertical shape: rises from a soft base, tapers to wispy tips. A little
     // upward flow makes the light seem to stream skyward.
     float flow = v + 0.06 * sin(u * 40.0 + t * 2.5);
-    float bottom = smoothstep(0.0, 0.18, flow);
-    float top = 1.0 - smoothstep(0.45, 1.0, flow);
+    float bottom = smoothstep(0.0, 0.22, flow);
+    float top = 1.0 - smoothstep(0.42, 1.0, flow);
     float shape = bottom * top;
 
-    float intensity = rays * folds * shape;
+    // Horizontal end fade — the left/right tips of the arc dissolve into the
+    // sky instead of stopping on a hard vertical edge. A drifting waver keeps
+    // the fade organic rather than a clean gradient.
+    float ends = smoothstep(0.0, 0.22, u) * (1.0 - smoothstep(0.78, 1.0, u));
+    ends *= 0.9 + 0.1 * sin(u * 9.0 + t * 0.7);
+
+    float intensity = rays * folds * shape * ends;
 
     // Colour grades green → teal → magenta as it climbs.
     vec3 col = mix(uLow, uMid, smoothstep(0.0, 0.5, v));
     col = mix(col, uHigh, smoothstep(0.55, 1.0, v));
 
     float alpha = intensity * uOpacity;
-    gl_FragColor = vec4(col * (0.7 + intensity * 0.8), alpha);
+    gl_FragColor = vec4(col * (0.6 + intensity * 0.7), alpha);
   }
 `
 
@@ -167,7 +173,8 @@ export function Aurora({ view }: { view: ViewMode }) {
     if (!g) return
     // Northern lights belong to the horizon-facing views; the top-down 2D map
     // never sees the sky, so skip the work there.
-    const target = view === 'iso' ? 0 : nightFactor()
+    // Keep it subtle — a gentle glow, not a light show.
+    const target = view === 'iso' ? 0 : nightFactor() * 0.62
     for (const child of g.children) {
       const m = child.material
       if (!m?.uniforms) continue
