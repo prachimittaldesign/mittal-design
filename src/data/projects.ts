@@ -24,6 +24,7 @@ export const PROJECTS: Project[] = [
     gx: 6,
     gy: 4,
     scale: 1.5,
+    height: 34, // capped below the featured trio so the gold-star towers own the skyline
     label: 'iZak',
     sub: '3D SCANNING · LiDAR',
     glyph: 'scanner',
@@ -37,6 +38,8 @@ export const PROJECTS: Project[] = [
     gx: 4,
     gy: 2,
     scale: 1.5,
+    height: 52, // the tallest tower in the city — newest featured work
+    footprint: 8,
     label: 'Ved',
     sub: 'CMS · DITA BUILDER',
     glyph: 'servers',
@@ -215,6 +218,7 @@ export const PROJECTS: Project[] = [
     gx: 2,
     gy: 2,
     scale: 1.35,
+    height: 44, // featured — second-tallest after Ved
     label: 'SnapLogic',
     sub: 'DOCUMENTATION REVAMP',
     glyph: 'connector',
@@ -374,7 +378,7 @@ export const PROJECTS: Project[] = [
     gx: 4,
     gy: -2,
     scale: 1.4,
-    height: 26,
+    height: 40, // featured — towers over the consumer side
     label: 'Revee & Mo',
     sub: 'TV SUPER APPS · CES 2024',
     glyph: 'tv',

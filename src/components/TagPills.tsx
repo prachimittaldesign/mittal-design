@@ -18,8 +18,11 @@ const TAGS: { tag: string; icon: ReactNode }[] = [
 ]
 
 export function TagPills({ activeTag, onChange }: TagPillsProps) {
+  // Mobile: full-width scroll row under the search bar. Desktop: anchored
+  // right after the search box (Google-Maps style) with room for every pill —
+  // no clipping until the window gets genuinely narrow.
   return (
-    <div className="pointer-events-none absolute left-0 right-0 top-[calc(0.75rem+env(safe-area-inset-top)+46px)] z-30 flex max-w-full gap-2 overflow-x-auto px-3 [scrollbar-width:none] sm:left-1/2 sm:right-auto sm:top-4 sm:max-w-[min(620px,62vw)] sm:-translate-x-1/2 sm:px-2 [&::-webkit-scrollbar]:hidden">
+    <div className="pointer-events-none absolute left-0 right-0 top-[calc(0.75rem+env(safe-area-inset-top)+46px)] z-30 flex max-w-full gap-2 overflow-x-auto px-3 [scrollbar-width:none] sm:left-[400px] sm:right-auto sm:top-4 sm:max-w-[calc(100vw-700px)] sm:px-0 [&::-webkit-scrollbar]:hidden">
       {TAGS.map(({ tag, icon }) => {
         const active = activeTag === tag
         return (

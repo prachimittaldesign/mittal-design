@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { MeshReflectorMaterial } from '@react-three/drei'
-import { Color, InstancedMesh, Mesh, MeshBasicMaterial, Object3D, Shape, ShapeGeometry } from 'three'
+import { Color, Group, InstancedMesh, Mesh, MeshBasicMaterial, Object3D, Shape, ShapeGeometry } from 'three'
 
 function mulberry32(seed: number): () => number {
   let s = seed >>> 0
@@ -85,17 +84,68 @@ function Reeds() {
 // ─── Ripples ─────────────────────────────────────────────────────────────────
 function ripple(m: Mesh | null, p: number) {
   if (!m) return
-  const s = 1.5 + p * 7
+  const s = 1.2 + p * 6
   m.scale.set(s, s, 1)
-  ;(m.material as MeshBasicMaterial).opacity = (1 - p) * 0.28
+  ;(m.material as MeshBasicMaterial).opacity = Math.sin(Math.min(p, 1) * Math.PI) * 0.3
+}
+
+// ─── Ducks ───────────────────────────────────────────────────────────────────
+// Two tiny stylised ducks paddling a lazy ellipse, leaving the ripples behind.
+function Duck({ phase, dir, tint }: { phase: number; dir: 1 | -1; tint: string }) {
+  const ref = useRef<Group>(null)
+  useFrame((state) => {
+    const g = ref.current
+    if (!g) return
+    const t = state.clock.elapsedTime * 0.14 * dir + phase
+    const x = Math.cos(t) * RX * 0.52
+    const z = Math.sin(t) * RZ * 0.5
+    g.position.set(x, 0.42 + Math.sin(state.clock.elapsedTime * 1.7 + phase) * 0.05, z)
+    // face along the direction of travel
+    g.rotation.y = -t + (dir === 1 ? Math.PI : 0)
+  })
+  return (
+    <group ref={ref}>
+      {/* body */}
+      <mesh castShadow scale={[1.15, 0.75, 0.8]}>
+        <sphereGeometry args={[0.62, 10, 8]} />
+        <meshStandardMaterial color={tint} roughness={0.85} />
+      </mesh>
+      {/* tail flick */}
+      <mesh position={[-0.62, 0.18, 0]} rotation={[0, 0, 0.7]} scale={[0.5, 0.28, 0.3]}>
+        <sphereGeometry args={[0.5, 8, 6]} />
+        <meshStandardMaterial color={tint} roughness={0.85} />
+      </mesh>
+      {/* head */}
+      <mesh position={[0.52, 0.52, 0]} castShadow>
+        <sphereGeometry args={[0.32, 10, 8]} />
+        <meshStandardMaterial color={tint} roughness={0.85} />
+      </mesh>
+      {/* beak */}
+      <mesh position={[0.88, 0.48, 0]} rotation={[0, 0, -Math.PI / 2]}>
+        <coneGeometry args={[0.12, 0.3, 6]} />
+        <meshStandardMaterial color="#e8933a" roughness={0.7} />
+      </mesh>
+    </group>
+  )
 }
 
 // ─── Pond ────────────────────────────────────────────────────────────────────
+// The water is deliberately NOT a planar reflector: MeshReflectorMaterial
+// re-renders the whole city into a low-res FBO every frame, and its depth-blur
+// pass broke into flickering blocky artifacts (the glass towers' window
+// rectangles). Instead the surface is a glossy physical material that picks up
+// the live sky/cloud environment cube — soft, stable reflections at zero extra
+// render cost — layered over a darker depth blob so the middle reads deep.
 export function Pond() {
   const r1 = useRef<Mesh>(null)
   const r2 = useRef<Mesh>(null)
+  const r3 = useRef<Mesh>(null)
+  const padsRef = useRef<Group>(null)
 
   const waterGeom = useMemo(() => makeBlob(RX, RZ, 4242), [])
+  const foamGeom = useMemo(() => makeBlob(RX, RZ, 4242), []) // same outline, scaled up a hair
+  const depthGeom = useMemo(() => makeBlob(RX * 0.6, RZ * 0.58, 4243), [])
+  const sandGeom = useMemo(() => makeBlob(RX * 1.09, RZ * 1.1, 4242), [])
   const mudGeom = useMemo(() => makeBlob(RX * 1.16, RZ * 1.18, 4242), [])
 
   // A handful of cattails — thin stalks with a soft brown head near the top.
@@ -126,51 +176,83 @@ export function Pond() {
         s: 0.8 + rand() * 1.0,
         flower: rand() > 0.6,
         rot: rand() * Math.PI * 2,
+        bob: rand() * Math.PI * 2,
       }
     })
   }, [])
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
-    ripple(r1.current, (t % 4) / 4)
-    ripple(r2.current, ((t + 2) % 4) / 4)
+    ripple(r1.current, (t % 5) / 5)
+    ripple(r2.current, ((t + 1.7) % 5) / 5)
+    ripple(r3.current, ((t + 3.4) % 5) / 5)
+    // Lily pads ride a slow swell — tiny bob + drift-in-place rotation.
+    const g = padsRef.current
+    if (g) {
+      g.children.forEach((pad, i) => {
+        const p = pads[i]
+        if (!p) return
+        pad.position.y = Math.sin(t * 0.9 + p.bob) * 0.045
+        pad.rotation.y = p.rot + Math.sin(t * 0.22 + p.bob) * 0.12
+      })
+    }
   })
 
   return (
     <group position={[POND_CENTER[0], 0, POND_CENTER[1]]}>
-      {/* Wet mud / sand shoreline band around the water */}
-      <mesh geometry={mudGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} receiveShadow>
+      {/* Wet mud shoreline band around the water */}
+      <mesh geometry={mudGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]} receiveShadow>
         <meshStandardMaterial color="#46412c" roughness={1} metalness={0} />
       </mesh>
 
-      {/* Reflective water surface — mirrors the world for a real wet look */}
+      {/* Damp sand ring — a lighter waterline between mud and water */}
+      <mesh geometry={sandGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.16, 0]} receiveShadow>
+        <meshStandardMaterial color="#7c7250" roughness={1} metalness={0} />
+      </mesh>
+
+      {/* Foam rim — pale sliver peeking out around the water's edge */}
+      <mesh geometry={foamGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.2, 0]} scale={[1.045, 1.045, 1]}>
+        <meshBasicMaterial color="#dcebe2" transparent opacity={0.85} />
+      </mesh>
+
+      {/* Water surface — glossy, sky-reflecting, slightly transparent */}
       <mesh geometry={waterGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.26, 0]}>
-        <MeshReflectorMaterial
-          resolution={256}
-          mirror={0.55}
-          blur={[200, 60]}
-          mixBlur={10}
-          mixStrength={1.6}
-          depthScale={0.7}
-          minDepthThreshold={0.3}
-          maxDepthThreshold={1.2}
-          color="#43594c"
-          roughness={0.85}
-          metalness={0.2}
+        <meshPhysicalMaterial
+          color="#3d7a8c"
+          roughness={0.08}
+          metalness={0.1}
+          envMapIntensity={1.25}
+          clearcoat={1}
+          clearcoatRoughness={0.12}
+          transparent
+          opacity={0.92}
         />
       </mesh>
 
-      {/* Expanding ripple rings for gentle surface life */}
-      <mesh ref={r1} rotation={[-Math.PI / 2, 0, 0]} position={[2, 0.3, -1]}>
-        <ringGeometry args={[0.82, 1, 32]} />
-        <meshBasicMaterial color="#dfeae4" transparent opacity={0} depthWrite={false} />
+      {/* Deep centre — darker blob just above the surface so the middle reads deep */}
+      <mesh geometry={depthGeom} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.3, 0]}>
+        <meshBasicMaterial color="#1e4a5c" transparent opacity={0.5} depthWrite={false} />
       </mesh>
-      <mesh ref={r2} rotation={[-Math.PI / 2, 0, 0]} position={[-3, 0.3, 2]}>
-        <ringGeometry args={[0.82, 1, 32]} />
-        <meshBasicMaterial color="#dfeae4" transparent opacity={0} depthWrite={false} />
+
+      {/* Expanding ripple rings for gentle surface life */}
+      <mesh ref={r1} rotation={[-Math.PI / 2, 0, 0]} position={[2, 0.34, -1]}>
+        <ringGeometry args={[0.86, 1, 40]} />
+        <meshBasicMaterial color="#e6f2ec" transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <mesh ref={r2} rotation={[-Math.PI / 2, 0, 0]} position={[-3.5, 0.34, 2]}>
+        <ringGeometry args={[0.86, 1, 40]} />
+        <meshBasicMaterial color="#e6f2ec" transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <mesh ref={r3} rotation={[-Math.PI / 2, 0, 0]} position={[5, 0.34, 3]}>
+        <ringGeometry args={[0.86, 1, 40]} />
+        <meshBasicMaterial color="#e6f2ec" transparent opacity={0} depthWrite={false} />
       </mesh>
 
       <Reeds />
+
+      {/* Ducks — one white, one mallard-brown, paddling opposite ways */}
+      <Duck phase={0.8} dir={1} tint="#f2ede2" />
+      <Duck phase={3.6} dir={-1} tint="#8a6a4a" />
 
       {/* Cattails */}
       {cattails.map((c, i) => (
@@ -186,21 +268,34 @@ export function Pond() {
         </group>
       ))}
 
-      {/* Lily pads */}
-      {pads.map((p, i) => (
-        <group key={i} position={[p.x, 0.3, p.z]} rotation={[0, p.rot, 0]}>
-          <mesh scale={[p.s, 1, p.s]}>
-            <cylinderGeometry args={[1, 1, 0.06, 14]} />
-            <meshStandardMaterial color="#2f5135" roughness={0.7} metalness={0} />
-          </mesh>
-          {p.flower && (
-            <mesh position={[0, 0.18, 0]}>
-              <sphereGeometry args={[0.22, 8, 8]} />
-              <meshStandardMaterial color="#e7c6d6" roughness={0.6} />
+      {/* Lily pads — bobbed and drifted from useFrame via padsRef */}
+      <group ref={padsRef}>
+        {pads.map((p, i) => (
+          <group key={i} position={[p.x, 0.36, p.z]} rotation={[0, p.rot, 0]}>
+            <mesh scale={[p.s, 1, p.s]}>
+              <cylinderGeometry args={[1, 1, 0.06, 14]} />
+              <meshStandardMaterial color="#3a6b42" roughness={0.55} />
             </mesh>
-          )}
-        </group>
-      ))}
+            {/* notch highlight — a lighter wedge makes each pad read as a leaf */}
+            <mesh position={[p.s * 0.3, 0.045, 0]} scale={[p.s * 0.5, 1, p.s * 0.5]}>
+              <cylinderGeometry args={[0.5, 0.5, 0.02, 10]} />
+              <meshStandardMaterial color="#4d8354" roughness={0.6} />
+            </mesh>
+            {p.flower && (
+              <group position={[0, 0.16, 0]}>
+                <mesh>
+                  <sphereGeometry args={[0.24, 8, 8]} />
+                  <meshStandardMaterial color="#f0c9dc" roughness={0.5} />
+                </mesh>
+                <mesh position={[0, 0.14, 0]}>
+                  <sphereGeometry args={[0.1, 6, 6]} />
+                  <meshStandardMaterial color="#f5df6e" roughness={0.5} emissive="#f5df6e" emissiveIntensity={0.25} />
+                </mesh>
+              </group>
+            )}
+          </group>
+        ))}
+      </group>
     </group>
   )
 }

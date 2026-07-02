@@ -4,6 +4,7 @@ import { Environment, Loader } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import type { Points } from 'three'
 import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
+import { CoachAnchorProbe } from './CoachAnchorProbe'
 import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
 import { DaySky } from './DaySky'
@@ -125,6 +126,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           </Suspense>
 
           <CameraRig focus={focus} cmd={cameraCmd} view={view} />
+          <CoachAnchorProbe />
 
           {/* Bloom — only the brightest pixels (lit windows, accents, monument
               tip) bloom, so it stays subtle by day and glows after dark. */}

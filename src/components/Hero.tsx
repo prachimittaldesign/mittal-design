@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useIsMobile } from '../lib/useIsMobile'
 import { useIsNight } from '../lib/useIsNight'
@@ -41,6 +41,36 @@ export function Hero({ docked }: { docked: boolean }) {
   const [open, setOpen] = useState(false)
   const toggle = () => setOpen((o) => !o)
   const lockupTrigger = docked && !isMobile
+
+  // The coachmark tour opens/closes this menu on its "monogram" step.
+  useEffect(() => {
+    const openMenu = () => setOpen(true)
+    const closeMenu = () => setOpen(false)
+    window.addEventListener('pm:about-open', openMenu)
+    window.addEventListener('pm:about-close', closeMenu)
+    return () => {
+      window.removeEventListener('pm:about-open', openMenu)
+      window.removeEventListener('pm:about-close', closeMenu)
+    }
+  }, [])
+
+  // First-visit peek: once the lockup docks, the About card opens by itself
+  // for a few seconds so newcomers learn there is something behind the logo.
+  // No ref guard — StrictMode double-invokes the effect, and a ref set on the
+  // first pass would block the re-run after its cleanup cleared the timers.
+  useEffect(() => {
+    if (!docked) return
+    if (localStorage.getItem('pm-about-peek-v1')) return
+    const show = setTimeout(() => setOpen(true), 800)
+    const hide = setTimeout(() => {
+      setOpen(false)
+      localStorage.setItem('pm-about-peek-v1', '1')
+    }, 5600)
+    return () => {
+      clearTimeout(show)
+      clearTimeout(hide)
+    }
+  }, [docked])
 
   // Lockup sits directly on the canvas, so its colours must flip at night.
   const wordColor = night ? 'text-paper' : 'text-ink'
