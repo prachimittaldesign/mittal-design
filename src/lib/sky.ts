@@ -19,7 +19,21 @@ export interface HyderabadClock {
   period: string // "AM" | "PM"
 }
 
+// Dev/QA override: append ?hour=22.5 to force a time-of-day for screenshots.
+// Ignored unless the param is present, so production always uses real IST.
+let FORCED_FRAC: number | null = null
+if (typeof window !== 'undefined') {
+  const p = new URLSearchParams(window.location.search).get('hour')
+  if (p !== null && !Number.isNaN(Number(p))) FORCED_FRAC = ((Number(p) % 24) + 24) % 24
+}
+
 export function getHyderabadTime(date = new Date()): HyderabadClock {
+  if (FORCED_FRAC !== null) {
+    const hour = Math.floor(FORCED_FRAC)
+    const minute = Math.round((FORCED_FRAC - hour) * 60)
+    const h12 = hour % 12 || 12
+    return { hour, minute, frac: FORCED_FRAC, label: `${h12}:${String(minute).padStart(2, '0')}`, period: hour < 12 ? 'AM' : 'PM' }
+  }
   const parts = IST.formatToParts(date)
   const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? '0') % 24
   const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? '0')

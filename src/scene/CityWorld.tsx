@@ -25,6 +25,7 @@ import { Beach } from './Beach'
 import { Campfires } from './Campfires'
 import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
+import { Aurora } from './Aurora'
 import { Rainbow } from './Rainbow'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import { PROJECTS } from '../data/projects'
@@ -112,6 +113,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
         <Ground />
         <CoastEnvironment />
         <Constellations />
+        <Aurora view={view} />
         <Roads />
         <Props />
         {/* The countryside belt + waterfront keep the island honest from every
