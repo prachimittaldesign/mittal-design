@@ -6,14 +6,15 @@ import { easing } from 'maath'
 import { CITY_BOUNDS } from './lib/cityModel'
 import type { CameraCmd, ViewMode } from '../types'
 
-export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 125, 215]
+export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 72, 292]
 export const DEFAULT_CAMERA_POS = new Vector3(...DEFAULT_CAMERA_TUPLE)
 
 // Camera offset (from the pan target) per view mode.
 const VIEW_OFFSET: Record<ViewMode, Vector3> = {
-  // 3D: a scenic coastal overview — pitched ~30° so the sea around the town and
-  // the dusk horizon read behind it, while the city layout stays legible.
-  '3d':      new Vector3(0,  125, 215),
+  // 3D: a low, cinematic postcard angle (~14° pitch) — the island floats on
+  // the sea with the headland mountains and horizon behind it, lighthouse in
+  // the foreground. The whole city reads as a place, not a diagram.
+  '3d':      new Vector3(0,  72, 292),
   // 2D ("map"): a near-top-down view (~6° off vertical) — a Google-Maps-style
   // plan of the island. Orientation is locked north-up (no orbit) so the map
   // stays stable and readable; roads, quadrant colours and water read like a
@@ -35,6 +36,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 export interface FocusTarget {
   x: number
   z: number
+  /** Height of the target building — used to frame the whole tower. */
+  h?: number
   nonce: number
 }
 
@@ -129,15 +132,30 @@ export function CameraRig({
     c.autoRotate =
       view === '3d' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
 
-    // Fly-to a searched/recommended place (preserve viewing angle).
+    // Fly-to a searched/recommended place. The camera settles on a hover
+    // OUTSIDE the city looking inward at the target — approaching along the
+    // centre→building ray guarantees no taller tower stands between camera
+    // and destination (only outskirts lie beyond the perimeter), so the
+    // building and its gold star are always cleanly framed.
     if (focus && focus.nonce !== lastNonce.current) {
       lastNonce.current = focus.nonce
       flying.current = true
-      flyTarget.current.set(focus.x, 0, focus.z)
-      const dir = camera.position.clone().sub(c.target)
-      dir.y = Math.max(dir.y, 34)
-      dir.setLength(96)
-      flyPos.current.copy(flyTarget.current).add(dir)
+      const h = focus.h ?? 14
+      // Aim at the tower's midriff and stand off proportionally to its height,
+      // so a 52-unit skyscraper and an 8-unit cottage both fill the frame with
+      // their label and gold star in view.
+      flyTarget.current.set(focus.x, h * 0.42, focus.z)
+      const out = flyTarget.current.clone()
+      out.y = 0
+      if (out.lengthSq() < 100) {
+        // Central targets have no meaningful "outward" — keep the current azimuth.
+        out.copy(camera.position).sub(c.target)
+        out.y = 0
+        if (out.lengthSq() < 1) out.set(0, 0, 1)
+      }
+      out.setLength(92 + h * 0.8)
+      flyPos.current.copy(flyTarget.current).add(out)
+      flyPos.current.y = Math.max(56, h * 1.35)
       c.enabled = false
     }
 

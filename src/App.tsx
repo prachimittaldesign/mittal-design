@@ -57,7 +57,7 @@ export default function App() {
         onSelectLandmark={(landmark, rect) => setOverlay({ type: 'landmark', landmark, rect })}
       />
 
-      <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, nonce: performance.now() })} />
+      <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, h: p.h, nonce: performance.now() })} />
       <TagPills activeTag={activeTag} onChange={setActiveTag} />
       <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
       <MapControlsHud

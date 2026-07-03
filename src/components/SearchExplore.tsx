@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
-import { PLACES, RECOMMENDED, type Place } from '../scene/lib/places'
+import { PLACES, RECOMMENDED, interpretQuery, type Place } from '../scene/lib/places'
 
 interface SearchExploreProps {
   onFocus: (place: Place) => void
 }
 
 // A Google-Maps-style search box, top-left. Focusing it (empty) reveals
-// recommended places; typing filters all places. Selecting one flies the
-// camera there.
+// recommended places; typing filters all places — and full sentences work
+// too ("show me your recent project" → Ved). Enter flies to the top match;
+// clicking a result flies there directly.
 export function SearchExplore({ onFocus }: SearchExploreProps) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -15,15 +16,24 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
   const results = useMemo(() => {
     const s = query.trim().toLowerCase()
     if (!s) return RECOMMENDED
-    return PLACES.filter(
+    // Literal name/sub matches first; if the query reads like a sentence
+    // (no direct hits), fall through to intent + keyword interpretation.
+    const direct = PLACES.filter(
       (p) => p.label.toLowerCase().includes(s) || p.sub.toLowerCase().includes(s),
     ).slice(0, 7)
+    return direct.length > 0 ? direct : interpretQuery(s)
   }, [query])
 
   const pick = (place: Place) => {
     onFocus(place)
     setQuery('')
     setOpen(false)
+  }
+
+  // Enter executes the search — fly to the best match for whatever was typed,
+  // whether that's a name fragment or a whole sentence.
+  const submit = () => {
+    if (query.trim() && results.length > 0) pick(results[0])
   }
 
   return (
@@ -35,8 +45,16 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 140)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              submit()
+              ;(e.target as HTMLInputElement).blur()
+            }
+          }}
           placeholder="Search Prachi's city…"
           className="hud-input hud-text w-full bg-transparent text-[14px] outline-none"
+          enterKeyHint="search"
         />
       </div>
 

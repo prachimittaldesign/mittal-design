@@ -76,7 +76,19 @@ function classify(code: number, tempC: number, isDay: boolean): Weather {
   return { tempC, code, condition, isDay, rain, icon: iconFor(condition, isDay), label }
 }
 
+// Dev/QA override: ?weather=rain|storm|cloudy|fog|snow|partly|clear forces a
+// condition for screenshots. Ignored in normal use — real Open-Meteo data runs.
+function forcedWeather(): Weather | null {
+  if (typeof window === 'undefined') return null
+  const p = new URLSearchParams(window.location.search).get('weather') as Condition | null
+  if (!p || !['clear', 'partly', 'cloudy', 'fog', 'rain', 'snow', 'storm'].includes(p)) return null
+  const code = { clear: 0, partly: 2, cloudy: 3, fog: 45, rain: 63, snow: 73, storm: 95 }[p]
+  return classify(code, 25, true)
+}
+
 export async function fetchHyderabadWeather(signal?: AbortSignal): Promise<Weather | null> {
+  const forced = forcedWeather()
+  if (forced) return forced
   try {
     const url =
       `https://api.open-meteo.com/v1/forecast?latitude=${HYDERABAD.lat}&longitude=${HYDERABAD.lon}` +

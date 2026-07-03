@@ -42,12 +42,17 @@ function makeCloudTexture(): string {
     ctx.fill()
   }
 
-  // Subtle base shadow for volume/depth.
+  // Subtle base shadow for volume/depth — composited 'source-atop' so it only
+  // paints where cloud lobes already exist. A plain fillRect here stamped a
+  // faint full-width blue rectangle onto EVERY sprite, which read as hard
+  // blue diamonds wherever a segment rendered small or isolated in the sky.
+  ctx.globalCompositeOperation = 'source-atop'
   const shadow = ctx.createLinearGradient(0, 150, 0, N)
   shadow.addColorStop(0, 'rgba(170,185,210,0)')
   shadow.addColorStop(1, 'rgba(150,168,200,0.22)')
   ctx.fillStyle = shadow
   ctx.fillRect(0, 0, N, N)
+  ctx.globalCompositeOperation = 'source-over'
 
   return c.toDataURL()
 }
