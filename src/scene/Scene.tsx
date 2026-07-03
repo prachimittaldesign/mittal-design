@@ -78,7 +78,11 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-paper animate-[worldFadeIn_900ms_100ms_both]">
-      <div className="absolute inset-0">
+      <div
+        className="absolute inset-0"
+        role="application"
+        aria-label="Interactive 3D map of Prachi Mittal's projects. Each building is a project — use the search box to find one, or the project index (first link on the page) for a text version."
+      >
         <Canvas
           className="scene-canvas"
           shadows

@@ -14,7 +14,7 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
   const { fill: accent, label: qLabel } = BIOME[q]
 
   return (
-    <TakeoverShell tileRect={tileRect} accent={accent} onClose={onClose}>
+    <TakeoverShell tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>
       {/* Eyebrow */}
       <div className="mb-5 flex items-center gap-[10px] font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft">
         <span className="h-[3px] w-[28px] flex-shrink-0 rounded-[2px]" style={{ background: accent }} />
@@ -84,6 +84,8 @@ function ImageCarousel({
             src={img.src}
             alt={img.caption ?? `${label} screen ${i + 1}`}
             draggable={false}
+            loading="lazy"
+            decoding="async"
             className={[
               'absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ease-out',
               i === idx ? 'opacity-100' : 'pointer-events-none opacity-0',
@@ -609,6 +611,8 @@ function Carousels({ groups, accent }: { groups?: Project['imageGroups']; accent
                     src={img.src}
                     alt={img.caption ?? `${group.title} screen ${i + 1}`}
                     draggable={false}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full rounded-[12px] object-contain"
                   />
                   {img.caption && (

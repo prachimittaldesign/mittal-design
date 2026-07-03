@@ -7,12 +7,14 @@ interface TakeoverShellProps {
   accent: string
   onClose: () => void
   children: React.ReactNode
+  /** Accessible name announced when the dialog opens (e.g. the project name). */
+  ariaLabel?: string
 }
 
 // The fullscreen "takeover" animation shell: expands a card from a screen rect
 // to fullscreen and collapses back. Content-agnostic — used by both the project
 // overlay and the landmark (place) overlay.
-export function TakeoverShell({ tileRect, accent, onClose, children }: TakeoverShellProps) {
+export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel }: TakeoverShellProps) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -31,6 +33,16 @@ export function TakeoverShell({ tileRect, accent, onClose, children }: TakeoverS
     setOpen(false)
     setTimeout(onClose, 650)
   }
+
+  // Escape closes the dialog — standard keyboard affordance.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const overlayStyle = open
     ? { top: 0, left: 0, width: '100%', height: '100%', borderRadius: 0 }
@@ -57,6 +69,9 @@ export function TakeoverShell({ tileRect, accent, onClose, children }: TakeoverS
 
       {/* Expanding card */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={ariaLabel ?? 'Details'}
         className="fixed z-[50] overflow-hidden bg-paper transition-all duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={overlayStyle}
       >
