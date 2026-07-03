@@ -150,18 +150,25 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
   )
 }
 
-// Persistent control hint — a legible glass pill in the HUD family (the same
-// tokens flip it for night mode). Desktop only; on touch the first-visit
-// coachmarks carry the gesture instructions instead.
+// Persistent control hint — a subtle frosted-glass pill (same light glass as
+// the map Legend, day + night) so it stays legible without shouting over the
+// scene. Desktop only; on touch the first-visit coachmarks carry the gestures.
 function Hint() {
   return (
     <div className="pointer-events-none absolute bottom-4 left-1/2 z-[15] hidden -translate-x-1/2 sm:block">
-      <div className="hud flex items-center gap-[9px] whitespace-nowrap rounded-full border px-[15px] py-[8px] shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
+      <div
+        className="flex items-center gap-[9px] whitespace-nowrap rounded-full border px-[15px] py-[7px] backdrop-blur-xl"
+        style={{
+          background: 'var(--legend-bg)',
+          borderColor: 'var(--legend-border)',
+          boxShadow: '0 3px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.22)',
+        }}
+      >
         <span
-          className="hud-fill h-[6px] w-[6px] rounded-full"
-          style={{ animation: 'pulseDot 1.8s ease-in-out infinite' }}
+          className="hud-soft h-[5px] w-[5px] rounded-full"
+          style={{ background: 'currentColor', animation: 'pulseDot 1.8s ease-in-out infinite' }}
         />
-        <span className="hud-text font-mono text-[10.5px] font-semibold uppercase tracking-[0.13em]">
+        <span className="hud-soft font-mono text-[10px] font-medium uppercase tracking-[0.13em]">
           Drag to pan · Scroll to zoom · Right-drag to orbit · Click a building
         </span>
       </div>
