@@ -43,6 +43,9 @@
   --hud-soft: #4a463f;
   --hud-accent-bg: #1b1b1b;
   --hud-accent-text: #fbf7ee;
+  /* Legend glass — much lighter than the HUD panels so it whispers, not shouts. */
+  --legend-bg: rgba(255, 255, 255, 0.42);
+  --legend-border: rgba(255, 255, 255, 0.45);
 }
 body.night {
   --hud-bg: rgba(20, 28, 43, 0.72);
@@ -53,6 +56,8 @@ body.night {
   --hud-soft: rgba(242, 237, 225, 0.66);
   --hud-accent-bg: #f2ede1;
   --hud-accent-text: #1b1b1b;
+  --legend-bg: rgba(20, 28, 43, 0.38);
+  --legend-border: rgba(255, 255, 255, 0.16);
 }
 
 @layer components {

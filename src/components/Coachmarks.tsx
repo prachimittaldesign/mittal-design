@@ -106,16 +106,12 @@ export function Coachmarks({ suppressed }: { suppressed: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const caretRef = useRef<HTMLSpanElement>(null)
 
-  // First visit only. The About-card peek plays first on a fresh visit; the
-  // tour begins a beat after it closes, so the two never share the screen.
-  // If the peek already ran on an earlier visit, fall back to a plain delay.
+  // First visit only. The About-card peek plays on every load; the tour begins
+  // a beat after that peek closes, so the two never share the screen. A safety
+  // net starts the tour anyway if the peek event never arrives.
   useEffect(() => {
     if (localStorage.getItem(SEEN_KEY)) return
     const timers: number[] = []
-    if (localStorage.getItem('pm-about-peek-v1')) {
-      timers.push(window.setTimeout(() => setVisible(true), 3000))
-      return () => timers.forEach(clearTimeout)
-    }
     const begin = () => timers.push(window.setTimeout(() => setVisible(true), 700))
     window.addEventListener('pm:peek-done', begin, { once: true })
     timers.push(window.setTimeout(begin, 12000)) // safety net if the peek never fires

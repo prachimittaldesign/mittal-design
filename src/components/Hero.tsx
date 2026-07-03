@@ -54,19 +54,18 @@ export function Hero({ docked }: { docked: boolean }) {
     }
   }, [])
 
-  // First-visit peek: once the lockup docks, the About card opens by itself
-  // for a few seconds so newcomers learn there is something behind the logo.
-  // No ref guard — StrictMode double-invokes the effect, and a ref set on the
-  // first pass would block the re-run after its cleanup cleared the timers.
+  // Peek: once the lockup docks, the About card opens by itself for a few
+  // seconds — EVERY visit, new or returning — so the profile behind the logo
+  // is always surfaced, then quietly closes. No ref guard: StrictMode
+  // double-invokes the effect and a ref set on the first pass would block the
+  // re-run after its cleanup cleared the timers.
   useEffect(() => {
     if (!docked) return
-    if (localStorage.getItem('pm-about-peek-v1')) return
     const show = setTimeout(() => setOpen(true), 800)
     const hide = setTimeout(() => {
       setOpen(false)
-      localStorage.setItem('pm-about-peek-v1', '1')
-      // Hand the stage to the coachmark tour — it waits for this so the two
-      // popups never share the screen.
+      // Hand the stage to the coachmark tour (first visit only) — it waits for
+      // this so the two popups never share the screen.
       window.dispatchEvent(new Event('pm:peek-done'))
     }, 5600)
     return () => {

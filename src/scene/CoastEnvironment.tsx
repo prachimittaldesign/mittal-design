@@ -234,7 +234,8 @@ function Boat({ spec }: { spec: BoatSpec }) {
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (ref.current) {
-      ref.current.position.y = -0.2 + Math.sin(t * 0.8 + spec.bobPhase) * 0.18
+      // Ride the sea surface (y = -0.7) rather than hovering above it.
+      ref.current.position.y = -0.52 + Math.sin(t * 0.8 + spec.bobPhase) * 0.1
       ref.current.rotation.z = Math.sin(t * 0.6 + spec.bobPhase) * 0.04
     }
   })

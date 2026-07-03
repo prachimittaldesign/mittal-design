@@ -42,7 +42,12 @@ function buildBoats(): MooredBoat[] {
   const out: MooredBoat[] = []
   PIER_ANGLES.forEach((t, pi) => {
     for (let side = 0; side < 2; side++) {
-      const r = 206 + side * 6 + pi * 1.5
+      // The shore is ringed to r≈228 (stone edge at 213 + submerged-rock band
+      // to 224 + surf line to 228), all sitting ABOVE the sea plane. Mooring a
+      // boat inside that band left those rings poking through the hull ("boats
+      // in the sand"). r ≥ 230 anchors every boat just offshore on clean open
+      // sea, aligned to its pier so it still reads as part of the marina.
+      const r = 230 + side * 5 + pi * 2
       const lateral = (side === 0 ? 1 : -1) * 3.4
       // Perpendicular offset from the pier centerline
       const px = Math.cos(t) * r - Math.sin(t) * lateral
@@ -64,7 +69,10 @@ function Boat({ spec }: { spec: MooredBoat }) {
   useFrame((state) => {
     const t = state.clock.elapsedTime
     if (ref.current) {
-      ref.current.position.y = -0.25 + Math.sin(t * 0.7 + spec.phase) * 0.14
+      // Sea surface sits at y = -0.7. Rest the hull so the waterline cuts
+      // through it (a little draft below, most of the hull above) and bob
+      // gently — so it rides the water instead of hovering over / under it.
+      ref.current.position.y = -0.58 + Math.sin(t * 0.7 + spec.phase) * 0.06
       ref.current.rotation.z = Math.sin(t * 0.55 + spec.phase) * 0.035
     }
   })

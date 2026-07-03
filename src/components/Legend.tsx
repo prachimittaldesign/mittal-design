@@ -1,10 +1,19 @@
 import { EFFORT_RAMP, OWNERSHIP_COLORS } from '../scene/lib/cityTheme'
 import type { MapLayer } from '../types'
 
-// Legend for the active map layer, shown bottom-center.
+// Legend for the active map layer, shown bottom-center. Frosted glass: a very
+// light translucent fill with a strong backdrop blur, so it reads clearly
+// without the loud solid panel competing with the scene behind it.
 export function Legend({ layer }: { layer: MapLayer }) {
   return (
-    <div className="hud pointer-events-none absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 z-20 max-w-[70vw] -translate-x-1/2 rounded-[18px] border px-[14px] py-[8px] shadow-[0_4px_18px_rgba(0,0,0,0.12)] backdrop-blur-md sm:bottom-[58px] sm:max-w-none sm:rounded-full">
+    <div
+      className="pointer-events-none absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 z-20 max-w-[70vw] -translate-x-1/2 rounded-[18px] border px-[14px] py-[8px] backdrop-blur-xl sm:bottom-[58px] sm:max-w-none sm:rounded-full"
+      style={{
+        background: 'var(--legend-bg)',
+        borderColor: 'var(--legend-border)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.25)',
+      }}
+    >
       {layer === 'effort' ? <EffortLegend /> : <OwnershipLegend />}
     </div>
   )

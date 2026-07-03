@@ -2,6 +2,14 @@ import { PROJECTS } from '../../data/projects'
 import { LANDMARKS } from '../../data/landmarks'
 import { quadrant, BIOME } from '../../lib/iso'
 import { gridToWorld, heightFor } from './project3d'
+import { LIGHTHOUSE } from './cityModel'
+
+// A few projects render somewhere other than their grid cell; search must fly
+// to the ACTUAL model position, not the graph coordinate. The Studio is the
+// lighthouse, which stands at a fixed spot near the Past gateway.
+const POSITION_OVERRIDES: Record<string, [number, number]> = {
+  arch: [LIGHTHOUSE.position[0], LIGHTHOUSE.position[2]],
+}
 
 // A unified registry of everything searchable / flyable in the city — projects
 // and landmarks share one shape so search, recommendations, and fly-to iterate
@@ -22,7 +30,8 @@ export interface Place {
 
 export const PLACES: Place[] = [
   ...PROJECTS.map((p): Place => {
-    const [x, , z] = gridToWorld(p.gx, p.gy)
+    const [gx, , gz] = gridToWorld(p.gx, p.gy)
+    const [x, z] = POSITION_OVERRIDES[p.id] ?? [gx, gz]
     return {
       id: p.id,
       kind: 'project',
