@@ -165,10 +165,10 @@ function Hint() {
         }}
       >
         <span
-          className="hud-soft h-[5px] w-[5px] rounded-full"
+          className="glass-label h-[5px] w-[5px] rounded-full"
           style={{ background: 'currentColor', animation: 'pulseDot 1.8s ease-in-out infinite' }}
         />
-        <span className="hud-soft font-mono text-[10px] font-medium uppercase tracking-[0.13em]">
+        <span className="glass-label font-mono text-[10px] font-semibold uppercase tracking-[0.13em]">
           Drag to pan · Scroll to zoom · Right-drag to orbit · Click a building
         </span>
       </div>

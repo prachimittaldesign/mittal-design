@@ -21,15 +21,15 @@ export function Legend({ layer }: { layer: MapLayer }) {
 
 function EffortLegend() {
   return (
-    <div className="hud-soft flex flex-wrap items-center justify-center gap-x-[10px] gap-y-1 text-[9px] font-medium sm:text-[10px]">
-      <span className="hud-text font-mono uppercase tracking-[0.14em]">Effort</span>
-      <span>Light</span>
-      <span className="flex overflow-hidden rounded-[3px]">
+    <div className="flex flex-wrap items-center justify-center gap-x-[10px] gap-y-1 text-[9px] font-semibold sm:text-[10px]">
+      <span className="glass-label font-mono uppercase tracking-[0.14em]">Effort</span>
+      <span className="glass-label-soft">Light</span>
+      <span className="flex overflow-hidden rounded-[3px] ring-1 ring-black/10">
         {EFFORT_RAMP.map((c) => (
           <span key={c} className="h-[12px] w-[16px]" style={{ background: c }} />
         ))}
       </span>
-      <span>Heavy</span>
+      <span className="glass-label-soft">Heavy</span>
     </div>
   )
 }
@@ -43,11 +43,11 @@ const OWNERSHIP_LABELS: Record<string, string> = {
 
 function OwnershipLegend() {
   return (
-    <div className="hud-soft flex flex-wrap items-center justify-center gap-x-[12px] gap-y-1 text-[9px] font-medium sm:text-[10px]">
-      <span className="hud-text font-mono uppercase tracking-[0.14em]">Ownership</span>
+    <div className="flex flex-wrap items-center justify-center gap-x-[12px] gap-y-1 text-[9px] font-semibold sm:text-[10px]">
+      <span className="glass-label font-mono uppercase tracking-[0.14em]">Ownership</span>
       {Object.entries(OWNERSHIP_COLORS).map(([key, color]) => (
-        <span key={key} className="flex items-center gap-[5px]">
-          <span className="h-[11px] w-[11px] rounded-[2px]" style={{ background: color }} />
+        <span key={key} className="glass-label-soft flex items-center gap-[5px]">
+          <span className="h-[11px] w-[11px] rounded-[2px] ring-1 ring-black/10" style={{ background: color }} />
           {OWNERSHIP_LABELS[key]}
         </span>
       ))}

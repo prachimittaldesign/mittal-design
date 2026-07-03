@@ -43,9 +43,13 @@
   --hud-soft: #4a463f;
   --hud-accent-bg: #1b1b1b;
   --hud-accent-text: #fbf7ee;
-  /* Legend glass — much lighter than the HUD panels so it whispers, not shouts. */
-  --legend-bg: rgba(255, 255, 255, 0.42);
-  --legend-border: rgba(255, 255, 255, 0.45);
+  /* Frosted-glass chips (map Legend + control hint) — lighter than the solid
+     HUD panels so they whisper, but paired with a text halo (below) that keeps
+     the label crisp over any background. */
+  --legend-bg: rgba(255, 255, 255, 0.5);
+  --legend-border: rgba(255, 255, 255, 0.55);
+  /* Pale halo behind dark day text so it reads over dark scenery too. */
+  --legend-halo: rgba(255, 255, 255, 0.85);
 }
 body.night {
   --hud-bg: rgba(20, 28, 43, 0.72);
@@ -56,8 +60,10 @@ body.night {
   --hud-soft: rgba(242, 237, 225, 0.66);
   --hud-accent-bg: #f2ede1;
   --hud-accent-text: #1b1b1b;
-  --legend-bg: rgba(20, 28, 43, 0.38);
-  --legend-border: rgba(255, 255, 255, 0.16);
+  --legend-bg: rgba(20, 28, 43, 0.46);
+  --legend-border: rgba(255, 255, 255, 0.18);
+  /* Dark halo behind light night text so it reads over bright scenery too. */
+  --legend-halo: rgba(6, 12, 22, 0.7);
 }
 
 @layer components {
@@ -115,6 +121,24 @@ body.night {
   }
   .hud-input::placeholder {
     color: var(--hud-soft);
+  }
+  /* Text on the frosted Legend / hint chips: full-contrast colour plus a
+     soft same-theme halo, so it stays readable over any scene behind the
+     translucent glass (accessibility over a variable 3D background). */
+  .glass-label {
+    color: var(--hud-text);
+    text-shadow:
+      0 0 3px var(--legend-halo),
+      0 1px 2px var(--legend-halo);
+    transition: color 700ms;
+  }
+  .glass-label-soft {
+    color: var(--hud-text);
+    opacity: 0.9;
+    text-shadow:
+      0 0 3px var(--legend-halo),
+      0 1px 2px var(--legend-halo);
+    transition: color 700ms;
   }
 }
 
