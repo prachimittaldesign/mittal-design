@@ -1,41 +1,34 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Scene } from './scene/Scene'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { ProjectOverlay } from './components/ProjectOverlay'
 import { PlaceOverlay } from './components/PlaceOverlay'
-import { SearchExplore } from './components/SearchExplore'
-import { TagPills } from './components/TagPills'
-import { LayersControl } from './components/LayersControl'
-import { MapControlsHud } from './components/MapControlsHud'
-import { MusicPlayer } from './components/MusicPlayer'
-import { Legend } from './components/Legend'
-import { Coachmarks } from './components/Coachmarks'
-import { NoWebGL } from './components/NoWebGL'
+import { Coverflow } from './components/Coverflow'
+import { SceneErrorBoundary } from './components/SceneErrorBoundary'
 import { PROJECTS } from './data/projects'
+import { PLACES } from './scene/lib/places'
 import type { FocusTarget } from './scene/CameraRig'
-import { PLACES, type Place } from './scene/lib/places'
 import { useIsNight } from './lib/useIsNight'
-import type { Appearance, CameraCmd, LayerState, MapLayer, ViewMode, Project, Landmark } from './types'
+import { useLowFps } from './lib/useLowFps'
+import type { Project, Landmark } from './types'
+
+// The heavy three.js / react-three stack lives behind a lazy boundary, so the
+// initial download is the tiny shell + HTML gallery. The 3D city streams in
+// after; on slow/broken/laggy loads the gallery carries the experience.
+const CityExperience = lazy(() => import('./CityExperience'))
 
 type Overlay =
   | { type: 'project'; project: Project; rect: DOMRect }
   | { type: 'landmark'; landmark: Landmark; rect: DOMRect }
   | null
 
-// ── Shareable URLs ────────────────────────────────────────────────────────────
-// Every project has a real URL (/projects/<id>) — prerendered at build time
-// for crawlers, and handled here for humans: deep links open the case study
-// over the city, opening a case study updates the address bar, and the back
-// button closes it again.
 const DEFAULT_TITLE = 'Prachi Mittal — Portfolio'
 
 function projectFromPath(pathname: string): Project | null {
   const m = pathname.match(/^\/projects\/([\w-]+)\/?$/)
   return m ? PROJECTS.find((p) => p.id === m[1]) ?? null : null
 }
-function titleFor(p: Project): string {
-  return `${p.label} — ${p.sub} | Prachi Mittal`
-}
-// Deep links have no clicked tile to expand from — grow from screen centre.
+const titleFor = (p: Project) => `${p.label} — ${p.sub} | Prachi Mittal`
+
+// Deep links / gallery picks have no clicked tile — grow from screen centre.
 function centerRect(): DOMRect {
   const w = typeof window === 'undefined' ? 1200 : window.innerWidth
   const h = typeof window === 'undefined' ? 800 : window.innerHeight
@@ -53,20 +46,18 @@ function webglSupported(): boolean {
 
 export default function App() {
   const [overlay, setOverlay] = useState<Overlay>(null)
-  const [focus, setFocus] = useState<FocusTarget | null>(null)
-  const [activeTag, setActiveTag] = useState<string | null>(null)
-  const [layers, setLayers] = useState<LayerState>({
-    showLabels: true,
-    showScenery: true,
-    showLandmarks: true,
-  })
-  const [layer, setLayer] = useState<MapLayer | null>(null)
-  const [view, setView] = useState<ViewMode>('3d')
-  const [cameraCmd, setCameraCmd] = useState<CameraCmd | null>(null)
+  const [focusRequest, setFocusRequest] = useState<FocusTarget | null>(null)
   const [hasWebGL] = useState(webglSupported)
+  const [retryKey, setRetryKey] = useState(0)
+  // The lag prompt → user chose the gallery over the (laggy) 3D city.
+  const [galleryOverride, setGalleryOverride] = useState(false)
+  const [lagDismissed, setLagDismissed] = useState(false)
 
-  // Flip the whole HUD to dark "night glass" when Hyderabad is dark. Toggled on
-  // <body> so portaled menus (About) inherit the tokens too.
+  // Watch FPS only once the city is actually the active experience.
+  const cityActive = hasWebGL && !galleryOverride
+  const lagging = useLowFps(cityActive)
+
+  // Flip the whole HUD to dark "night glass" when Hyderabad is dark.
   const night = useIsNight()
   useEffect(() => {
     document.body.classList.toggle('night', night)
@@ -77,10 +68,8 @@ export default function App() {
     setOverlay({ type: 'project', project, rect })
     document.title = titleFor(project)
     if (push) history.pushState({ project: project.id }, '', `/projects/${project.id}`)
-    // Aim the camera at the building too, so closing the overlay leaves the
-    // visitor standing in front of what they were reading about.
     const place = PLACES.find((pl) => pl.id === project.id)
-    if (place) setFocus({ x: place.x, z: place.z, h: place.h, nonce: performance.now() })
+    if (place) setFocusRequest({ x: place.x, z: place.z, h: place.h, nonce: performance.now() })
   }, [])
 
   const closeOverlay = useCallback((push: boolean) => {
@@ -102,62 +91,95 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPop)
   }, [openProject, closeOverlay])
 
-  const appearance = useMemo<Appearance>(
-    () => ({ mode: layer ? 'layer' : activeTag ? 'tag' : 'default', activeTag, layer }),
-    [layer, activeTag],
-  )
-
-  // Graceful fallback: no WebGL → an accessible project list instead of a
-  // blank canvas. The case-study overlays are plain DOM, so they still work.
-  if (!hasWebGL) {
-    return (
-      <div className="relative h-full w-full overflow-hidden">
-        <NoWebGL onOpen={(p) => openProject(p, centerRect(), true)} />
-        {overlay?.type === 'project' && (
-          <ProjectOverlay
-            project={overlay.project}
-            tileRect={overlay.rect}
-            onClose={() => closeOverlay(true)}
-          />
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative h-full w-full overflow-hidden">
-      <Scene
-        appearance={appearance}
-        layers={layers}
-        view={view}
-        focus={focus}
-        cameraCmd={cameraCmd}
-        onSelect={(project, rect) => openProject(project, rect, true)}
-        onSelectLandmark={(landmark, rect) => setOverlay({ type: 'landmark', landmark, rect })}
-      />
-
-      <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, h: p.h, nonce: performance.now() })} />
-      <TagPills activeTag={activeTag} onChange={setActiveTag} />
-      <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
-      <MapControlsHud
-        view={view}
-        onSetView={setView}
-        onCmd={(type) => setCameraCmd({ type, nonce: performance.now() })}
-      />
-      <MusicPlayer />
-      {layer && <Legend layer={layer} />}
-      <Coachmarks suppressed={overlay !== null} />
-
+  // The shared case-study / place overlays (plain DOM — work in every mode).
+  const overlays = (
+    <>
       {overlay?.type === 'project' && (
-        <ProjectOverlay
-          project={overlay.project}
-          tileRect={overlay.rect}
-          onClose={() => closeOverlay(true)}
-        />
+        <ProjectOverlay project={overlay.project} tileRect={overlay.rect} onClose={() => closeOverlay(true)} />
       )}
       {overlay?.type === 'landmark' && (
         <PlaceOverlay landmark={overlay.landmark} onClose={() => setOverlay(null)} />
       )}
+    </>
+  )
+
+  // ── Fallback modes: no WebGL, or the user escaped a laggy scene ──────────────
+  if (!hasWebGL) {
+    return (
+      <div className="relative h-full w-full overflow-hidden">
+        <Coverflow mode="nowebgl" onOpen={(p) => openProject(p, centerRect(), true)} />
+        {overlays}
+      </div>
+    )
+  }
+  if (galleryOverride) {
+    return (
+      <div className="relative h-full w-full overflow-hidden">
+        <Coverflow
+          mode="gallery"
+          onOpen={(p) => openProject(p, centerRect(), true)}
+          onClose={() => setGalleryOverride(false)}
+        />
+        {overlays}
+      </div>
+    )
+  }
+
+  // ── The 3D city (lazy) with gallery fallbacks for slow load + errors ─────────
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      <SceneErrorBoundary
+        resetKey={retryKey}
+        fallback={(retry) => (
+          <Coverflow
+            mode="error"
+            onOpen={(p) => openProject(p, centerRect(), true)}
+            onRetry={() => {
+              retry()
+              setRetryKey((k) => k + 1)
+            }}
+          />
+        )}
+      >
+        <Suspense fallback={<Coverflow mode="loading" onOpen={(p) => openProject(p, centerRect(), true)} />}>
+          <CityExperience
+            key={retryKey}
+            overlayActive={overlay !== null}
+            focusRequest={focusRequest}
+            onSelectProject={(project, rect) => openProject(project, rect, true)}
+            onSelectLandmark={(landmark, rect) => setOverlay({ type: 'landmark', landmark, rect })}
+          />
+        </Suspense>
+      </SceneErrorBoundary>
+
+      {/* Lag rescue: a device struggling to render can drop to the gallery. */}
+      {lagging && !lagDismissed && overlay === null && (
+        <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+56px)] left-1/2 z-[40] w-[min(340px,calc(100vw-24px))] -translate-x-1/2 sm:bottom-[70px]">
+          <div className="hud-strong flex items-center gap-3 rounded-[16px] border p-[14px] shadow-[0_14px_44px_rgba(0,0,0,0.18)] backdrop-blur-md">
+            <div className="min-w-0 flex-1">
+              <div className="hud-text text-[13.5px] font-bold">Running slowly?</div>
+              <div className="hud-soft text-[12px] leading-[1.45]">View the projects as a fast gallery instead.</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setGalleryOverride(true)}
+              className="hud-on flex-shrink-0 rounded-full px-[13px] py-[7px] text-[12px] font-bold"
+            >
+              Open gallery
+            </button>
+            <button
+              type="button"
+              onClick={() => setLagDismissed(true)}
+              aria-label="Dismiss"
+              className="hud-soft flex-shrink-0 text-[16px] leading-none transition-opacity hover:opacity-70"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {overlays}
     </div>
   )
 }

@@ -9,6 +9,38 @@ interface ProjectOverlayProps {
   onClose: () => void
 }
 
+// An <img> that degrades to a labelled placeholder if the source fails to load
+// (e.g. a dropped connection mid-download) instead of a broken-image icon.
+function SafeImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string
+  alt: string
+  className?: string
+}) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return (
+      <div className={`flex items-center justify-center bg-black/[0.04] text-[12px] font-medium text-ink-soft ${className ?? ''}`}>
+        <span className="px-4 text-center">Image unavailable — {alt}</span>
+      </div>
+    )
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      draggable={false}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={className}
+    />
+  )
+}
+
 export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayProps) {
   const q = quadrant(project.gx, project.gy)
   const { fill: accent, label: qLabel } = BIOME[q]
@@ -79,13 +111,10 @@ function ImageCarousel({
         style={{ aspectRatio: aspect ?? '16 / 9' }}
       >
         {images.map((img, i) => (
-          <img
+          <SafeImage
             key={i}
             src={img.src}
             alt={img.caption ?? `${label} screen ${i + 1}`}
-            draggable={false}
-            loading="lazy"
-            decoding="async"
             className={[
               'absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ease-out',
               i === idx ? 'opacity-100' : 'pointer-events-none opacity-0',
@@ -607,12 +636,9 @@ function Carousels({ groups, accent }: { groups?: Project['imageGroups']; accent
             <div className="flex flex-col gap-8">
               {group.images.map((img, i) => (
                 <div key={i}>
-                  <img
+                  <SafeImage
                     src={img.src}
                     alt={img.caption ?? `${group.title} screen ${i + 1}`}
-                    draggable={false}
-                    loading="lazy"
-                    decoding="async"
                     className="w-full rounded-[12px] object-contain"
                   />
                   {img.caption && (

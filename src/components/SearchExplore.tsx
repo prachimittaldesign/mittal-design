@@ -87,6 +87,16 @@ export function SearchExplore({ onFocus }: SearchExploreProps) {
           ))}
         </div>
       )}
+
+      {/* Empty state — a typed query that matches nothing. */}
+      {open && query.trim() && results.length === 0 && (
+        <div className="hud-strong mt-2 rounded-[18px] border px-[18px] py-[14px] shadow-[0_10px_34px_rgba(0,0,0,0.16)] backdrop-blur-md">
+          <p className="hud-text text-[13px] font-semibold">No matches for “{query.trim()}”</p>
+          <p className="hud-soft mt-1 text-[12px] leading-[1.5]">
+            Try a project name (Ved, Revee), a discipline (AI, TV, Enterprise), or “recent”.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
