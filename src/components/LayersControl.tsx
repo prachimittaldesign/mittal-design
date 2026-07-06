@@ -66,6 +66,8 @@ export function LayersControl({ layers, onChange, layer, onLayerChange }: Layers
       )}
 
       <button
+        data-tip="Map layers & colour-by"
+        data-tip-pos="right"
         onClick={() => setOpen((o) => !o)}
         className={[HUD_ICON_BTN, open ? 'hud-bd-on' : ''].join(' ')}
         aria-label="Map layers"

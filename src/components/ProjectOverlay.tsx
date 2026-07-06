@@ -126,6 +126,7 @@ function ImageCarousel({
           <>
             <button
               type="button"
+              data-tip="Previous screen"
               onClick={prev}
               aria-label="Previous screen"
               className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
@@ -136,6 +137,7 @@ function ImageCarousel({
             </button>
             <button
               type="button"
+              data-tip="Next screen"
               onClick={next}
               aria-label="Next screen"
               className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.14)] backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"

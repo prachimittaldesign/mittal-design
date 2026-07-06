@@ -96,6 +96,8 @@ export function Hero({ docked }: { docked: boolean }) {
         onClick={lockupTrigger ? toggle : undefined}
         role={lockupTrigger ? 'button' : undefined}
         aria-label={lockupTrigger ? 'About Prachi Mittal' : undefined}
+        data-tip={lockupTrigger ? 'About · Resume · Links' : undefined}
+        data-tip-pos="bottom"
       >
         <div className="flex items-center gap-4">
           <div className={`text-[clamp(30px,9vw,90px)] font-extrabold tracking-[-0.04em] leading-[0.9] transition-colors duration-700 ${wordColor}`}>

@@ -28,6 +28,8 @@ export function TagPills({ activeTag, onChange }: TagPillsProps) {
         return (
           <button
             key={tag}
+            data-tip={active ? 'Clear filter' : `Highlight ${tag} projects`}
+            data-tip-pos="bottom"
             onClick={() => onChange(active ? null : tag)}
             className={[
               'pointer-events-auto flex flex-shrink-0 items-center gap-[6px] rounded-full border px-[13px] py-[7px]',

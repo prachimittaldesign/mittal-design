@@ -31,6 +31,8 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
       {/* View mode: 3D → 2D → Street View (skyline presentation) */}
       <div className="hud flex flex-col overflow-hidden rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
         <button
+          data-tip="3D city view"
+          data-tip-pos="left"
           onClick={() => onSetView('3d')}
           className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold transition-colors ${view === '3d' ? 'hud-on' : 'hud-text hud-hover'}`}
           aria-label="3D city view"
@@ -39,6 +41,8 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
         </button>
         <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
+          data-tip="2D map view"
+          data-tip-pos="left"
           onClick={() => onSetView('iso')}
           className={`flex h-[44px] w-[44px] items-center justify-center text-[11px] font-bold transition-colors ${view === 'iso' ? 'hud-on' : 'hud-text hud-hover'}`}
           aria-label="2D map view"
@@ -47,6 +51,8 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
         </button>
         <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
+          data-tip="Street view — walk the skyline"
+          data-tip-pos="left"
           onClick={() => onSetView('skyline')}
           className={`flex h-[44px] w-[44px] items-center justify-center transition-colors ${view === 'skyline' ? 'hud-on' : 'hud-text hud-hover'}`}
           aria-label="Street view / skyline presentation"
@@ -57,7 +63,7 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
       </div>
 
       {/* Recenter */}
-      <button onClick={() => onCmd('recenter')} className={`${btn} hud-text`} aria-label="Recenter">
+      <button data-tip="Recenter the city" data-tip-pos="left" onClick={() => onCmd('recenter')} className={`${btn} hud-text`} aria-label="Recenter">
         <svg viewBox="0 0 24 24" fill="none" className="h-[19px] w-[19px]">
           <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -67,6 +73,8 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
       {/* Zoom */}
       <div className="hud flex flex-col overflow-hidden rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
         <button
+          data-tip="Zoom in"
+          data-tip-pos="left"
           onClick={() => onCmd('zoomIn')}
           className="hud-text hud-hover flex h-[44px] w-[44px] items-center justify-center transition-colors"
           aria-label="Zoom in"
@@ -77,6 +85,8 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
         </button>
         <div style={{ background: 'var(--hud-border)' }} className="h-px" />
         <button
+          data-tip="Zoom out"
+          data-tip-pos="left"
           onClick={() => onCmd('zoomOut')}
           className="hud-text hud-hover flex h-[44px] w-[44px] items-center justify-center transition-colors"
           aria-label="Zoom out"

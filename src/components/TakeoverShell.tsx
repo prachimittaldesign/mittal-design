@@ -93,6 +93,8 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel }
 
       {/* Close button */}
       <button
+        data-tip="Close · Esc"
+        data-tip-pos="left"
         onClick={handleClose}
         className={[
           'fixed right-[max(22px,env(safe-area-inset-right))] top-[max(22px,env(safe-area-inset-top))] z-[60] flex h-11 w-11 items-center justify-center',

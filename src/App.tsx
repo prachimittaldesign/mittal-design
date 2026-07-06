@@ -3,6 +3,7 @@ import { ProjectOverlay } from './components/ProjectOverlay'
 import { PlaceOverlay } from './components/PlaceOverlay'
 import { Coverflow } from './components/Coverflow'
 import { SceneErrorBoundary } from './components/SceneErrorBoundary'
+import { TooltipLayer } from './components/TooltipLayer'
 import { PROJECTS } from './data/projects'
 import { PLACES } from './scene/lib/places'
 import type { FocusTarget } from './scene/CameraRig'
@@ -107,6 +108,7 @@ export default function App() {
   if (!hasWebGL) {
     return (
       <div className="relative h-full w-full overflow-hidden">
+        <TooltipLayer />
         <Coverflow mode="nowebgl" onOpen={(p) => openProject(p, centerRect(), true)} />
         {overlays}
       </div>
@@ -115,6 +117,7 @@ export default function App() {
   if (galleryOverride) {
     return (
       <div className="relative h-full w-full overflow-hidden">
+        <TooltipLayer />
         <Coverflow
           mode="gallery"
           onOpen={(p) => openProject(p, centerRect(), true)}
@@ -128,6 +131,7 @@ export default function App() {
   // ── The 3D city (lazy) with gallery fallbacks for slow load + errors ─────────
   return (
     <div className="relative h-full w-full overflow-hidden">
+      <TooltipLayer />
       <SceneErrorBoundary
         resetKey={retryKey}
         fallback={(retry) => (

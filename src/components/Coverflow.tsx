@@ -246,6 +246,8 @@ function NavArrow({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
   return (
     <button
       type="button"
+      data-tip={dir === 1 ? 'Next projects' : 'Previous projects'}
+      data-tip-pos={dir === 1 ? 'left' : 'right'}
       onClick={onClick}
       aria-label={dir === 1 ? 'Next projects' : 'Previous projects'}
       className={[

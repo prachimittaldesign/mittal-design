@@ -83,6 +83,8 @@ export function MusicPlayer() {
       <div className="pointer-events-auto absolute bottom-4 left-4 z-20 hidden sm:block">
         <div className="hud flex max-w-[260px] items-center gap-[8px] rounded-full border px-[10px] py-[7px] shadow-[0_3px_14px_rgba(0,0,0,0.12)] backdrop-blur-md">
           <button
+            data-tip={playing ? 'Pause' : 'Play'}
+            data-tip-pos="top"
             onClick={toggleDesktop}
             aria-label={playing ? 'Pause' : 'Play'}
             className="hud-fill hud-fill-text flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105"
@@ -98,6 +100,8 @@ export function MusicPlayer() {
           {/* Next */}
           {PLAYLIST.length > 1 && (
             <button
+              data-tip="Next track"
+              data-tip-pos="top"
               onClick={nextDesktop}
               aria-label="Next track"
               className="hud-soft flex h-6 w-6 flex-shrink-0 items-center justify-center transition-colors hover:hud-text"
@@ -109,6 +113,8 @@ export function MusicPlayer() {
           {/* Stop */}
           {playing && (
             <button
+              data-tip="Stop"
+              data-tip-pos="top"
               onClick={stop}
               aria-label="Stop"
               className="hud-soft flex h-6 w-6 flex-shrink-0 items-center justify-center transition-colors hover:hud-text"
