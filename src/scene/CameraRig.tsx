@@ -19,7 +19,7 @@ const VIEW_OFFSET: Record<ViewMode, Vector3> = {
   // plan of the island. Orientation is locked north-up (no orbit) so the map
   // stays stable and readable; roads, quadrant colours and water read like a
   // real map layer while the buildings keep a faint bit of dimensionality.
-  iso:       new Vector3(0,  360, 38),
+  iso:       new Vector3(0,  295, 32),
   // Street view: a low eye, pushed OUT over the water (past the LAND_R≈206
   // coastline) so shimmering reflections fill the foreground and the lit town
   // rises across the bay against the dusk sky — the closest match to Amalfi.

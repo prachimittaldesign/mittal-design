@@ -126,7 +126,8 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
 
   // The user toggle gates the name labels; they stay visible in 2D too, where
   // Building / Landmark counter-scale them so the flatten doesn't squash them.
-  const showLabel = layers.showLabels
+  // In the 2D map the DOM markers replace the tiny 3D name plates entirely.
+  const showLabel = layers.showLabels && view !== 'iso'
 
   return (
     <>

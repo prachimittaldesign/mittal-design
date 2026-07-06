@@ -5,6 +5,8 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import type { Points } from 'three'
 import { CameraRig, DEFAULT_CAMERA_TUPLE, type FocusTarget } from './CameraRig'
 import { CoachAnchorProbe } from './CoachAnchorProbe'
+import { MapMarkerProbe } from './MapMarkerProbe'
+import { MapMarkers } from '../components/MapMarkers'
 import { CityWorld } from './CityWorld'
 import { DayNight } from './DayNight'
 import { DaySky } from './DaySky'
@@ -139,6 +141,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
 
           <CameraRig focus={focus} cmd={cameraCmd} view={view} />
           <CoachAnchorProbe />
+          <MapMarkerProbe view={view} />
 
           {/* Bloom — only the brightest pixels (lit windows, accents, monument
               tip) bloom, so it stays subtle by day and glows after dark. */}
@@ -155,6 +158,9 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
       <Loader />
 
       {/* DOM HUD over the canvas */}
+      {view === 'iso' && (
+        <MapMarkers onSelectProject={onSelect} onSelectLandmark={onSelectLandmark} />
+      )}
       <Hero docked={docked} />
       <WeatherClock time={time} weather={weather} />
       <Hint />
