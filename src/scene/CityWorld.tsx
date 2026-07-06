@@ -39,6 +39,10 @@ interface CityWorldProps {
   weather: Weather | null
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: LandmarkData, rect: DOMRect) => void
+  /** Fires with the hovered building's project, or null on hover-out — drives
+      the cursor-following "click to open" tooltip (buildings are WebGL, not
+      DOM, so they can't use the data-tip attribute the rest of the HUD uses). */
+  onHoverProject?: (project: Project | null) => void
 }
 
 // Project a building's world bounding box to a screen-space rect, so the DOM
@@ -77,11 +81,28 @@ function projectRect(object: Object3D, camera: Camera, canvas: HTMLCanvasElement
   return new DOMRect(minX, minY, Math.max(8, maxX - minX), Math.max(8, maxY - minY))
 }
 
-export function CityWorld({ appearance, layers, view, weather, onSelect, onSelectLandmark }: CityWorldProps) {
+export function CityWorld({ appearance, layers, view, weather, onSelect, onSelectLandmark, onHoverProject }: CityWorldProps) {
   const [hovered, setHovered] = useState<string | null>(null)
   const worldRef = useRef<Group>(null)
   const camera = useThree((s) => s.camera)
   const gl = useThree((s) => s.gl)
+
+  // Buildings report their hover up for the DOM tooltip; hovering a landmark
+  // (which has no case-study "click to open" hint) clears it.
+  const handleBuildingHover = useCallback(
+    (id: string | null) => {
+      setHovered(id)
+      onHoverProject?.(id ? PROJECTS.find((p) => p.id === id) ?? null : null)
+    },
+    [onHoverProject],
+  )
+  const handleLandmarkHover = useCallback(
+    (id: string | null) => {
+      setHovered(id)
+      onHoverProject?.(null)
+    },
+    [onHoverProject],
+  )
 
   // The city keeps its full height in every view — 2D is now a cinematic
   // coastal-dusk townscape, not a flattened map.
@@ -142,7 +163,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
               project={studioProject}
               hovered={hovered === studioProject.id}
               showLabel={showLabel}
-              onHover={setHovered}
+              onHover={handleBuildingHover}
               onSelect={handleSelect}
             />
           ) : null
@@ -159,7 +180,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
             showLabel={showLabel}
             view={view}
             skylineX={SKYLINE_POSITIONS.get(def.project.id) ?? 0}
-            onHover={setHovered}
+            onHover={handleBuildingHover}
             onSelect={handleSelect}
           />
         ))}
@@ -170,7 +191,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
             def={def}
             hovered={hovered === def.landmark.id}
             showLabel={showLabel}
-            onHover={setHovered}
+            onHover={handleLandmarkHover}
             onSelect={handleSelectLandmark}
           />
         ))}

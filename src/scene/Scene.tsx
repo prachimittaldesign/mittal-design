@@ -14,6 +14,12 @@ import { WeatherClock } from '../components/WeatherClock'
 import { useHyderabad } from '../lib/useHyderabad'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
+// Hover-capable, precise pointer only (no touch) — on phones the affordance
+// is already obvious from tapping, and a cursor-following chip has no sense
+// on a touchscreen.
+const canHover = () =>
+  typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
 interface SceneProps {
   appearance: Appearance
   layers: LayerState
@@ -64,6 +70,7 @@ function AmbientParticles() {
 
 export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark }: SceneProps) {
   const [docked, setDocked] = useState(false)
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
   const { time, weather } = useHyderabad()
   useEffect(() => {
     const t = setTimeout(() => setDocked(true), 2400)
@@ -125,6 +132,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               weather={weather}
               onSelect={onSelect}
               onSelectLandmark={onSelectLandmark}
+              onHoverProject={setHoveredProject}
             />
             <AmbientParticles />
           </Suspense>
@@ -150,6 +158,45 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
       <Hero docked={docked} />
       <WeatherClock time={time} weather={weather} />
       <Hint />
+      <BuildingTooltip project={hoveredProject} />
+    </div>
+  )
+}
+
+// Cursor-following "click to open" hint for hovered buildings. Buildings are
+// WebGL meshes, not DOM nodes, so they can't use the data-tip attribute the
+// rest of the HUD's TooltipLayer relies on — this tracks the raw pointer
+// position instead (via a ref, so mousemove never triggers a React re-render)
+// and only re-renders when the hovered building itself changes.
+function BuildingTooltip({ project }: { project: Project | null }) {
+  const chipRef = useRef<HTMLDivElement>(null)
+  const posRef = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (!canHover()) return
+    const onMove = (e: PointerEvent) => {
+      posRef.current = { x: e.clientX, y: e.clientY }
+      const el = chipRef.current
+      if (el) {
+        el.style.left = `${posRef.current.x + 18}px`
+        el.style.top = `${posRef.current.y + 22}px`
+      }
+    }
+    window.addEventListener('pointermove', onMove)
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [])
+
+  if (!project || !canHover()) return null
+
+  return (
+    <div
+      ref={chipRef}
+      className="tt-chip tt-show"
+      style={{ position: 'fixed', left: posRef.current.x + 18, top: posRef.current.y + 22 }}
+      role="tooltip"
+      aria-hidden
+    >
+      {project.label} — click to open
     </div>
   )
 }
