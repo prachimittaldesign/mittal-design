@@ -113,7 +113,7 @@ export function Coverflow({ mode, onOpen, onRetry, onClose }: CoverflowProps) {
           : null // gallery
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-paper">
+    <div className="isolate relative flex h-full w-full flex-col overflow-hidden bg-paper">
       {/* Header */}
       <header className="flex flex-shrink-0 items-center justify-between gap-4 px-[clamp(16px,5vw,44px)] pt-[calc(20px+env(safe-area-inset-top))]">
         <div>

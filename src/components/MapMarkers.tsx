@@ -151,14 +151,23 @@ function ProjectPin({
             className={[
               'relative flex items-center whitespace-nowrap rounded-full bg-white/95 shadow-[0_6px_18px_rgba(0,0,0,0.28)]',
               'transition-transform duration-150 hover:scale-110',
-              big ? 'gap-[7px] px-[13px] py-[7px]' : 'gap-[6px] px-[10px] py-[5px]',
+              big
+                ? 'gap-[7px] px-[13px] py-[7px]'
+                : 'gap-[6px] px-[10px] py-[5px] max-[640px]:gap-0 max-[640px]:px-[8px] max-[640px]:py-[7px]',
             ].join(' ')}
             style={{ border: `3px solid ${tier === 'newest' ? '#f5b912' : accent}` }}
           >
             <span className={big ? 'text-[16px] leading-none' : 'text-[13px] leading-none'} aria-hidden>
               {GLYPH_EMOJI[project.glyph]}
             </span>
-            <span className={`font-bold tracking-[-0.01em] text-ink ${tier === 'newest' ? 'text-[14px]' : big ? 'text-[13px]' : 'text-[11.5px]'}`}>
+            {/* On phones, plain pins collapse to emoji-only badges (game-map
+                declutter) — names stay on the featured trio, which carry the
+                narrative. Tap opens the project either way. */}
+            <span
+              className={`font-bold tracking-[-0.01em] text-ink ${
+                tier === 'newest' ? 'text-[14px]' : big ? 'text-[13px]' : 'text-[11.5px] max-[640px]:hidden'
+              }`}
+            >
               {project.featured && <span aria-hidden>⭐ </span>}
               {project.label}
             </span>
