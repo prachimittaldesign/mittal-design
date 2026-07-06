@@ -154,25 +154,21 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
   )
 }
 
-// Persistent control hint — a subtle frosted-glass pill (same light glass as
-// the map Legend, day + night) so it stays legible without shouting over the
-// scene. Desktop only; on touch the first-visit coachmarks carry the gestures.
+// Persistent control hint — no background at all; plain white text with a soft
+// dark shadow so it stays readable over the (light or dark) scene without a
+// panel. Desktop only; on touch the first-visit coachmarks carry the gestures.
 function Hint() {
   return (
     <div className="pointer-events-none absolute bottom-4 left-1/2 z-[15] hidden -translate-x-1/2 sm:block">
-      <div
-        className="flex items-center gap-[9px] whitespace-nowrap rounded-full border px-[15px] py-[7px] backdrop-blur-xl"
-        style={{
-          background: 'var(--legend-bg)',
-          borderColor: 'var(--legend-border)',
-          boxShadow: '0 3px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.22)',
-        }}
-      >
+      <div className="flex items-center gap-[9px] whitespace-nowrap px-[15px] py-[7px]">
         <span
-          className="glass-label h-[5px] w-[5px] rounded-full"
-          style={{ background: 'currentColor', animation: 'pulseDot 1.8s ease-in-out infinite' }}
+          className="h-[5px] w-[5px] rounded-full bg-white"
+          style={{ animation: 'pulseDot 1.8s ease-in-out infinite', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.55))' }}
         />
-        <span className="glass-label font-mono text-[10px] font-semibold uppercase tracking-[0.13em]">
+        <span
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-white"
+          style={{ textShadow: '0 1px 3px rgba(0,0,0,0.55), 0 0 10px rgba(0,0,0,0.35)' }}
+        >
           Drag to pan · Scroll to zoom · Right-drag to orbit · Click a building
         </span>
       </div>
