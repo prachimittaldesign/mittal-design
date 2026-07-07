@@ -27,6 +27,7 @@ import { SkyBeams } from './SkyBeams'
 import { Constellations } from './Constellations'
 import { Aurora } from './Aurora'
 import { Rainbow } from './Rainbow'
+import { FerrisWheel, Tram, ShootingStars } from './Funfair'
 import { BUILDINGS, LANDMARK_DEFS, SKYLINE_POSITIONS } from './lib/cityModel'
 import { PROJECTS } from '../data/projects'
 import type { Weather } from '../lib/weather'
@@ -170,6 +171,11 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
           ) : null
         })()}
         {view !== 'skyline' && <Rainbow weather={weather} />}
+        {/* Funfair life: the beach ferris wheel, the ring-road tram, and
+            night meteors. Skyline keeps its clean stage. */}
+        {view !== 'skyline' && layers.showScenery && <FerrisWheel />}
+        {view !== 'skyline' && <Tram />}
+        {view !== 'skyline' && <ShootingStars />}
         {view !== 'skyline' && <Billboards />}
         {view !== 'skyline' && <CityLife />}
         {BUILDINGS.filter(d => d.project.id !== 'arch').map((def) => (

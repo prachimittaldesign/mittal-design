@@ -3,7 +3,8 @@ import { PROJECTS } from '../data/projects'
 import { LANDMARKS } from '../data/landmarks'
 import { quadrant, BIOME } from '../lib/iso'
 import { markerPositions } from '../lib/markerStore'
-import type { GlyphName, Landmark, LandmarkKind, Project } from '../types'
+import { MapGlyph, StarBadge } from './MapGlyph'
+import type { Landmark, Project } from '../types'
 
 // Game-map POI markers for the 2D view. The buildings read tiny from straight
 // above, so — like a game world map — every project gets a big, labelled,
@@ -16,32 +17,6 @@ import type { GlyphName, Landmark, LandmarkKind, Project } from '../types'
 // applied in a requestAnimationFrame loop straight to element transforms —
 // panning/zooming the map never touches React state.
 
-const GLYPH_EMOJI: Record<GlyphName, string> = {
-  robot: '🤖',
-  scanner: '🛰️',
-  servers: '🗄️',
-  connector: '🔗',
-  book: '📖',
-  tv: '📺',
-  heart: '💚',
-  bubble: '💬',
-  ballot: '🗳️',
-  sprout: '🌱',
-  circles: '⭕',
-  docs: '📑',
-  cottage: '🏡',
-  trees: '🌳',
-  rocks: '🪨',
-  sign: '📍',
-}
-const KIND_EMOJI: Record<LandmarkKind, string> = {
-  cinema: '🎬',
-  stadium: '🏟️',
-  library: '📚',
-  gallery: '🖼️',
-  cafe: '☕',
-  music: '🎵',
-}
 
 const NEWEST_ID = 'paas' // Ved — the most recent project gets the hero pin
 
@@ -157,8 +132,9 @@ function ProjectPin({
             ].join(' ')}
             style={{ border: `3px solid ${tier === 'newest' ? '#f5b912' : accent}` }}
           >
-            <span className={big ? 'text-[16px] leading-none' : 'text-[13px] leading-none'} aria-hidden>
-              {GLYPH_EMOJI[project.glyph]}
+            {project.featured && <StarBadge className="h-[13px] w-[13px] flex-shrink-0" />}
+            <span className="flex-shrink-0" style={{ color: tier === 'newest' ? '#b8860b' : accent }}>
+              <MapGlyph name={project.glyph} className={big ? 'h-[16px] w-[16px]' : 'h-[14px] w-[14px]'} />
             </span>
             {/* On phones, plain pins collapse to emoji-only badges (game-map
                 declutter) — names stay on the featured trio, which carry the
@@ -168,7 +144,6 @@ function ProjectPin({
                 tier === 'newest' ? 'text-[14px]' : big ? 'text-[13px]' : 'text-[11.5px] max-[640px]:hidden'
               }`}
             >
-              {project.featured && <span aria-hidden>⭐ </span>}
               {project.label}
             </span>
             {tier === 'newest' && (
@@ -219,10 +194,10 @@ function LandmarkPoi({
     >
       <span className="block -translate-x-1/2 -translate-y-1/2">
         <span
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/95 text-[14px] shadow-[0_4px_12px_rgba(0,0,0,0.25)] transition-transform duration-150 hover:scale-110"
-          style={{ border: `2.5px solid ${landmark.accent}` }}
+          className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/95 shadow-[0_4px_12px_rgba(0,0,0,0.25)] transition-transform duration-150 hover:scale-110"
+          style={{ border: `2.5px solid ${landmark.accent}`, color: landmark.accent }}
         >
-          <span aria-hidden>{KIND_EMOJI[landmark.kind]}</span>
+          <MapGlyph name={landmark.kind} className="h-[15px] w-[15px]" />
         </span>
       </span>
     </button>

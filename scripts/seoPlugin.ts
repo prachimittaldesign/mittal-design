@@ -22,7 +22,7 @@
  * Content is sourced from src/data/projects.ts at build time, so the
  * crawlable layer can never drift out of sync with the city.
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import { PROJECTS } from '../src/data/projects'
@@ -224,6 +224,47 @@ function projectPage(builtIndex: string, p: Project): string {
   return html
 }
 
+
+// llms.txt — the emerging convention for AI assistants: a compact markdown
+// digest of the site with canonical links, generated from the same data as
+// the pages so it can never drift.
+function llmsTxt(): string {
+  const featured = PROJECTS.filter((p) => p.featured)
+  const rest = PROJECTS.filter((p) => !p.featured)
+  const line = (p: Project) => `- [${p.label}](${projectUrl(p)}): ${projectDesc(p)}`
+  return `# ${AUTHOR} — Product Designer & Architect
+
+> An explorable 3D portfolio city at ${ORIGIN}. Every building is a shipped design project, mapped by audience and complexity. Each project page carries a full case study structured as Problem / Role / Process / Solution / Impact / Skills.
+
+## Featured case studies
+${featured.map(line).join('\n')}
+
+## All projects
+${rest.map(line).join('\n')}
+
+## About
+- [About Prachi](${ORIGIN}/about.html): background, practice and approach
+- [Resume (PDF)](${ORIGIN}/Prachi-Mittal-Resume-2026.pdf)
+- [LinkedIn](https://www.linkedin.com/in/prachi15mittal)
+- [Behance](https://www.behance.net/prachimittal2)
+`
+}
+
+const HUMANS = `/* TEAM */
+Designer & Owner: Prachi Mittal
+Role: Product Designer · Architect
+Location: Hyderabad, India
+Contact: hello [at] prachimittal.com
+
+/* THANKS */
+Everyone who wandered the city and wrote back.
+
+/* SITE */
+Standards: HTML5, CSS3, ES2022, WebGL2
+Components: React, three.js, react-three-fiber, Tailwind CSS, Vite
+The sky follows Hyderabad's real time and weather.
+`
+
 function sitemap(): string {
   const today = new Date().toISOString().slice(0, 10)
   const urls = [
@@ -293,7 +334,23 @@ export function seoPlugin(): Plugin {
       }
       writeFileSync(resolve(outDir, 'sitemap.xml'), sitemap())
       writeFileSync(resolve(outDir, 'robots.txt'), ROBOTS)
+      writeFileSync(resolve(outDir, 'llms.txt'), llmsTxt())
+      writeFileSync(resolve(outDir, 'humans.txt'), HUMANS)
       writeFileSync(resolve(outDir, '404.html'), NOT_FOUND)
+
+      // Smooth loading: the 3D stack is lazy-imported, so by default it only
+      // starts downloading after React boots. Preload hints let the browser
+      // fetch those chunks in parallel with shell execution — fast networks
+      // reach the city sooner (and never flash the gallery), slow networks
+      // still get the instant gallery fallback.
+      const heavy = readdirSync(resolve(outDir, 'assets')).filter((f) =>
+        /^(three|r3f|CityExperience)-.*\.js$/.test(f),
+      )
+      const preloads = heavy.map((f) => `<link rel="modulepreload" href="/assets/${f}">`).join('')
+      for (const page of ['index.html', ...PROJECTS.map((pr) => `projects/${pr.id}/index.html`)]) {
+        const fp = resolve(outDir, page)
+        writeFileSync(fp, readFileSync(fp, 'utf8').replace('</head>', `${preloads}</head>`))
+      }
       console.log(`[seo] prerendered ${PROJECTS.length} project pages + sitemap + robots + 404`)
     },
   }
