@@ -23,7 +23,7 @@ function CornerPanel() {
         Architecture is the cottage in the back.
       </p>
       <div className="links">
-        <a href="mailto:hello@prachimittal.com">hello@</a>
+        <a href="mailto:hello@mittal.design">hello@</a>
         <a href="#" className="ghost">Resume</a>
         <a href="#" className="ghost">LinkedIn</a>
         <a href="#" className="ghost">Dribbble</a>

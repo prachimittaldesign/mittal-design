@@ -254,7 +254,7 @@ const HUMANS = `/* TEAM */
 Designer & Owner: Prachi Mittal
 Role: Product Designer · Architect
 Location: Hyderabad, India
-Contact: hello [at] prachimittal.com
+Contact: hello [at] mittal.design
 
 /* THANKS */
 Everyone who wandered the city and wrote back.
