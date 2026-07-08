@@ -1,9 +1,9 @@
 import { Fragment, useState } from 'react'
 import { quadrant, BIOME } from '../lib/iso'
-import type { CaseStudy, Project } from '../types'
+import type { CaseStudy, LockedPayload, Project } from '../types'
 import { TakeoverShell } from './TakeoverShell'
 import { CaseStudy as RichCaseStudyView } from './CaseStudy/CaseStudy'
-import { RICH_CASE_STUDIES } from '../data/projects/ved'
+import { LockGate } from './LockGate'
 
 interface ProjectOverlayProps {
   project: Project
@@ -46,21 +46,38 @@ function SafeImage({
 export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayProps) {
   const q = quadrant(project.gx, project.gy)
   const { fill: accent, label: qLabel } = BIOME[q]
+  // Decrypted body for password-gated studies, tagged with the id it belongs to.
+  // Related-tile navigation reuses this component instance, so a stale payload
+  // from the previous project must read as locked until the new one decrypts.
+  const [payload, setPayload] = useState<{ id: string; data: LockedPayload } | null>(null)
+  const unlocked = payload && payload.id === project.id ? payload.data : null
 
-  // Projects with rich, Apple-style case-study content get the full CaseStudy
-  // takeover; everything else keeps the classic overlay below. Related-tile
-  // clicks navigate like a deep link — App's popstate handler swaps the overlay.
-  const rich = RICH_CASE_STUDIES[project.id]
-  if (rich) {
+  // Password-gated featured studies: only the teaser ships publicly. Until the
+  // encrypted blob is fetched + decrypted (LockGate), there is no body in the
+  // DOM to reveal. Once unlocked, render the real content — rich or standard —
+  // in place, inside the same takeover.
+  if (project.locked) {
+    const navigate = (id: string) => {
+      history.pushState({ project: id }, '', `/projects/${id}`)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }
     return (
       <TakeoverShell bare tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>
-        <RichCaseStudyView
-          data={rich}
-          onNavigate={(id) => {
-            history.pushState({ project: id }, '', `/projects/${id}`)
-            window.dispatchEvent(new PopStateEvent('popstate'))
-          }}
-        />
+        {!unlocked ? (
+          <LockGate
+            project={project}
+            accent={accent}
+            qLabel={qLabel}
+            onUnlock={(data) => setPayload({ id: project.id, data })}
+          />
+        ) : unlocked.kind === 'rich' ? (
+          <RichCaseStudyView data={unlocked.data} onNavigate={navigate} />
+        ) : (
+          <div className="px-[min(10vw,96px)] pt-[calc(88px+env(safe-area-inset-top))] pb-[calc(80px+env(safe-area-inset-bottom))]">
+            <StandardHeader project={project} cs={unlocked.data} accent={accent} qLabel={qLabel} />
+            <CaseStudyBody cs={unlocked.data} accent={accent} tags={project.tags} imageGroups={project.imageGroups} />
+          </div>
+        )}
       </TakeoverShell>
     )
   }
@@ -194,6 +211,43 @@ function ImageCarousel({
         )}
       </div>
     </div>
+  )
+}
+
+// Eyebrow + title + context badge for a standard (unlocked) case study — mirrors
+// the inline header used by the non-locked overlay path.
+function StandardHeader({
+  project,
+  cs,
+  accent,
+  qLabel,
+}: {
+  project: Project
+  cs: CaseStudy
+  accent: string
+  qLabel: string
+}) {
+  return (
+    <>
+      <div className="mb-5 flex items-center gap-[10px] font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft">
+        <span className="h-[3px] w-[28px] flex-shrink-0 rounded-[2px]" style={{ background: accent }} />
+        {qLabel} · {project.sub}
+      </div>
+      <div className="flex flex-wrap items-end gap-x-5 gap-y-3">
+        <h1 className="text-[clamp(40px,7vw,80px)] font-extrabold leading-[0.95] tracking-[-0.03em] text-ink">
+          {project.label}
+        </h1>
+        {cs.context && (
+          <span
+            className="mb-[10px] inline-flex items-center gap-[7px] rounded-full px-[12px] py-[6px] text-[12px] font-semibold text-ink"
+            style={{ background: `${accent}22` }}
+          >
+            <span className="h-[6px] w-[6px] rounded-full" style={{ background: accent }} />
+            {cs.context}
+          </span>
+        )}
+      </div>
+    </>
   )
 }
 

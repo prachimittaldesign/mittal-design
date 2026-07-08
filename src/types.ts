@@ -85,6 +85,32 @@ export interface CaseStudy {
   reflection?: string
 }
 
+// --- Password-gated case studies --------------------------------------------
+// The three featured case studies ship only a public teaser; the full body is
+// AES-GCM encrypted at build time and fetched/decrypted on the client after the
+// correct password is entered. The plaintext lives in a Node-only module and is
+// never bundled or prerendered — so there is no DOM/CSS trick that reveals it.
+export interface ProjectTeaser {
+  /** Lead paragraph shown publicly (also used for SEO description). */
+  summary: string
+  /** Single hero stat shown on the teaser. */
+  metric?: { value: string; label: string }
+}
+
+/** The decrypted payload shape (type only — the data lives Node-side). */
+export type LockedPayload =
+  | { kind: 'rich'; data: import('./data/caseStudyTypes').RichCaseStudy }
+  | { kind: 'standard'; data: CaseStudy }
+
+/** On-the-wire encrypted blob served at /locked/<id>.json. */
+export interface EncryptedBlob {
+  v: 1
+  kdf: { salt: string; iterations: number; hash: 'SHA-256' }
+  iv: string
+  /** base64(ciphertext || 16-byte GCM auth tag). */
+  data: string
+}
+
 export interface Project {
   id: string
   gx: number
@@ -95,6 +121,9 @@ export interface Project {
   glyph: GlyphName
   desc: string
   tags: string[]
+  /** Featured case studies are password-gated: only `teaser` ships publicly. */
+  locked?: boolean
+  teaser?: ProjectTeaser
   /** Optional 3D overrides; derived from the graph position when omitted. */
   height?: number
   footprint?: number

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 interface TakeoverShellProps {
@@ -19,6 +19,12 @@ interface TakeoverShellProps {
 // overlay and the landmark (place) overlay.
 export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, bare = false }: TakeoverShellProps) {
   const [open, setOpen] = useState(false)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const restoreRef = useRef<HTMLElement | null>(null)
+  // Guards onClose against double-firing (Escape + backdrop click + close button
+  // can all land during the 650ms collapse — that would pushState / clear the
+  // overlay twice).
+  const closingRef = useRef(false)
 
   useEffect(() => {
     // Two rAFs so the browser paints the collapsed start state first.
@@ -32,7 +38,20 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, 
     }
   }, [])
 
+  // A11y: this is a modal dialog. Move focus into it when it finishes expanding
+  // (so keyboard + screen-reader users land inside, not on the now-hidden city),
+  // and restore focus to the element that opened it when it unmounts.
+  useEffect(() => {
+    restoreRef.current = (document.activeElement as HTMLElement | null) ?? null
+    return () => restoreRef.current?.focus?.()
+  }, [])
+  useEffect(() => {
+    if (open) dialogRef.current?.focus()
+  }, [open])
+
   const handleClose = () => {
+    if (closingRef.current) return
+    closingRef.current = true
     setOpen(false)
     setTimeout(onClose, 650)
   }
@@ -72,10 +91,12 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, 
 
       {/* Expanding card */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel ?? 'Details'}
-        className="fixed z-[50] overflow-hidden bg-paper transition-all duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        tabIndex={-1}
+        className="fixed z-[50] overflow-hidden bg-paper outline-none transition-all duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={overlayStyle}
       >
         <div

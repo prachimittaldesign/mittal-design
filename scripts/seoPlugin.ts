@@ -24,8 +24,10 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { pbkdf2Sync, randomBytes, createCipheriv } from 'node:crypto'
 import type { Plugin } from 'vite'
 import { PROJECTS } from '../src/data/projects'
+import { LOCKED_CASE_STUDIES } from '../src/data/lockedCaseStudies'
 import type { Project } from '../src/types'
 
 // Canonical origin. Vercel serves www as the primary domain (the apex 30x-
@@ -40,7 +42,7 @@ const esc = (s: string) =>
 
 const projectUrl = (p: Project) => `${ORIGIN}/projects/${p.id}`
 const projectTitle = (p: Project) => `${p.label} — ${titleCase(p.sub)} | ${AUTHOR}`
-const projectDesc = (p: Project) => (p.caseStudy?.summary ?? p.desc).slice(0, 300)
+const projectDesc = (p: Project) => (p.teaser?.summary ?? p.caseStudy?.summary ?? p.desc).slice(0, 300)
 const projectImage = (p: Project) => {
   const src = p.imageGroups?.[0]?.images[0]?.src
   return src ? `${ORIGIN}${encodeURI(src)}` : `${ORIGIN}/IMAGES/CMS-2025-DITA.png`
@@ -65,6 +67,21 @@ function titleCase(sub: string): string {
 // ── Structured summary (Problem · Role · Process · Impact · Skills) ─────────
 // The exact shape AI search assistants want to quote from.
 function articleFor(p: Project): string {
+  // Password-gated studies expose only the teaser to crawlers — the page stays
+  // indexable under Prachi's name, but the full body is never prerendered.
+  if (p.locked) {
+    const teaser = p.teaser?.summary ?? p.desc
+    return `
+<article aria-label="${esc(p.label)} case study (summary)">
+  <header>
+    <h1>${esc(p.label)} — ${esc(titleCase(p.sub))}</h1>
+    <p>${esc(teaser)}</p>
+  </header>
+  <p>The full case study for ${esc(p.label)} — problem, process, design decisions, and outcomes — is private and available on request. <a href="mailto:hello@mittal.design">Request access</a>, or <a href="/">explore the interactive portfolio city</a>.</p>
+  <footer><a href="/">← Explore the interactive portfolio city</a></footer>
+</article>`
+  }
+
   const cs = p.caseStudy
   const section = (title: string, body: string) =>
     body ? `<section aria-labelledby="${p.id}-${title.toLowerCase()}"><h3 id="${p.id}-${title.toLowerCase()}">${title}</h3>${body}</section>` : ''
@@ -315,6 +332,28 @@ const NOT_FOUND = `<!doctype html>
 </head><body><p>Page not found — <a href="/">back to the portfolio</a>.</p></body></html>
 `
 
+// ── Build-time encryption of the gated case studies ─────────────────────────
+// AES-256-GCM with a PBKDF2-SHA256 key derived from the site password. The
+// browser (src/lib/lock.ts) mirrors these params to decrypt. The password comes
+// from SITE_UNLOCK_PASSWORD at build time and is never committed; the plaintext
+// lives only in the Node-only registry, so no readable copy ships.
+const PBKDF2_ITERATIONS = 210_000
+function encryptBlob(plaintext: string, password: string) {
+  const salt = randomBytes(16)
+  const key = pbkdf2Sync(password, salt, PBKDF2_ITERATIONS, 32, 'sha256')
+  const iv = randomBytes(12)
+  const cipher = createCipheriv('aes-256-gcm', key, iv)
+  const ct = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
+  const tag = cipher.getAuthTag()
+  return {
+    v: 1 as const,
+    kdf: { salt: salt.toString('base64'), iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' as const },
+    iv: iv.toString('base64'),
+    // WebCrypto AES-GCM expects the 16-byte tag appended to the ciphertext.
+    data: Buffer.concat([ct, tag]).toString('base64'),
+  }
+}
+
 export function seoPlugin(): Plugin {
   let outDir = 'dist'
   return {
@@ -341,6 +380,24 @@ export function seoPlugin(): Plugin {
       writeFileSync(resolve(outDir, 'llms.txt'), llmsTxt())
       writeFileSync(resolve(outDir, 'humans.txt'), HUMANS)
       writeFileSync(resolve(outDir, '404.html'), NOT_FOUND)
+
+      // Encrypt the gated case-study bodies → dist/locked/<id>.json. Requires
+      // SITE_UNLOCK_PASSWORD at build time; without it the blobs are omitted and
+      // the gated studies show a "content unavailable" state (fail-closed).
+      const password = process.env.SITE_UNLOCK_PASSWORD
+      if (password) {
+        const lockedDir = resolve(outDir, 'locked')
+        mkdirSync(lockedDir, { recursive: true })
+        for (const [id, payload] of Object.entries(LOCKED_CASE_STUDIES)) {
+          const blob = encryptBlob(JSON.stringify(payload), password)
+          writeFileSync(resolve(lockedDir, `${id}.json`), JSON.stringify(blob))
+        }
+        console.log(`[seo] encrypted ${Object.keys(LOCKED_CASE_STUDIES).length} gated case studies → /locked`)
+      } else {
+        console.warn(
+          '[seo] SITE_UNLOCK_PASSWORD not set — gated case studies will be unavailable in this build',
+        )
+      }
 
       // Smooth loading: the 3D stack is lazy-imported, so by default it only
       // starts downloading after React boots. Preload hints let the browser
