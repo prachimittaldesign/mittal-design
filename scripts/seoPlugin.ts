@@ -28,7 +28,11 @@ import type { Plugin } from 'vite'
 import { PROJECTS } from '../src/data/projects'
 import type { Project } from '../src/types'
 
-const ORIGIN = 'https://mittal.design'
+// Canonical origin. Vercel serves www as the primary domain (the apex 30x-
+// redirects to it), and www is what Google has indexed — so every generated
+// canonical/OG/sitemap/JSON-LD URL uses www to match, consolidating all ranking
+// signals on one host instead of splitting them across apex vs www.
+const ORIGIN = 'https://www.mittal.design'
 const AUTHOR = 'Prachi Mittal'
 
 const esc = (s: string) =>
