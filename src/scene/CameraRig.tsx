@@ -4,6 +4,7 @@ import { MapControls } from '@react-three/drei'
 import { Vector3 } from 'three'
 import { easing } from 'maath'
 import { CITY_BOUNDS } from './lib/cityModel'
+import { viewSnapshot, type ViewSnapshot } from '../lib/viewStore'
 import type { CameraCmd, ViewMode } from '../types'
 
 export const DEFAULT_CAMERA_TUPLE: [number, number, number] = [0, 72, 292]
@@ -59,10 +60,15 @@ export function CameraRig({
   focus,
   cmd,
   view,
+  embed = false,
+  initial = null,
 }: {
   focus: FocusTarget | null
   cmd: CameraCmd | null
   view: ViewMode
+  /** Embed mode: boot to `initial`, hold the angle (no idle orbit, no clamp). */
+  embed?: boolean
+  initial?: ViewSnapshot | null
 }) {
   const ref = useRef<ElementRef<typeof MapControls>>(null)
   const camera = useThree((s) => s.camera)
@@ -114,8 +120,14 @@ export function CameraRig({
   useEffect(() => {
     const c = ref.current
     if (!c) return
-    camera.position.copy(offsetFor('3d'))
-    c.target.set(0, 0, 0)
+    if (initial) {
+      // Embed: restore the exact captured pose (no responsive fit).
+      camera.position.set(initial.cx, initial.cy, initial.cz)
+      c.target.set(initial.tx, initial.ty, initial.tz)
+    } else {
+      camera.position.copy(offsetFor('3d'))
+      c.target.set(0, 0, 0)
+    }
     c.update()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -124,13 +136,23 @@ export function CameraRig({
     const c = ref.current
     if (!c) return
 
+    // Publish the live pose for the Share → Embed feature (plain store write).
+    viewSnapshot.cx = camera.position.x
+    viewSnapshot.cy = camera.position.y
+    viewSnapshot.cz = camera.position.z
+    viewSnapshot.tx = c.target.x
+    viewSnapshot.ty = c.target.y
+    viewSnapshot.tz = c.target.z
+    viewSnapshot.view = view
+
     // Idle auto-orbit: the city drifts on its own (from first paint) whenever
     // the user hasn't touched the canvas recently and no programmatic camera
     // motion is in flight. Only the 3D scenic view idles — the 2D map stays
-    // north-up and the skyline locks its cinematic angle.
+    // north-up and the skyline locks its cinematic angle. Embeds hold their
+    // captured angle, so they never auto-orbit.
     const busy = flying.current || zooming.current || viewing.current || recentering.current
     c.autoRotate =
-      view === '3d' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
+      !embed && view === '3d' && !busy && performance.now() - lastInteract.current > IDLE_RESUME_MS
 
     // Fly-to a searched/recommended place. The camera settles on a hover
     // OUTSIDE the city looking inward at the target — approaching along the
@@ -229,9 +251,11 @@ export function CameraRig({
         recentering.current = false
         c.enabled = true
       }
-    } else {
+    } else if (!embed) {
       // Keep the pan target inside the city; shift the camera by the same delta
-      // so clamping doesn't alter the zoom/angle at the boundary.
+      // so clamping doesn't alter the zoom/angle at the boundary. Skipped in
+      // embed so a captured angle that looks out past the city (e.g. the Future
+      // island) isn't yanked back inside the bounds.
       const tx = clamp(c.target.x, minX, maxX)
       const tz = clamp(c.target.z, minZ, maxZ)
       const dx = tx - c.target.x

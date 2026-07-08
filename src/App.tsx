@@ -9,6 +9,7 @@ import { PLACES } from './scene/lib/places'
 import type { FocusTarget } from './scene/CameraRig'
 import { useIsNight } from './lib/useIsNight'
 import { useLowFps } from './lib/useLowFps'
+import { parseEmbed } from './lib/viewStore'
 import type { Project, Landmark } from './types'
 
 // The heavy three.js / react-three stack lives behind a lazy boundary, so the
@@ -46,6 +47,9 @@ function webglSupported(): boolean {
 }
 
 export default function App() {
+  // Embed mode (Share → "Embed a map"): boot straight to a captured angle with
+  // no HUD. Detected once from the URL; short-circuits all the interactive shell.
+  const [embed] = useState(() => parseEmbed(window.location.search))
   const [overlay, setOverlay] = useState<Overlay>(null)
   const [focusRequest, setFocusRequest] = useState<FocusTarget | null>(null)
   const [hasWebGL] = useState(webglSupported)
@@ -103,6 +107,30 @@ export default function App() {
       )}
     </>
   )
+
+  // ── Embed mode: just the clean captured scene, no shell, no overlays ─────────
+  if (embed) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-paper">
+        <SceneErrorBoundary
+          resetKey={retryKey}
+          fallback={() => (
+            <div className="grid h-full place-items-center text-[13px] text-ink-soft">Preview unavailable</div>
+          )}
+        >
+          <Suspense fallback={null}>
+            <CityExperience
+              overlayActive={false}
+              focusRequest={null}
+              onSelectProject={() => {}}
+              onSelectLandmark={() => {}}
+              embed={embed}
+            />
+          </Suspense>
+        </SceneErrorBoundary>
+      </div>
+    )
+  }
 
   // ── Fallback modes: no WebGL, or the user escaped a laggy scene ──────────────
   if (!hasWebGL) {

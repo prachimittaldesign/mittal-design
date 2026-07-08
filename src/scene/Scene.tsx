@@ -14,6 +14,7 @@ import { EnvBalloons } from './CityLife'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
 import { useHyderabad } from '../lib/useHyderabad'
+import type { EmbedConfig } from '../lib/viewStore'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
 // Hover-capable, precise pointer only (no touch) — on phones the affordance
@@ -30,6 +31,8 @@ interface SceneProps {
   cameraCmd: CameraCmd | null
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: Landmark, rect: DOMRect) => void
+  /** When set, boot to a captured angle and hide every HUD element (embeds). */
+  embed?: EmbedConfig | null
 }
 
 // Slowly drifting golden motes — atmosphere that catches the light.
@@ -70,7 +73,7 @@ function AmbientParticles() {
   )
 }
 
-export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark }: SceneProps) {
+export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, embed = null }: SceneProps) {
   const [docked, setDocked] = useState(false)
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
   const { time, weather } = useHyderabad()
@@ -102,7 +105,12 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           // away, causing the road network to z-fight/flicker on zoom-out.
           // A larger near plane (still well inside minDistance=26) quarters
           // that error at typical viewing distances.
-          camera={{ position: DEFAULT_CAMERA_TUPLE, fov: 40, near: 2, far: 2000 }}
+          camera={{
+            position: embed ? [embed.initial.cx, embed.initial.cy, embed.initial.cz] : DEFAULT_CAMERA_TUPLE,
+            fov: 40,
+            near: 2,
+            far: 2000,
+          }}
           gl={{ toneMappingExposure: 0.6 }}
         >
           {/* Lights, fog and time-of-day cycle. */}
@@ -139,7 +147,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
             <AmbientParticles />
           </Suspense>
 
-          <CameraRig focus={focus} cmd={cameraCmd} view={view} />
+          <CameraRig focus={focus} cmd={cameraCmd} view={view} embed={!!embed} initial={embed?.initial ?? null} />
           <CoachAnchorProbe />
           <MapMarkerProbe view={view} />
 
@@ -157,14 +165,19 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
       </div>
       <Loader />
 
-      {/* DOM HUD over the canvas */}
-      {view === 'iso' && (
-        <MapMarkers onSelectProject={onSelect} onSelectLandmark={onSelectLandmark} />
+      {/* DOM HUD over the canvas — entirely suppressed in embed mode, which
+          shows only the clean captured scene. */}
+      {!embed && (
+        <>
+          {view === 'iso' && (
+            <MapMarkers onSelectProject={onSelect} onSelectLandmark={onSelectLandmark} />
+          )}
+          <Hero docked={docked} />
+          <WeatherClock time={time} weather={weather} />
+          <Hint />
+          <BuildingTooltip project={hoveredProject} />
+        </>
       )}
-      <Hero docked={docked} />
-      <WeatherClock time={time} weather={weather} />
-      <Hint />
-      <BuildingTooltip project={hoveredProject} />
     </div>
   )
 }

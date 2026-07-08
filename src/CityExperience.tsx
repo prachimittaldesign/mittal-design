@@ -8,8 +8,10 @@ import { MusicPlayer } from './components/MusicPlayer'
 import { Legend } from './components/Legend'
 import { Coachmarks } from './components/Coachmarks'
 import { WorkWithMe } from './components/WorkWithMe'
+import { ShareMenu } from './components/ShareMenu'
 import type { FocusTarget } from './scene/CameraRig'
 import type { Place } from './scene/lib/places'
+import type { EmbedConfig } from './lib/viewStore'
 import type { Appearance, CameraCmd, LayerState, MapLayer, ViewMode, Project, Landmark } from './types'
 
 export interface CityExperienceProps {
@@ -19,6 +21,8 @@ export interface CityExperienceProps {
   overlayActive: boolean
   /** External "fly here" request (deep link / gallery pick); nonce triggers it. */
   focusRequest: FocusTarget | null
+  /** When set, boot to a captured angle with no HUD (a shareable embed). */
+  embed?: EmbedConfig | null
 }
 
 // The full interactive 3D city + its HUD. Lazy-loaded (React.lazy) so the heavy
@@ -30,6 +34,7 @@ export default function CityExperience({
   onSelectLandmark,
   overlayActive,
   focusRequest,
+  embed = null,
 }: CityExperienceProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [layers, setLayers] = useState<LayerState>({
@@ -38,7 +43,7 @@ export default function CityExperience({
     showLandmarks: true,
   })
   const [layer, setLayer] = useState<MapLayer | null>(null)
-  const [view, setView] = useState<ViewMode>('3d')
+  const [view, setView] = useState<ViewMode>(embed?.initial.view ?? '3d')
   const [cameraCmd, setCameraCmd] = useState<CameraCmd | null>(null)
   const [focus, setFocus] = useState<FocusTarget | null>(null)
 
@@ -62,20 +67,26 @@ export default function CityExperience({
         cameraCmd={cameraCmd}
         onSelect={onSelectProject}
         onSelectLandmark={onSelectLandmark}
+        embed={embed}
       />
 
-      <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, h: p.h, nonce: performance.now() })} />
-      <TagPills activeTag={activeTag} onChange={setActiveTag} />
-      <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
-      <MapControlsHud
-        view={view}
-        onSetView={setView}
-        onCmd={(type) => setCameraCmd({ type, nonce: performance.now() })}
-      />
-      <MusicPlayer />
-      {layer && <Legend layer={layer} />}
-      <Coachmarks suppressed={overlayActive} />
-      <WorkWithMe />
+      {!embed && (
+        <>
+          <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, h: p.h, nonce: performance.now() })} />
+          <TagPills activeTag={activeTag} onChange={setActiveTag} />
+          <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
+          <MapControlsHud
+            view={view}
+            onSetView={setView}
+            onCmd={(type) => setCameraCmd({ type, nonce: performance.now() })}
+          />
+          <MusicPlayer />
+          {layer && <Legend layer={layer} />}
+          <Coachmarks suppressed={overlayActive} />
+          <WorkWithMe />
+          <ShareMenu />
+        </>
+      )}
     </>
   )
 }

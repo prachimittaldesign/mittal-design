@@ -28,6 +28,22 @@ export function MapControlsHud({ view, onSetView, onCmd }: MapControlsHudProps) 
   return (
     <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-20 flex flex-col items-center gap-3 sm:bottom-4 sm:right-4">
 
+      {/* Share / embed */}
+      <button
+        data-tip="Share or embed this city"
+        data-tip-pos="left"
+        onClick={() => window.dispatchEvent(new CustomEvent('pm:share-open'))}
+        className={`${btn} hud-text`}
+        aria-label="Share or embed this city"
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="h-[18px] w-[18px]">
+          <circle cx="18" cy="5" r="2.6" stroke="currentColor" strokeWidth="2" />
+          <circle cx="6" cy="12" r="2.6" stroke="currentColor" strokeWidth="2" />
+          <circle cx="18" cy="19" r="2.6" stroke="currentColor" strokeWidth="2" />
+          <path d="M8.3 10.7l7.4-4.4M8.3 13.3l7.4 4.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
+
       {/* View mode: 3D → 2D → Street View (skyline presentation) */}
       <div className="hud flex flex-col overflow-hidden rounded-[12px] border shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md">
         <button
