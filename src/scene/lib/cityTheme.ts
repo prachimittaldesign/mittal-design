@@ -79,6 +79,21 @@ const TERRACOTTA = ['#b5683f', '#a8553a', '#c0703a', '#9c5236', '#c98a52', '#ab5
 export const STUCCO_WINDOW = '#ffd89a'
 export const GLASS_TOWER_WINDOW = '#bcd8f4'
 
+// Night window tints per category — after dark the glass facades go near-black,
+// so the lit windows carry the category colour instead. Kept pale (mostly-white
+// with a clear temperature shift) so the skyline reads lamplit, not neon.
+//   enterprise → cool sky-blue     consumer → warm amber
+//   spatial    → soft mint         research → pale lavender
+const GLASS_WINDOW_TINTS: Record<BuildingCategory, string> = {
+  enterprise: '#bcd8f4',
+  consumer:   '#ffd9a6',
+  spatial:    '#bff0d4',
+  research:   '#d8ccff',
+}
+export function glassWindow(cat: BuildingCategory): string {
+  return GLASS_WINDOW_TINTS[cat]
+}
+
 export function facadeColor(cat: BuildingCategory, hash: number): string {
   switch (cat) {
     case 'consumer': return STUCCO_CONSUMER[hash % STUCCO_CONSUMER.length]

@@ -57,6 +57,11 @@
   --legend-border: rgba(255, 255, 255, 0.55);
   /* Pale halo behind dark day text so it reads over dark scenery too. */
   --legend-halo: rgba(255, 255, 255, 0.85);
+  /* Subtle same-theme surfaces INSIDE hud cards (close chips, input fields,
+     toggle tracks) — must flip with the card or they vanish at night. */
+  --hud-chip: rgba(0, 0, 0, 0.06);
+  --hud-chip-strong: rgba(0, 0, 0, 0.15);
+  --hud-field: rgba(0, 0, 0, 0.03);
 }
 body.night {
   --hud-bg: rgba(20, 28, 43, 0.72);
@@ -71,6 +76,9 @@ body.night {
   --legend-border: rgba(255, 255, 255, 0.18);
   /* Dark halo behind light night text so it reads over bright scenery too. */
   --legend-halo: rgba(6, 12, 22, 0.7);
+  --hud-chip: rgba(255, 255, 255, 0.12);
+  --hud-chip-strong: rgba(255, 255, 255, 0.24);
+  --hud-field: rgba(255, 255, 255, 0.07);
 }
 
 @layer components {
@@ -128,6 +136,27 @@ body.night {
   }
   .hud-input::placeholder {
     color: var(--hud-soft);
+  }
+  /* In-card surfaces that flip with the theme (see token comments above). */
+  .hud-chip {
+    background-color: var(--hud-chip);
+    transition: background-color 700ms;
+  }
+  .hud-chip-strong {
+    background-color: var(--hud-chip-strong);
+    transition: background-color 700ms;
+  }
+  .hud-chip-hover:hover {
+    background-color: var(--hud-chip);
+  }
+  .hud-field {
+    background-color: var(--hud-field);
+    border-color: var(--hud-border);
+    transition: background-color 700ms, border-color 700ms;
+  }
+  .hud-bd {
+    border-color: var(--hud-border);
+    transition: border-color 700ms;
   }
   /* Text on the frosted Legend / hint chips: full-contrast colour plus a
      soft same-theme halo, so it stays readable over any scene behind the

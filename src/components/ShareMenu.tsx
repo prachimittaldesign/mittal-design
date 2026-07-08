@@ -129,12 +129,12 @@ export function ShareMenu() {
       <div className="hud-strong relative z-[81] w-[min(480px,94vw)] overflow-hidden rounded-[20px] border shadow-[0_24px_70px_rgba(0,0,0,0.32)]">
         {/* header */}
         <div className="flex items-center justify-between px-6 pt-5">
-          <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink">Share this city</h2>
+          <h2 className="text-[22px] font-extrabold tracking-[-0.02em] hud-text">Share this city</h2>
           <button
             type="button"
             aria-label="Close"
             onClick={() => setOpen(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/[0.06] text-ink transition-transform hover:scale-105 active:scale-95"
+            className="flex h-8 w-8 items-center justify-center hud-chip hud-text rounded-full transition-transform hover:scale-105 active:scale-95"
           >
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
               <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -151,7 +151,7 @@ export function ShareMenu() {
               onClick={() => setTab(t)}
               className={[
                 'rounded-full px-4 py-[7px] text-[13px] font-semibold transition-colors',
-                tab === t ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-black/[0.05]',
+                tab === t ? 'hud-on' : 'hud-soft hud-chip-hover',
               ].join(' ')}
             >
               {t === 'link' ? 'Send a link' : 'Embed a map'}
@@ -163,12 +163,12 @@ export function ShareMenu() {
           {tab === 'link' ? (
             <>
               {/* copy row */}
-              <div className="flex items-center gap-2 rounded-[12px] border border-black/10 bg-black/[0.03] p-1.5 pl-4">
-                <span className="min-w-0 flex-1 truncate text-[13px] text-ink-soft">{link}</span>
+              <div className="flex items-center gap-2 hud-field rounded-[12px] border p-1.5 pl-4">
+                <span className="min-w-0 flex-1 truncate text-[13px] hud-soft">{link}</span>
                 <button
                   type="button"
                   onClick={() => copy(link, 'Link copied')}
-                  className="flex-shrink-0 rounded-[9px] bg-ink px-4 py-2 text-[12px] font-bold text-paper transition-transform hover:-translate-y-0.5"
+                  className="hud-fill hud-fill-text flex-shrink-0 rounded-[9px] px-4 py-2 text-[12px] font-bold transition-transform hover:-translate-y-0.5"
                 >
                   Copy link
                 </button>
@@ -190,7 +190,7 @@ export function ShareMenu() {
                     >
                       <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]">{s.icon}</svg>
                     </span>
-                    <span className="text-[11px] font-medium text-ink-soft">{s.label}</span>
+                    <span className="text-[11px] font-medium hud-soft">{s.label}</span>
                   </button>
                 ))}
               </div>
@@ -198,7 +198,7 @@ export function ShareMenu() {
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <span className="text-[12px] font-semibold text-ink-soft">Size</span>
+                <span className="text-[12px] font-semibold hud-soft">Size</span>
                 <div className="flex gap-1">
                   {(Object.keys(SIZES) as SizeKey[]).map((k) => (
                     <button
@@ -207,7 +207,7 @@ export function ShareMenu() {
                       onClick={() => setSize(k)}
                       className={[
                         'rounded-full px-3 py-[5px] text-[12px] font-semibold transition-colors',
-                        size === k ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-black/[0.05]',
+                        size === k ? 'hud-on' : 'hud-soft hud-chip-hover',
                       ].join(' ')}
                     >
                       {k}
@@ -220,16 +220,16 @@ export function ShareMenu() {
                 readOnly
                 value={snippet}
                 onFocus={(e) => e.currentTarget.select()}
-                className="mt-3 h-[92px] w-full resize-none rounded-[12px] border border-black/10 bg-black/[0.03] p-3 font-mono text-[11.5px] leading-[1.5] text-ink-soft"
+                className="mt-3 h-[92px] w-full hud-field hud-text resize-none rounded-[12px] border p-3 font-mono text-[11.5px] leading-[1.5]"
               />
               <div className="mt-3 flex items-center justify-between gap-3">
-                <p className="text-[11.5px] leading-[1.5] text-ink-soft">
+                <p className="text-[11.5px] leading-[1.5] hud-soft">
                   Captures the current camera angle and time of day.
                 </p>
                 <button
                   type="button"
                   onClick={() => copy(snippet, 'Embed HTML copied')}
-                  className="flex-shrink-0 rounded-[9px] bg-ink px-4 py-2 text-[12px] font-bold text-paper transition-transform hover:-translate-y-0.5"
+                  className="hud-fill hud-fill-text flex-shrink-0 rounded-[9px] px-4 py-2 text-[12px] font-bold transition-transform hover:-translate-y-0.5"
                 >
                   Copy HTML
                 </button>
@@ -240,7 +240,7 @@ export function ShareMenu() {
 
         {/* toast */}
         {toast && (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-paper shadow-lg">
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 hud-fill hud-fill-text rounded-full px-4 py-2 text-[12px] font-semibold shadow-lg">
             {toast}
           </div>
         )}

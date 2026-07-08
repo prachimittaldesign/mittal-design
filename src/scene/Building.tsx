@@ -4,6 +4,7 @@ import { Billboard } from '@react-three/drei'
 import { Color, ExtrudeGeometry, Group, MeshPhysicalMaterial, MeshStandardMaterial, Shape as ThreeShape, Vector3, type Object3D } from 'three'
 import { easing } from 'maath'
 import { Label } from './Label'
+import { nightFactor } from '../lib/sky'
 import {
   buildingCategory,
   isGlassTower,
@@ -11,8 +12,8 @@ import {
   stuccoRoof,
   glassFacade,
   glassRoof,
+  glassWindow,
   STUCCO_WINDOW,
-  GLASS_TOWER_WINDOW,
   DIM_GREY,
   layerColor,
   type BuildingCategory,
@@ -239,7 +240,9 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
     () => (glass ? glassRoof(category, idHash(project.id)) : stuccoRoof(idHash(project.id))),
     [glass, category, project.id],
   )
-  const winColor = glass ? GLASS_TOWER_WINDOW : STUCCO_WINDOW
+  // Windows carry the category colour — the main way to tell districts apart
+  // after dark, when the mirror-glass facades stop reflecting the sky.
+  const winColor = glass ? glassWindow(category) : STUCCO_WINDOW
 
   // Glass: a physical curtain-wall material. A glossy clearcoat layer over a
   // pale, lightly-metallic tint gives a strong glassy sheen with bright,
@@ -258,6 +261,11 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
             clearcoat: 1.0,
             clearcoatRoughness: 0.04,
             reflectivity: 0.95,
+            // Facade self-glow after dark (intensity driven per-frame from
+            // nightFactor) — mirror glass reflects nothing at night, so the
+            // tower keeps its category tint by emitting it softly instead.
+            emissive: facadeHex,
+            emissiveIntensity: 0,
           })
         : new MeshStandardMaterial({
             color: facadeHex,
@@ -307,7 +315,13 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
     }
 
     let target = baseColor
-    let em = hovered ? baseEmissive + 0.5 : baseEmissive
+    // Night: the glass towers self-illuminate their category tint (subtle —
+    // the skyline should read lamplit, not neon). Day: emissive stays 0 for
+    // glass so the daytime mirror look is byte-identical to before.
+    const nf = nightFactor()
+    let em = glass
+      ? nf * (hovered ? 0.62 : 0.4)
+      : hovered ? baseEmissive + 0.5 : baseEmissive
     let liftBonus = 0
     if (appearance.mode === 'layer' && layerCol) {
       target = layerCol
@@ -322,6 +336,9 @@ export function Building({ def, hovered, appearance, showLabel, view, skylineX, 
     // World keeps full height in every view now, so labels need no counter-scale.
     if (labelRef.current) easing.damp(labelRef.current.scale, 'y', 1, 0.22, dt)
     easing.dampC(body.color, target, 0.18, dt)
+    // Keep the glow the same hue as whatever the facade currently shows
+    // (facade tint, layer colour, or the tag-dim grey).
+    easing.dampC(body.emissive, target, 0.18, dt)
     easing.damp(body, 'emissiveIntensity', em, 0.15, dt)
     easing.damp(hoverGlow, 'emissiveIntensity', hovered ? 1.6 : 0, 0.14, dt)
     easing.damp(hoverGlow, 'opacity', hovered ? 0.2 : 0, 0.14, dt)

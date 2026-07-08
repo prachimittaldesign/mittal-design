@@ -86,7 +86,7 @@ function Switch({ on }: { on: boolean }) {
     <span
       className={[
         'relative inline-block h-[16px] w-[28px] flex-shrink-0 rounded-full transition-colors',
-        on ? 'hud-fill' : 'bg-black/15',
+        on ? 'hud-fill' : 'hud-chip-strong',
       ].join(' ')}
     >
       <span

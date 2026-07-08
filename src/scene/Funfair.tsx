@@ -39,8 +39,13 @@ export function FerrisWheel() {
       g.rotation.z = Math.sin(t * 1.4 + i) * 0.06 // gentle free swing
     }
     // Lamps fade up with the night.
-    lampMat.emissiveIntensity += (nightFactor() * 2.2 - lampMat.emissiveIntensity) * Math.min(1, dt * 3)
+    lampMat.emissiveIntensity += (nightFactor() * 2.6 - lampMat.emissiveIntensity) * Math.min(1, dt * 3)
   })
+
+  // Fairground rim bulbs — a ring of lights riding the wheel so it reads as a
+  // lit ferris wheel from across the bay (the tiny gondola lamps alone vanish
+  // at city distance). They share lampMat, so they fade with the night too.
+  const RIM_BULBS = 20
 
   return (
     <group position={WHEEL_POS} rotation={[0, 0.5, 0]}>
@@ -76,6 +81,19 @@ export function FerrisWheel() {
             </mesh>
           )
         })}
+        {/* ring of fairground bulbs around the rim — glow after dark */}
+        {Array.from({ length: RIM_BULBS }, (_, i) => {
+          const a = (i / RIM_BULBS) * Math.PI * 2
+          return (
+            <mesh key={`b${i}`} position={[Math.cos(a) * WHEEL_R, Math.sin(a) * WHEEL_R, 0.34]} material={lampMat}>
+              <sphereGeometry args={[0.26, 6, 6]} />
+            </mesh>
+          )
+        })}
+        {/* hub lamp */}
+        <mesh position={[0, 0, 1.3]} material={lampMat}>
+          <sphereGeometry args={[0.4, 8, 8]} />
+        </mesh>
       </group>
 
       {/* upright gondolas riding the rim */}
@@ -91,7 +109,7 @@ export function FerrisWheel() {
           </mesh>
           {/* lamp under the roof — glows at night */}
           <mesh position={[0, 0.35, 0]} material={lampMat}>
-            <sphereGeometry args={[0.14, 6, 6]} />
+            <sphereGeometry args={[0.2, 6, 6]} />
           </mesh>
         </group>
       ))}

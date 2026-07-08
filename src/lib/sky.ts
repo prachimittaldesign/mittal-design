@@ -67,10 +67,10 @@ interface Key {
 // Dawn/dusk: rich coral/amber that bleeds into orange.
 // Night: deep indigo-navy with cool blue stars.
 const KEYS: Key[] = [
-  // midnight — deep indigo
-  { h: 0,    bg: C('#0c1828'), hs: C('#1c2e4a'), hg: C('#0a1218'), hi: 0.50, am: 0.26, di: 0.32, dc: C('#98aec8') },
+  // midnight — deep indigo (lifted moonlight so the city stays legible)
+  { h: 0,    bg: C('#0c1828'), hs: C('#22375a'), hg: C('#0e1826'), hi: 0.62, am: 0.36, di: 0.46, dc: C('#a8bcd8') },
   // pre-dawn — dark blue
-  { h: 5,    bg: C('#16243a'), hs: C('#283c58'), hg: C('#121c28'), hi: 0.54, am: 0.28, di: 0.38, dc: C('#a8bcd0') },
+  { h: 5,    bg: C('#16243a'), hs: C('#2e4466'), hg: C('#162232'), hi: 0.64, am: 0.38, di: 0.50, dc: C('#b4c6da') },
   // dawn — vibrant coral/amber sunrise
   { h: 6.8,  bg: C('#e8773a'), hs: C('#f4a060'), hg: C('#905838'), hi: 0.62, am: 0.32, di: 0.75, dc: C('#ffb04a') },
   // morning — bright Amalfi azure
@@ -83,8 +83,9 @@ const KEYS: Key[] = [
   { h: 18.3, bg: C('#f07228'), hs: C('#f49a42'), hg: C('#885830'), hi: 0.65, am: 0.30, di: 0.82, dc: C('#ffa840') },
   // twilight — deep purple/rose
   { h: 19.6, bg: C('#7a3a68'), hs: C('#a85878'), hg: C('#582848'), hi: 0.48, am: 0.26, di: 0.40, dc: C('#e07848') },
-  // evening — settling to night
-  { h: 21,   bg: C('#0e1c30'), hs: C('#1e3050'), hg: C('#0c1420'), hi: 0.52, am: 0.28, di: 0.36, dc: C('#a0b2ca') },
+  // evening — settling to night (kept a notch brighter than before so the
+  // prime viewing hours never go murky)
+  { h: 21,   bg: C('#0e1c30'), hs: C('#243a5e'), hg: C('#101a2a'), hi: 0.62, am: 0.36, di: 0.48, dc: C('#acbed4') },
 ]
 
 export interface SkyProfile {
