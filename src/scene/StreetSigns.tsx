@@ -85,7 +85,9 @@ export function AvenueLabels() {
 export function GatewayLabels() {
   return (
     <group>
-      {GATEWAYS.map((g) => (
+      {/* 'The Future' now reads as the Hollywood-style sign on the island
+          hillside (FutureIsland.tsx), so only the +Z 'The Past' marker remains. */}
+      {GATEWAYS.filter((g) => g.id !== 'future').map((g) => (
         <Billboard key={g.id} position={[0, 7, g.z]}>
           <Text
             font={interSemi}

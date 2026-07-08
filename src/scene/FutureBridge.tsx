@@ -250,8 +250,9 @@ export function FutureBridge() {
         </group>
       ))}
 
-      {/* ── Ferry drifting past the bridge end toward the peak ───────── */}
-      <Ferry from={new Vector3(END.x, 0.45, END.z - 6)} travelDist={62} />
+      {/* ── Ferry drifting past the bridge end toward the peak ───────────
+           Offset in −X so it clears the island now sitting at z ≈ −300. */}
+      <Ferry from={new Vector3(END.x - 42, 0.45, END.z - 6)} travelDist={62} />
 
     </group>
   )

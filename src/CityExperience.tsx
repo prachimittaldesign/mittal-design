@@ -7,6 +7,7 @@ import { MapControlsHud } from './components/MapControlsHud'
 import { MusicPlayer } from './components/MusicPlayer'
 import { Legend } from './components/Legend'
 import { Coachmarks } from './components/Coachmarks'
+import { WorkWithMe } from './components/WorkWithMe'
 import type { FocusTarget } from './scene/CameraRig'
 import type { Place } from './scene/lib/places'
 import type { Appearance, CameraCmd, LayerState, MapLayer, ViewMode, Project, Landmark } from './types'
@@ -74,6 +75,7 @@ export default function CityExperience({
       <MusicPlayer />
       {layer && <Legend layer={layer} />}
       <Coachmarks suppressed={overlayActive} />
+      <WorkWithMe />
     </>
   )
 }

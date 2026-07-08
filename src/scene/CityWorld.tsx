@@ -16,6 +16,7 @@ import { Birds } from './Birds'
 import { ClockTower } from './ClockTower'
 import { Lighthouse } from './Lighthouse'
 import { FutureBridge } from './FutureBridge'
+import { FutureIsland } from './FutureIsland'
 import { Billboards } from './Billboards'
 import { CityLife } from './CityLife'
 import { CoastEnvironment } from './CoastEnvironment'
@@ -158,6 +159,7 @@ export function CityWorld({ appearance, layers, view, weather, onSelect, onSelec
         {view !== 'skyline' && <Birds />}
         {view !== 'skyline' && <ClockTower />}
         {view !== 'skyline' && <FutureBridge />}
+        {view !== 'skyline' && <FutureIsland />}
         {view !== 'skyline' && (() => {
           const studioProject = PROJECTS.find(p => p.id === 'arch')
           return studioProject ? (
