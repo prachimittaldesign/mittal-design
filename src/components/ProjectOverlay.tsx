@@ -2,6 +2,8 @@ import { Fragment, useState } from 'react'
 import { quadrant, BIOME } from '../lib/iso'
 import type { CaseStudy, Project } from '../types'
 import { TakeoverShell } from './TakeoverShell'
+import { CaseStudy as RichCaseStudyView } from './CaseStudy/CaseStudy'
+import { RICH_CASE_STUDIES } from '../data/projects/ved'
 
 interface ProjectOverlayProps {
   project: Project
@@ -44,6 +46,24 @@ function SafeImage({
 export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayProps) {
   const q = quadrant(project.gx, project.gy)
   const { fill: accent, label: qLabel } = BIOME[q]
+
+  // Projects with rich, Apple-style case-study content get the full CaseStudy
+  // takeover; everything else keeps the classic overlay below. Related-tile
+  // clicks navigate like a deep link — App's popstate handler swaps the overlay.
+  const rich = RICH_CASE_STUDIES[project.id]
+  if (rich) {
+    return (
+      <TakeoverShell bare tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>
+        <RichCaseStudyView
+          data={rich}
+          onNavigate={(id) => {
+            history.pushState({ project: id }, '', `/projects/${id}`)
+            window.dispatchEvent(new PopStateEvent('popstate'))
+          }}
+        />
+      </TakeoverShell>
+    )
+  }
 
   return (
     <TakeoverShell tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>

@@ -9,12 +9,15 @@ interface TakeoverShellProps {
   children: React.ReactNode
   /** Accessible name announced when the dialog opens (e.g. the project name). */
   ariaLabel?: string
+  /** Bare mode: no built-in padding — the child owns the full canvas (used by
+      the rich Apple-style CaseStudy, whose sections are full-bleed bands). */
+  bare?: boolean
 }
 
 // The fullscreen "takeover" animation shell: expands a card from a screen rect
 // to fullscreen and collapses back. Content-agnostic — used by both the project
 // overlay and the landmark (place) overlay.
-export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel }: TakeoverShellProps) {
+export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, bare = false }: TakeoverShellProps) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -82,7 +85,9 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel }
         <div
           className={[
             'absolute inset-0 overflow-y-auto overflow-x-hidden',
-            'px-[min(10vw,96px)] pt-[calc(88px+env(safe-area-inset-top))] pb-[calc(80px+env(safe-area-inset-bottom))]',
+            bare
+              ? ''
+              : 'px-[min(10vw,96px)] pt-[calc(88px+env(safe-area-inset-top))] pb-[calc(80px+env(safe-area-inset-bottom))]',
             'transition-opacity duration-[360ms] delay-[320ms]',
             open ? 'opacity-100' : 'opacity-0',
           ].join(' ')}
