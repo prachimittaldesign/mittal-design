@@ -344,7 +344,7 @@ export function seoPlugin(): Plugin {
       // reach the city sooner (and never flash the gallery), slow networks
       // still get the instant gallery fallback.
       const heavy = readdirSync(resolve(outDir, 'assets')).filter((f) =>
-        /^(three|r3f|CityExperience)-.*\.js$/.test(f),
+        /^(three|r3f|drei|postprocessing|CityExperience)-.*\.js$/.test(f),
       )
       const preloads = heavy.map((f) => `<link rel="modulepreload" href="/assets/${f}">`).join('')
       for (const page of ['index.html', ...PROJECTS.map((pr) => `projects/${pr.id}/index.html`)]) {
