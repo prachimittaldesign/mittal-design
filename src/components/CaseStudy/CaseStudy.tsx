@@ -349,6 +349,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
             <div className={`wrap reveal${impactOn ? ' is-animated' : ''}`}>
               <p className="eyebrow">{data.impact.eyebrow}</p>
               <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.impact.headline}</h2>
+              {data.impact.note && <p className="lead" style={{ maxWidth: '68ch' }}>{rich(data.impact.note)}</p>}
               <div className="bars">
                 {data.impact.bars.map((b) => (
                   <div className="bar" key={b.label}>

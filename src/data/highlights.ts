@@ -2,8 +2,8 @@
 // copy. Feeds the upcoming screensaver mode: after a period of inactivity the
 // site auto-plays these as a full-screen reel (image + project name + headline
 // + blurb, cross-fading on each item's `duration`), dismissed by any input.
-// Source: highlight.json (session 2 — Ved only; SnapLogic + Revee to follow as
-// their images arrive). Image files live at `${imageBase(project)}/${image}.png`.
+// Source: highlight.json (session 3 — Ved + SnapLogic; Revee to follow as its
+// images arrive). Image files live at `${imageBase(project)}/${image}.png`.
 
 export interface ReelHighlight {
   /** Repo project id (matches PROJECTS / RICH_CASE_STUDIES keys). */
@@ -19,7 +19,7 @@ export interface ReelHighlight {
   duration: number
 }
 
-const BASES: Record<string, string> = { ved: '/IMAGES/Ved' }
+const BASES: Record<string, string> = { ved: '/IMAGES/Ved', snaplogic: '/IMAGES/Snap' }
 
 export function highlightSrc(h: ReelHighlight): string {
   return `${BASES[h.project] ?? '/IMAGES'}/${h.image}.png`
@@ -79,6 +79,61 @@ export const REEL_HIGHLIGHTS: ReelHighlight[] = [
     headline: 'Content operations, at a glance.',
     blurb: 'A governance dashboard tracking documents, topics, content blocks, and activity across the workspace.',
     tags: ['operations', 'governance', 'analytics'],
+    duration: 4500,
+  },
+  {
+    project: 'snaplogic',
+    projectName: 'SnapLogic Documentation',
+    order: 6,
+    image: 'SNAP_home_01',
+    feature: 'dual-nav homepage',
+    headline: 'Find it by product — or by task.',
+    blurb: "A documentation homepage built around 'What do you want to do?' — Browse by Goals and Browse by Features, side by side.",
+    tags: ['dual navigation', 'IA', 'homepage'],
+    duration: 5000,
+  },
+  {
+    project: 'snaplogic',
+    projectName: 'SnapLogic Documentation',
+    order: 7,
+    image: 'SNAP_dualnav_01',
+    feature: 'in-page dual-nav toggle',
+    headline: 'Two ways through, one page.',
+    blurb: 'A persistent in-page toggle between Browse by Feature and Browse by Goal — a differentiator no iPaaS competitor matches.',
+    tags: ['dual navigation', 'toggle', 'differentiator'],
+    duration: 5000,
+  },
+  {
+    project: 'snaplogic',
+    projectName: 'SnapLogic Documentation',
+    order: 8,
+    image: 'SNAP_aimode_01',
+    feature: 'AI Overview search',
+    headline: 'Ask a question. Get a cited answer.',
+    blurb: 'An AI Overview that synthesizes an answer with a sources panel — public, no login required.',
+    tags: ['AI search', 'cited answers', 'conversational'],
+    duration: 5000,
+  },
+  {
+    project: 'snaplogic',
+    projectName: 'SnapLogic Documentation',
+    order: 9,
+    image: 'SNAP_docgpt_01',
+    feature: 'DocGPT',
+    headline: 'Summarize this page.',
+    blurb: 'A page-level assistant that summarizes and answers follow-ups in context, with a downloadable summary.',
+    tags: ['DocGPT', 'AI assistant', 'summarize'],
+    duration: 4500,
+  },
+  {
+    project: 'snaplogic',
+    projectName: 'SnapLogic Documentation',
+    order: 10,
+    image: 'SNAP_mobile_01',
+    feature: 'responsive',
+    headline: 'Holds up on every screen.',
+    blurb: 'The dual-nav model and the full 700-page tree collapse cleanly to mobile.',
+    tags: ['responsive', 'mobile'],
     duration: 4500,
   },
 ]

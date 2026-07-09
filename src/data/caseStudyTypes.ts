@@ -10,6 +10,8 @@ export interface CSImageMeta {
   id: string
   /** 'received' → real <img>; 'planned' → placeholder until the file arrives. */
   status: 'received' | 'planned'
+  /** File extension without the dot. Defaults to 'png'. */
+  ext?: string
   highlight?: boolean
   feature: string
   alt: string
@@ -84,6 +86,8 @@ export interface CSImpactBar {
 export interface CSImpact {
   eyebrow: string
   headline: string
+  /** Methodology caveat shown under the headline (e.g. what the numbers do/don't cover). */
+  note?: string
   bars: CSImpactBar[]
 }
 
@@ -183,5 +187,5 @@ export function csImage(cs: RichCaseStudy, id: string | null | undefined) {
   if (!id) return null
   const meta = cs.images.find((i) => i.id === id)
   if (!meta) return null
-  return { src: `${cs.imageBase}/${id}.png`, ...meta }
+  return { src: `${cs.imageBase}/${id}.${meta.ext ?? 'png'}`, ...meta }
 }

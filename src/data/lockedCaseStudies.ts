@@ -1,50 +1,11 @@
 import type { CaseStudy } from '../types'
 import type { LockedPayload } from '../types'
 import { VED_CASE_STUDY } from './projects/ved'
+import { SNAPLOGIC_CASE_STUDY } from './projects/snaplogic'
 
 // NODE-ONLY. This module is imported solely by scripts/seoPlugin.ts at build
 // time to produce the encrypted blobs in dist/locked/. It is NEVER imported by
 // any client module, so this plaintext never enters the browser bundle.
-
-const SNAPLOGIC: CaseStudy = {
-      role: 'Sole Product Designer',
-      timeline: 'Jan 2025 – Ongoing',
-      platform: 'Responsive Web',
-      context: 'V1 live in production',
-      summary:
-        "SnapLogic's enterprise docs lived on Confluence — never built for external product documentation. I rebuilt the experience around a dual-navigation system that lets users browse by product taxonomy or by task intent, reducing clicks-to-target by a validated 40%.",
-      problem:
-        "The site exposed the entire ~700-page tree in one scrollable sidebar, organized purely by product (AutoSync, Designer, Monitor, SnapGPT, Admin Manager). Users who arrived with a task — \"monitor my pipeline,\" \"set up a user\" — had to first guess which product held the answer, then drill through nested nodes. This worked for power users but systematically failed newcomers, cross-product admins, and anyone arriving from search. They bounced to support or abandoned the docs entirely. The content was comprehensive; the architecture was the barrier.",
-      approach: [
-        {
-          title: 'Dual navigation',
-          body: 'Designed parallel Browse-by-Product and Browse-by-Task systems over the same content, with in-page switching — serving power users and newcomers without compromise.',
-        },
-        {
-          title: 'Task IA grounded in research',
-          body: "Mapped task categories to user goals using Jobs-To-Be-Done and Rosenfeld & Morville's multiple-navigation principle; benchmarked against Stripe, AWS, and Microsoft Learn.",
-        },
-        {
-          title: 'DITA map scoping',
-          body: 'Each task scopes the view down to a self-contained DITA map — turning a 700-page tree into a focused, guide-like micro-experience instead of a filtered list.',
-        },
-        {
-          title: 'Conversational search (DocGPT)',
-          body: 'Designed a natural-language search that synthesizes answers with page references — meeting users who arrive with a question, not a navigation path.',
-        },
-        {
-          title: 'Single-source content',
-          body: 'Conref wrappers serve both browse modes from one content body — zero duplicate maintenance for the writing team.',
-        },
-      ],
-      impact: [
-        '40% reduction in clicks-to-target, validated across all five test scenarios with automated Playwright usability tests',
-        'V1 shipped to production, replacing the Confluence-hosted site',
-        'Sole designer — drove alignment with senior tech writers, department heads, and international managers; secured in-house design approvals',
-        'Competitive edge: no direct iPaaS rival (MuleSoft, Boomi, Workato) offers dual-navigation or task-based browsing',
-      ],
-      metric: { value: '40%', label: 'fewer clicks to target' },
-    }
 
 const REVEE: CaseStudy = {
       role: 'Product Designer — end-to-end',
@@ -218,6 +179,6 @@ const REVEE: CaseStudy = {
 
 export const LOCKED_CASE_STUDIES: Record<string, LockedPayload> = {
   paas: { kind: 'rich', data: VED_CASE_STUDY },
-  snaplogic: { kind: 'standard', data: SNAPLOGIC },
+  snaplogic: { kind: 'rich', data: SNAPLOGIC_CASE_STUDY },
   revee: { kind: 'standard', data: REVEE },
 }
