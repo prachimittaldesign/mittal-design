@@ -112,6 +112,9 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const hlRef = useRef<HTMLDivElement>(null)
   const [hlAt, setHlAt] = useState<'start' | 'mid' | 'end'>('start')
+  const lookRef = useRef<HTMLDivElement>(null)
+  const [lookAt, setLookAt] = useState<'start' | 'mid' | 'end'>('start')
+  const [lookIdx, setLookIdx] = useState(0)
   const [lookTheme, setLookTheme] = useState('light')
   const [modal, setModal] = useState<CSModal | null>(null)
   const [impactOn, setImpactOn] = useState(false)
@@ -203,6 +206,34 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
     const atStart = el.scrollLeft < 8
     const atEnd = el.scrollLeft + el.clientWidth > el.scrollWidth - 8
     setHlAt(atStart ? 'start' : atEnd ? 'end' : 'mid')
+  }
+
+  // "Take a closer look" scroller — arrows + dots. Two independent signals
+  // (not just a hint of the next card's edge) so the gallery reads as
+  // swipeable on mobile, where a near-full-width item otherwise looks like a
+  // single static image.
+  const lookStep = (dir: 1 | -1) => {
+    const el = lookRef.current
+    if (!el) return
+    const card = el.querySelector('.look__item') as HTMLElement | null
+    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 400) + 18), behavior: 'smooth' })
+  }
+  const syncLook = () => {
+    const el = lookRef.current
+    if (!el) return
+    const atStart = el.scrollLeft < 8
+    const atEnd = el.scrollLeft + el.clientWidth > el.scrollWidth - 8
+    setLookAt(atStart ? 'start' : atEnd ? 'end' : 'mid')
+    const card = el.querySelector('.look__item') as HTMLElement | null
+    const step = (card?.offsetWidth ?? 400) + 18
+    setLookIdx(Math.round(el.scrollLeft / step))
+  }
+  const lookGoTo = (i: number) => {
+    const el = lookRef.current
+    const card = el?.querySelector('.look__item') as HTMLElement | null
+    if (!el) return
+    const step = (card?.offsetWidth ?? 400) + 18
+    el.scrollTo({ left: i * step, behavior: 'smooth' })
   }
 
   const goTo = (id: string) => {
@@ -306,17 +337,25 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
           <section className="section section--gray center" id="cs-look" style={{ scrollMarginTop: 64 }}>
             <div className="wrap reveal">
               <h2 className="h-sect">Take a closer look.</h2>
-              {data.closerLook.themes.length > 1 && (
-                <div className="toggle" role="group" aria-label="Theme">
-                  {data.closerLook.themes.map((t) => (
-                    <button key={t} aria-pressed={lookTheme === t} onClick={() => setLookTheme(t)}>
-                      {t[0].toUpperCase() + t.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="look__controls">
+                {data.closerLook.themes.length > 1 && (
+                  <div className="toggle" role="group" aria-label="Theme">
+                    {data.closerLook.themes.map((t) => (
+                      <button key={t} aria-pressed={lookTheme === t} onClick={() => setLookTheme(t)}>
+                        {t[0].toUpperCase() + t.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {data.closerLook.items.length > 1 && (
+                  <div className="look__arrows">
+                    <button className="arrow" onClick={() => lookStep(-1)} disabled={lookAt === 'start'} aria-label="Previous screenshot">‹</button>
+                    <button className="arrow" onClick={() => lookStep(1)} disabled={lookAt === 'end'} aria-label="Next screenshot">›</button>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="look__scroller" data-ui={lookTheme}>
+            <div className="look__scroller" data-ui={lookTheme} ref={lookRef} onScroll={syncLook}>
               {data.closerLook.items.map((item) => (
                 <figure className="look__item" key={item.image}>
                   <Shot cs={data} id={item.image} />
@@ -324,6 +363,20 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                 </figure>
               ))}
             </div>
+            {data.closerLook.items.length > 1 && (
+              <div className="look__dots" role="tablist" aria-label="Screenshot">
+                {data.closerLook.items.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className="look__dot"
+                    aria-label={`Go to screenshot ${i + 1} of ${data.closerLook!.items.length}`}
+                    aria-current={i === lookIdx}
+                    onClick={() => lookGoTo(i)}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
