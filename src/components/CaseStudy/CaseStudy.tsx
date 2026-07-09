@@ -138,7 +138,19 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
     )
-    els.forEach((el) => io.observe(el))
+    els.forEach((el) => {
+      io.observe(el)
+      // A direct jump to a mid-page anchor (a local-nav link, or a preview
+      // renderer that positions the viewport instantly instead of scrolling)
+      // can land an element already on screen before the observer's first
+      // async callback fires — check synchronously too, so it never sits
+      // stuck at opacity: 0.
+      const r = el.getBoundingClientRect()
+      if (r.top < window.innerHeight && r.bottom > 0) {
+        el.classList.add('in')
+        io.unobserve(el)
+      }
+    })
     return () => io.disconnect()
   }, [data])
 
@@ -157,6 +169,11 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
       { threshold: 0.35 },
     )
     io.observe(el)
+    const r = el.getBoundingClientRect()
+    if (r.top < window.innerHeight && r.bottom > 0) {
+      setImpactOn(true)
+      io.unobserve(el)
+    }
     return () => io.disconnect()
   }, [data])
 
