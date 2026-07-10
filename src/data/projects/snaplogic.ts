@@ -28,7 +28,7 @@ export const SNAPLOGIC_CASE_STUDY: RichCaseStudy = {
   hero: {
     eyebrow: 'Enterprise Documentation · Information Architecture · 2025',
     title: 'SnapLogic Docs',
-    tagline: "Find it by product — or by what you're trying to do.",
+    tagline: '700 pages of enterprise docs, rebuilt around one question: what are you trying to do?',
     cta: { label: 'View live', url: '' },
     image: 'SNAP_home_01',
   },

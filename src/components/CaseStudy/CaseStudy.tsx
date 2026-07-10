@@ -93,6 +93,73 @@ function SectionModal({ cs, modal, onClose }: { cs: RichCaseStudy; modal: CSModa
   )
 }
 
+// ---- trail band ---------------------------------------------------------------
+// A Trailhead-style illustrated divider — rolling hills, pines, and a winding
+// trail in the portfolio's soft palette — so the case study keeps the city's
+// outdoorsy theme instead of sitting on a bare white page. Pure decoration:
+// aria-hidden, no pointer events.
+function TrailBand({ flip = false }: { flip?: boolean }) {
+  return (
+    <div className="trailband" aria-hidden style={flip ? { transform: 'scaleX(-1)' } : undefined}>
+      <svg viewBox="0 0 1440 230" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
+        {/* sky wash */}
+        <defs>
+          <linearGradient id="tb-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#eaf2f0" stopOpacity="0" />
+            <stop offset="1" stopColor="#e3efe9" stopOpacity="0.9" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1440" height="230" fill="url(#tb-sky)" />
+        {/* far hills */}
+        <path d="M0 158 Q 200 96 430 132 T 900 120 Q 1180 96 1440 148 V 230 H 0 Z" fill="#7fa77e" />
+        <path d="M780 230 Q 1040 88 1440 128 V 230 Z" fill="#4d7a5a" />
+        {/* warm field */}
+        <path d="M0 230 V 176 Q 300 130 620 168 Q 900 200 1120 188 Q 1300 178 1440 196 V 230 Z" fill="#e3c56f" />
+        {/* near meadow */}
+        <path d="M0 230 V 196 Q 360 158 720 196 Q 1080 232 1440 208 V 230 Z" fill="#9dbf6e" />
+        {/* winding trail */}
+        <path
+          d="M700 230 C 690 208 620 200 640 184 C 662 166 780 172 800 156 C 820 140 740 134 764 122 C 784 112 880 118 920 112"
+          fill="none"
+          stroke="#fbf7ee"
+          strokeWidth="17"
+          strokeLinecap="round"
+        />
+        <path
+          d="M920 112 C 950 108 990 110 1020 106"
+          fill="none"
+          stroke="#fbf7ee"
+          strokeWidth="9"
+          strokeLinecap="round"
+          opacity="0.85"
+        />
+        {/* pines — left cluster */}
+        <g fill="#35604a">
+          <path d="M120 148 l14 -34 14 34 Z" />
+          <path d="M150 152 l11 -26 11 26 Z" />
+          <path d="M88 154 l10 -22 10 22 Z" />
+        </g>
+        {/* pines — right hill */}
+        <g fill="#2e5747">
+          <path d="M1236 128 l13 -30 13 30 Z" />
+          <path d="M1272 134 l10 -24 10 24 Z" />
+          <path d="M1206 136 l9 -20 9 20 Z" />
+        </g>
+        {/* the cottage on the far hill — a nod to the city's architecture corner */}
+        <g>
+          <rect x="336" y="118" width="20" height="13" rx="1.5" fill="#fffdf7" />
+          <path d="M333 119 L346 108 L359 119 Z" fill="#c96f4a" />
+        </g>
+        {/* soft cloud */}
+        <g fill="#dfe9ec" opacity="0.8">
+          <ellipse cx="1050" cy="52" rx="52" ry="17" />
+          <ellipse cx="1092" cy="42" rx="34" ry="14" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
 // ---- comparison mark ---------------------------------------------------------
 function Mark({ value }: { value: boolean | null }) {
   if (value === true) return <span className="mk mk-yes" role="img" aria-label="Yes">✓</span>
@@ -120,64 +187,62 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   const [impactOn, setImpactOn] = useState(false)
   const [current, setCurrent] = useState('')
 
-  // Scroll reveal — same IO recipe as the template.
+  // Scroll reveal + impact-bar trigger — deterministic geometry checks on
+  // every scroll frame instead of IntersectionObserver. IO proved unreliable
+  // inside the fullscreen takeover on real devices (its async callbacks never
+  // fired for some sections, which left them stuck at opacity 0 — the "blank
+  // black Impact section" bug). A capture-phase scroll listener on window sees
+  // scrolls of the overlay's inner scroll container too (scroll events don't
+  // bubble, but they do capture), and getBoundingClientRect can't lie.
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
     const els = Array.from(root.querySelectorAll('.reveal'))
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce || !('IntersectionObserver' in window)) {
+    if (reduce) {
       els.forEach((el) => el.classList.add('in'))
+      setImpactOn(true)
       return
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in')
-            io.unobserve(e.target)
-          }
-        })
-      },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
-    )
-    els.forEach((el) => {
-      io.observe(el)
-      // A direct jump to a mid-page anchor (a local-nav link, or a preview
-      // renderer that positions the viewport instantly instead of scrolling)
-      // can land an element already on screen before the observer's first
-      // async callback fires — check synchronously too, so it never sits
-      // stuck at opacity: 0.
-      const r = el.getBoundingClientRect()
-      if (r.top < window.innerHeight && r.bottom > 0) {
-        el.classList.add('in')
-        io.unobserve(el)
-      }
-    })
-    return () => io.disconnect()
-  }, [data])
+    const pending = new Set(els)
+    const impactEl = data.impact ? root.querySelector('#cs-impact') : null
+    let impactPending = !!impactEl
+    let raf = 0
 
-  // Impact bars animate when scrolled into view.
-  useEffect(() => {
-    const root = rootRef.current
-    if (!root || !data.impact) return
-    const el = root.querySelector('#cs-impact')
-    if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-      setImpactOn(true)
-      return
+    const detach = () => {
+      window.removeEventListener('scroll', schedule, true)
+      window.removeEventListener('resize', schedule)
     }
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && (setImpactOn(true), io.unobserve(e.target))),
-      { threshold: 0.35 },
-    )
-    io.observe(el)
-    const r = el.getBoundingClientRect()
-    if (r.top < window.innerHeight && r.bottom > 0) {
-      setImpactOn(true)
-      io.unobserve(el)
+    const check = () => {
+      raf = 0
+      const vh = window.innerHeight
+      pending.forEach((el) => {
+        const r = el.getBoundingClientRect()
+        if (r.top < vh * 0.94 && r.bottom > 0) {
+          el.classList.add('in')
+          pending.delete(el)
+        }
+      })
+      if (impactPending && impactEl) {
+        const r = impactEl.getBoundingClientRect()
+        if (r.top < vh * 0.72 && r.bottom > 0) {
+          setImpactOn(true)
+          impactPending = false
+        }
+      }
+      if (pending.size === 0 && !impactPending) detach()
     }
-    return () => io.disconnect()
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(check)
+    }
+
+    window.addEventListener('scroll', schedule, true)
+    window.addEventListener('resize', schedule)
+    check() // initial pass — covers direct anchor jumps and above-fold content
+    return () => {
+      detach()
+      cancelAnimationFrame(raf)
+    }
   }, [data])
 
   // Nav: current-section highlight.
@@ -312,6 +377,8 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
           </div>
         </header>
 
+        <TrailBand />
+
         {/* ---- 2 · highlights ---- */}
         <section className="section" id="cs-highlights" data-cs-section style={{ paddingBottom: 'calc(var(--pad) - 30px)', scrollMarginTop: 64 }}>
           <div className="hl__head reveal">
@@ -416,7 +483,10 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
         {/* ---- 5 · impact bars ---- */}
         {data.impact && (
           <section className="section section--dark" id="cs-impact" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className={`wrap reveal${impactOn ? ' is-animated' : ''}`}>
+            {/* No .reveal here: this is the only dark section, so content that
+                fails to un-hide reads as a solid black screen. The text is
+                always visible; only the bar fills animate in. */}
+            <div className={`wrap${impactOn ? ' is-animated' : ''}`}>
               <p className="eyebrow">{data.impact.eyebrow}</p>
               <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.impact.headline}</h2>
               {data.impact.note && <p className="lead" style={{ maxWidth: '68ch' }}>{rich(data.impact.note)}</p>}
@@ -735,6 +805,8 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
           </section>
         )}
       </main>
+
+      <TrailBand flip />
 
       {/* ---- footer ---- */}
       <footer className="footer">

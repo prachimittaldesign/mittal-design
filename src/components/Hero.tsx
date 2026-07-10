@@ -59,9 +59,15 @@ export function Hero({ docked }: { docked: boolean }) {
   // is always surfaced, then quietly closes. No ref guard: StrictMode
   // double-invokes the effect and a ref set on the first pass would block the
   // re-run after its cleanup cleared the timers.
+  // Skipped while a case study is open (checked at fire time — covers both
+  // direct /projects/:id loads and clicking a building right after boot): the
+  // card portals above the takeover, so it would float over the case study.
   useEffect(() => {
     if (!docked) return
-    const show = setTimeout(() => setOpen(true), 800)
+    const overlayOpen = () => /^\/projects\//.test(window.location.pathname)
+    const show = setTimeout(() => {
+      if (!overlayOpen()) setOpen(true)
+    }, 800)
     const hide = setTimeout(() => {
       setOpen(false)
       // Hand the stage to the coachmark tour (first visit only) — it waits for
