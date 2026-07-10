@@ -62,7 +62,14 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
       window.dispatchEvent(new PopStateEvent('popstate'))
     }
     return (
-      <TakeoverShell bare tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>
+      <TakeoverShell
+        bare
+        tileRect={tileRect}
+        accent={accent}
+        onClose={onClose}
+        ariaLabel={`${project.label} case study`}
+        contentKey={`${project.id}:${unlocked ? 'unlocked' : 'locked'}`}
+      >
         {!unlocked ? (
           <LockGate
             project={project}
@@ -83,7 +90,13 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
   }
 
   return (
-    <TakeoverShell tileRect={tileRect} accent={accent} onClose={onClose} ariaLabel={`${project.label} case study`}>
+    <TakeoverShell
+      tileRect={tileRect}
+      accent={accent}
+      onClose={onClose}
+      ariaLabel={`${project.label} case study`}
+      contentKey={project.id}
+    >
       {/* Eyebrow */}
       <div className="mb-5 flex items-center gap-[10px] font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft">
         <span className="h-[3px] w-[28px] flex-shrink-0 rounded-[2px]" style={{ background: accent }} />

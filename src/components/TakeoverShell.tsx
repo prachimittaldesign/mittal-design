@@ -12,15 +12,23 @@ interface TakeoverShellProps {
   /** Bare mode: no built-in padding — the child owns the full canvas (used by
       the rich Apple-style CaseStudy, whose sections are full-bleed bands). */
   bare?: boolean
+  /** Identity of the content currently shown. ProjectOverlay reuses one
+      TakeoverShell instance across project switches and lock→unlock swaps
+      (no `key`, so React never remounts it), which otherwise leaves the
+      scroll container wherever the previous content left it — e.g. opening
+      a gated study lands mid-page instead of at the top once unlocked.
+      Changing this value snaps scroll back to 0. */
+  contentKey?: string
 }
 
 // The fullscreen "takeover" animation shell: expands a card from a screen rect
 // to fullscreen and collapses back. Content-agnostic — used by both the project
 // overlay and the landmark (place) overlay.
-export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, bare = false }: TakeoverShellProps) {
+export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, bare = false, contentKey }: TakeoverShellProps) {
   const [open, setOpen] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
   const restoreRef = useRef<HTMLElement | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   // Guards onClose against double-firing (Escape + backdrop click + close button
   // can all land during the 650ms collapse — that would pushState / clear the
   // overlay twice).
@@ -48,6 +56,10 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, 
   useEffect(() => {
     if (open) dialogRef.current?.focus()
   }, [open])
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [contentKey])
 
   const handleClose = () => {
     if (closingRef.current) return
@@ -104,6 +116,7 @@ export function TakeoverShell({ tileRect, accent, onClose, children, ariaLabel, 
           style={{ background: accent, opacity: open ? 1 : 0 }}
         />
         <div
+          ref={scrollRef}
           className={[
             'absolute inset-0 overflow-y-auto overflow-x-hidden',
             bare
