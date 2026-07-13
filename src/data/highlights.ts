@@ -2,8 +2,8 @@
 // copy. Feeds the upcoming screensaver mode: after a period of inactivity the
 // site auto-plays these as a full-screen reel (image + project name + headline
 // + blurb, cross-fading on each item's `duration`), dismissed by any input.
-// Source: highlight.json (session 3 — Ved + SnapLogic; Revee to follow as its
-// images arrive). Image files live at `${imageBase(project)}/${image}.png`.
+// Source: highlight.json (session 7 — all three projects: Ved, SnapLogic, and
+// Revee & Mo, 17 entries). Image files live at `${imageBase(project)}/${image}.png`.
 
 export interface ReelHighlight {
   /** Repo project id (matches PROJECTS / RICH_CASE_STUDIES keys). */
@@ -19,7 +19,7 @@ export interface ReelHighlight {
   duration: number
 }
 
-const BASES: Record<string, string> = { ved: '/IMAGES/Ved', snaplogic: '/IMAGES/Snap' }
+const BASES: Record<string, string> = { ved: '/IMAGES/Ved', snaplogic: '/IMAGES/Snap', revee: '/IMAGES/Revee-Mo' }
 
 export function highlightSrc(h: ReelHighlight): string {
   return `${BASES[h.project] ?? '/IMAGES'}/${h.image}.png`
@@ -134,6 +134,83 @@ export const REEL_HIGHLIGHTS: ReelHighlight[] = [
     headline: 'Holds up on every screen.',
     blurb: 'The dual-nav model and the full 700-page tree collapse cleanly to mobile.',
     tags: ['responsive', 'mobile'],
+    duration: 4500,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 11,
+    image: 'REV_mohome_01',
+    feature: 'Mo home screen',
+    headline: 'The TV home screen, reclaimed for the community.',
+    blurb: 'Location-aware, personalized, and social — weather, local events, a daily timeline, and cross-app continuity, all in one glance.',
+    tags: ['Mo', 'home screen', 'community'],
+    duration: 5000,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 12,
+    image: 'REV_momap_01',
+    feature: 'Mo community map',
+    headline: "See who's around, and what they've earned.",
+    blurb: 'A community map with badge filters and neighbor presence — turning the TV into a shared local space.',
+    tags: ['Mo', 'map', 'community'],
+    duration: 4500,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 13,
+    image: 'REV_moevent_01',
+    feature: 'Mo as the ecosystem shell',
+    headline: 'One click from your street to your seat.',
+    blurb: 'See a community event on Mo, open it in HEAR, Here!, and book — the home screen is the doorway to all 12 apps.',
+    tags: ['Mo', 'events', 'app launch', 'ecosystem'],
+    duration: 5000,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 14,
+    image: 'REV_mostoryboard_01',
+    feature: 'Storyboarding',
+    headline: 'Build your own home screen.',
+    blurb: 'Rather than accept a fixed layout, compose the TV home from apps, widgets, and photos — then tune it to the room.',
+    tags: ['Mo', 'storyboarding', 'customization'],
+    duration: 4500,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 15,
+    image: 'REV_moambient_01',
+    feature: 'Ambient Mode',
+    headline: "When nobody's watching, it becomes art.",
+    blurb: 'Ambient Mode turns the idle TV from a black rectangle into artwork, photography, or a living widget surface.',
+    tags: ['Mo', 'ambient mode', 'art'],
+    duration: 4500,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 16,
+    image: 'REV_bannerad_01',
+    feature: 'Companion banner ad',
+    headline: 'Ads beside the stream, never over it.',
+    blurb: 'Non-interruptive companion advertising — contextually relevant, always visible, and never covering the broadcast.',
+    tags: ['Revee', 'advertising', 'non-interruptive'],
+    duration: 5000,
+  },
+  {
+    project: 'revee',
+    projectName: 'Revee & Mo',
+    order: 17,
+    image: 'REV_interactivead_01',
+    feature: 'Interactive ad format',
+    headline: 'An ad you can talk back to.',
+    blurb: 'A companion ad that expands into an interactive poll — engagement the viewer opts into, without ever leaving the stream.',
+    tags: ['Revee', 'advertising', 'interactive'],
     duration: 4500,
   },
 ]
