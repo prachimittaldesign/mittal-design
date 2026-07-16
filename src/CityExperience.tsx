@@ -9,6 +9,7 @@ import { Legend } from './components/Legend'
 import { Coachmarks } from './components/Coachmarks'
 import { WorkWithMe } from './components/WorkWithMe'
 import { ShareMenu } from './components/ShareMenu'
+import { useHyderabad } from './lib/useHyderabad'
 import type { FocusTarget } from './scene/CameraRig'
 import type { Place } from './scene/lib/places'
 import type { EmbedConfig } from './lib/viewStore'
@@ -61,6 +62,11 @@ export default function CityExperience({
     [layer, activeTag],
   )
 
+  // Lifted here (was inside Scene) so the same Hyderabad time/weather feed the
+  // sky, the desktop weather pill, and the mobile weather pill that leads the
+  // filter-chip row — one poll, one source of truth.
+  const { time, weather } = useHyderabad()
+
   return (
     <>
       <Scene
@@ -71,6 +77,8 @@ export default function CityExperience({
         cameraCmd={cameraCmd}
         onSelect={onSelectProject}
         onSelectLandmark={onSelectLandmark}
+        time={time}
+        weather={weather}
         embed={embed}
         onFirstFrame={onFirstFrame}
       />
@@ -78,7 +86,7 @@ export default function CityExperience({
       {!embed && (
         <>
           <SearchExplore onFocus={(p: Place) => setFocus({ x: p.x, z: p.z, h: p.h, nonce: performance.now() })} />
-          <TagPills activeTag={activeTag} onChange={setActiveTag} />
+          <TagPills activeTag={activeTag} onChange={setActiveTag} time={time} weather={weather} />
           <LayersControl layers={layers} onChange={setLayers} layer={layer} onLayerChange={setLayer} />
           <MapControlsHud
             view={view}

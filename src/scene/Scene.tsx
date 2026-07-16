@@ -13,7 +13,8 @@ import { DaySky } from './DaySky'
 import { EnvBalloons } from './CityLife'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
-import { useHyderabad } from '../lib/useHyderabad'
+import type { HyderabadClock } from '../lib/sky'
+import type { Weather } from '../lib/weather'
 import type { EmbedConfig } from '../lib/viewStore'
 import type { Appearance, CameraCmd, LayerState, ViewMode, Project, Landmark } from '../types'
 
@@ -31,6 +32,11 @@ interface SceneProps {
   cameraCmd: CameraCmd | null
   onSelect: (project: Project, rect: DOMRect) => void
   onSelectLandmark: (landmark: Landmark, rect: DOMRect) => void
+  /** Hyderabad time + weather, lifted to CityExperience so the same values
+      feed the sky, the desktop weather pill here, and the mobile weather pill
+      that now leads the filter-chip row (no duplicate useHyderabad poll). */
+  time: HyderabadClock
+  weather: Weather | null
   /** When set, boot to a captured angle and hide every HUD element (embeds). */
   embed?: EmbedConfig | null
   /** Fires once, the first time the canvas completes a real render pass with
@@ -91,10 +97,9 @@ function AmbientParticles() {
   )
 }
 
-export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, embed = null, onFirstFrame }: SceneProps) {
+export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, time, weather, embed = null, onFirstFrame }: SceneProps) {
   const [docked, setDocked] = useState(false)
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
-  const { time, weather } = useHyderabad()
   useEffect(() => {
     const t = setTimeout(() => setDocked(true), 2400)
     return () => clearTimeout(t)
