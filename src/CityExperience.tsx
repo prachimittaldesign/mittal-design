@@ -23,6 +23,9 @@ export interface CityExperienceProps {
   focusRequest: FocusTarget | null
   /** When set, boot to a captured angle with no HUD (a shareable embed). */
   embed?: EmbedConfig | null
+  /** Fires once the canvas has rendered its first real frame — the shell's
+      3-second watchdog waits on this to decide city vs. fallback page. */
+  onFirstFrame?: () => void
 }
 
 // The full interactive 3D city + its HUD. Lazy-loaded (React.lazy) so the heavy
@@ -35,6 +38,7 @@ export default function CityExperience({
   overlayActive,
   focusRequest,
   embed = null,
+  onFirstFrame,
 }: CityExperienceProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [layers, setLayers] = useState<LayerState>({
@@ -68,6 +72,7 @@ export default function CityExperience({
         onSelect={onSelectProject}
         onSelectLandmark={onSelectLandmark}
         embed={embed}
+        onFirstFrame={onFirstFrame}
       />
 
       {!embed && (

@@ -165,8 +165,11 @@ export function LockGate({
           <button
             type="submit"
             disabled={busy || !password}
-            className="flex-shrink-0 rounded-[10px] px-[20px] py-[11px] text-[14px] font-bold text-white transition-opacity disabled:opacity-40"
-            style={{ background: accent }}
+            // Solid ink, not the per-project pastel `accent` (q1-q4 fills like
+            // #8fb6d0 / #e6c389 are too light for white text at full opacity —
+            // the button read as disabled even when it wasn't). Ink stays
+            // unambiguously "enabled" at 100%; disabled drops to a real grey.
+            className="flex-shrink-0 rounded-[10px] bg-ink px-[20px] py-[11px] text-[14px] font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:bg-black/25 disabled:text-ink-soft"
           >
             {busy ? 'Unlocking…' : 'Unlock'}
           </button>

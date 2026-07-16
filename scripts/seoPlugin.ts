@@ -138,6 +138,7 @@ function siteIndex(): string {
     <h1>${AUTHOR} — Product Designer &amp; Architect</h1>
     <p>An explorable 3D portfolio city. Every building is a shipped project, mapped by audience and complexity. Featured case studies: Ved (enterprise DITA CMS with AI authoring), SnapLogic (documentation revamp, 40% fewer clicks-to-target), and Revee &amp; Mo (smart-TV super apps showcased at CES 2024).</p>
     <nav aria-label="Site">
+      <a href="/projects">Browse all projects (fast page)</a>
       <a href="/about.html">About</a>
       <a href="/Prachi-Mittal-Resume-2026.pdf">Resume (PDF)</a>
       <a href="https://www.linkedin.com/in/prachi15mittal">LinkedIn</a>
@@ -286,10 +287,33 @@ Components: React, three.js, react-three-fiber, Tailwind CSS, Vite
 The sky follows Hyderabad's real time and weather.
 `
 
+// The fast /projects landing page (entry-architecture fallback: a slow city
+// load, no WebGL, a real crash, or a direct visit). Reuses the built index.html
+// shell — the SPA route (App.tsx / useCityBoot) renders the real content once
+// JS runs; this just gives it its own title/description/canonical for
+// crawlers and link previews, same pattern as projectPage() below.
+function projectsPage(builtIndex: string): string {
+  let html = builtIndex
+  const title = `Selected work — ${AUTHOR}`
+  const desc = 'A fast, no-3D landing page: selected case studies (SnapLogic, Ved, Revee & Mo), what I bring, more work, and how to reach me — the same portfolio, without the WebGL city.'
+  const url = `${ORIGIN}/projects`
+
+  html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
+  html = html.replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${esc(desc)}"`)
+  html = html.replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${url}"`)
+  html = html.replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${esc(title)}"`)
+  html = html.replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${esc(desc)}"`)
+  html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${url}"`)
+  html = html.replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${esc(title)}"`)
+  html = html.replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${esc(desc)}"`)
+  return html
+}
+
 function sitemap(): string {
   const today = new Date().toISOString().slice(0, 10)
   const urls = [
     { loc: `${ORIGIN}/`, priority: '1.0' },
+    { loc: `${ORIGIN}/projects`, priority: '0.9' },
     { loc: `${ORIGIN}/about.html`, priority: '0.8' },
     ...PROJECTS.map((p) => ({ loc: projectUrl(p), priority: p.featured ? '0.9' : '0.6' })),
   ]
@@ -375,6 +399,9 @@ export function seoPlugin(): Plugin {
         mkdirSync(dir, { recursive: true })
         writeFileSync(resolve(dir, 'index.html'), projectPage(builtIndex, p))
       }
+      const projectsDir = resolve(outDir, 'projects')
+      mkdirSync(projectsDir, { recursive: true })
+      writeFileSync(resolve(projectsDir, 'index.html'), projectsPage(builtIndex))
       writeFileSync(resolve(outDir, 'sitemap.xml'), sitemap())
       writeFileSync(resolve(outDir, 'robots.txt'), ROBOTS)
       writeFileSync(resolve(outDir, 'llms.txt'), llmsTxt())

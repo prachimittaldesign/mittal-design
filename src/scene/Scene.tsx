@@ -33,6 +33,24 @@ interface SceneProps {
   onSelectLandmark: (landmark: Landmark, rect: DOMRect) => void
   /** When set, boot to a captured angle and hide every HUD element (embeds). */
   embed?: EmbedConfig | null
+  /** Fires once, the first time the canvas completes a real render pass with
+      the city geometry mounted — the "city ready" signal the shell's 3-second
+      watchdog waits on. Placed inside the same Suspense boundary as CityWorld
+      so it can't fire before the world is actually there to look at. */
+  onFirstFrame?: () => void
+}
+
+// Fires onFirstFrame on the very first useFrame tick, then goes quiet.
+// A sibling of CityWorld inside the same <Suspense>, so this only starts
+// ticking once whatever CityWorld suspends on (if anything) has resolved.
+function FirstFrameProbe({ onReady }: { onReady?: () => void }) {
+  const firedRef = useRef(false)
+  useFrame(() => {
+    if (firedRef.current || !onReady) return
+    firedRef.current = true
+    onReady()
+  })
+  return null
 }
 
 // Slowly drifting golden motes — atmosphere that catches the light.
@@ -73,7 +91,7 @@ function AmbientParticles() {
   )
 }
 
-export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, embed = null }: SceneProps) {
+export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, embed = null, onFirstFrame }: SceneProps) {
   const [docked, setDocked] = useState(false)
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
   const { time, weather } = useHyderabad()
@@ -145,6 +163,7 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               onHoverProject={setHoveredProject}
             />
             <AmbientParticles />
+            <FirstFrameProbe onReady={onFirstFrame} />
           </Suspense>
 
           <CameraRig focus={focus} cmd={cameraCmd} view={view} embed={!!embed} initial={embed?.initial ?? null} />
