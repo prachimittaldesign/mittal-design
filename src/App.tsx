@@ -208,16 +208,26 @@ export default function App() {
 
           {!showFallback && !cityReady && <BootLoader />}
 
-          {/* Persistent escape hatch — always available while the city is
-              the foregrounded experience, not just on a slow/lagging load. */}
-          {!showFallback && cityReady && overlay === null && (
+          {/* Persistent escape hatch — always available while the city is the
+              foregrounded experience. Bottom-centre: the top row is taken by
+              the search box (which spans the whole width on mobile), so a
+              top-left pill there sat *behind* it and was invisible. Bottom
+              centre is clear on mobile and clears the desktop hint. Hidden
+              while the lag toast is up — that toast offers the same action. */}
+          {!showFallback && cityReady && overlay === null && !(lagging && !lagDismissed) && (
             <button
               type="button"
               onClick={() => showProjects({ keepWarm: true })}
               data-tip="Browse everything as a fast page"
-              data-tip-pos="bottom"
-              className="hud hud-text pointer-events-auto absolute left-3 top-[calc(0.75rem+env(safe-area-inset-top))] z-20 rounded-full border px-[14px] py-[8px] text-[12.5px] font-bold shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md sm:left-4"
+              data-tip-pos="top"
+              className="hud hud-text pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 z-20 flex -translate-x-1/2 items-center gap-[7px] rounded-full border px-[16px] py-[9px] text-[12.5px] font-bold shadow-[0_3px_14px_rgba(0,0,0,0.14)] backdrop-blur-md sm:bottom-[54px]"
             >
+              <svg viewBox="0 0 20 20" fill="none" className="h-[14px] w-[14px]" aria-hidden>
+                <rect x="3" y="3" width="6" height="6" rx="1.4" stroke="currentColor" strokeWidth="1.7" />
+                <rect x="11" y="3" width="6" height="6" rx="1.4" stroke="currentColor" strokeWidth="1.7" />
+                <rect x="3" y="11" width="6" height="6" rx="1.4" stroke="currentColor" strokeWidth="1.7" />
+                <rect x="11" y="11" width="6" height="6" rx="1.4" stroke="currentColor" strokeWidth="1.7" />
+              </svg>
               View Projects
             </button>
           )}
