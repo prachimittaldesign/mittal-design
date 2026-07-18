@@ -21,6 +21,49 @@ interface ProjectsFallbackProps {
 
 const ROTATING_WORDS = ['enterprise AI tools', 'structured content', 'documentation IA', '10-foot TV']
 
+// Same trail artwork as the case studies (CaseStudy.tsx) — hills, a winding
+// path, pines and the architecture-corner cottage — for outdoor-theme
+// continuity between the fast page and the 3D city. `flip` mirrors it.
+function PfTrailBand({ flip = false }: { flip?: boolean }) {
+  return (
+    <div className="pf-trailband" aria-hidden style={flip ? { transform: 'scaleX(-1)' } : undefined}>
+      <svg viewBox="0 0 1440 230" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
+        <defs>
+          <linearGradient id="pf-tb-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#eaf2f0" stopOpacity="0" />
+            <stop offset="1" stopColor="#e3efe9" stopOpacity="0.9" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1440" height="230" fill="url(#pf-tb-sky)" />
+        <path d="M0 158 Q 200 96 430 132 T 900 120 Q 1180 96 1440 148 V 230 H 0 Z" fill="#7fa77e" />
+        <path d="M780 230 Q 1040 88 1440 128 V 230 Z" fill="#4d7a5a" />
+        <path d="M0 230 V 176 Q 300 130 620 168 Q 900 200 1120 188 Q 1300 178 1440 196 V 230 Z" fill="#e3c56f" />
+        <path d="M0 230 V 196 Q 360 158 720 196 Q 1080 232 1440 208 V 230 Z" fill="#9dbf6e" />
+        <path d="M700 230 C 690 208 620 200 640 184 C 662 166 780 172 800 156 C 820 140 740 134 764 122 C 784 112 880 118 920 112" fill="none" stroke="#fbf7ee" strokeWidth="17" strokeLinecap="round" />
+        <path d="M920 112 C 950 108 990 110 1020 106" fill="none" stroke="#fbf7ee" strokeWidth="9" strokeLinecap="round" opacity="0.85" />
+        <g fill="#35604a">
+          <path d="M120 148 l14 -34 14 34 Z" />
+          <path d="M150 152 l11 -26 11 26 Z" />
+          <path d="M88 154 l10 -22 10 22 Z" />
+        </g>
+        <g fill="#2e5747">
+          <path d="M1236 128 l13 -30 13 30 Z" />
+          <path d="M1272 134 l10 -24 10 24 Z" />
+          <path d="M1206 136 l9 -20 9 20 Z" />
+        </g>
+        <g>
+          <rect x="336" y="118" width="20" height="13" rx="1.5" fill="#fffdf7" />
+          <path d="M333 119 L346 108 L359 119 Z" fill="#c96f4a" />
+        </g>
+        <g fill="#dfe9ec" opacity="0.8">
+          <ellipse cx="1050" cy="52" rx="52" ry="17" />
+          <ellipse cx="1092" cy="42" rx="34" ry="14" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
 const MORE_WORK: Array<{ year: string; id: string; label: string; cat: string }> = [
   { year: '2024', id: 'impressio', label: 'Impressio', cat: 'Robotics · Humanoid casting' },
   { year: '2024', id: 'izak', label: 'iZak', cat: 'Spatial · 3D scanning research' },
@@ -191,8 +234,31 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
                 LinkedIn ↗
               </a>
             </div>
+
+            {/* Prominent, appealing entry to the 3D city — a live snapshot of
+                the cityscape with a clear call. This is the star action; the
+                text button above is the low-key alternative. */}
+            <div className="pf-city pf-rv">
+              <button className="pf-citycard" onClick={onEnterCity} aria-label="Enter the interactive 3D portfolio city">
+                <img src="/IMAGES/city-og.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
+                <span className="pf-citycard__scrim" />
+                <span className="pf-citycard__body">
+                  <span className="pf-citycard__eyebrow"><i />The full experience</span>
+                  <h3>Explore the portfolio as a 3D city.</h3>
+                  <p>Every building is a shipped project. Walk the streets, click a tower, read the story.</p>
+                  <span className="pf-citycard__go">
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden>
+                      <path d="M6 4l9 6-9 6V4z" fill="currentColor" />
+                    </svg>
+                    Enter the 3D city
+                  </span>
+                </span>
+              </button>
+            </div>
           </div>
         </header>
+
+        <PfTrailBand />
 
         {/* FEATURED */}
         <section className="pf-sec" id="pf-work">
@@ -387,6 +453,8 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
           </div>
         </section>
       </main>
+
+      <PfTrailBand flip />
 
       <footer>
         <div className="pf-wrap pf-foot">
