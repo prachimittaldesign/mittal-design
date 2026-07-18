@@ -13,5 +13,11 @@ export const WHATSAPP_URL = WHATSAPP_NUMBER
   ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi Prachi — I came from your portfolio site.')}`
   : ''
 
-// Feedback = a pre-addressed email. Works immediately, no backend.
+// Feedback modal submission — no backend needed. Paste a free Web3Forms access
+// key (https://web3forms.com — "Create Access Key", takes ~30s, delivers each
+// submission to your inbox). While empty, the modal still works: it falls back
+// to opening a pre-filled email with the name/email/message, so it's never dead.
+export const WEB3FORMS_KEY = ''
+
+// Fallback used when no form key is set (and as the modal's "email instead" link).
 export const FEEDBACK_URL = `mailto:${EMAIL}?subject=${encodeURIComponent('Feedback on mittal.design')}`

@@ -2,6 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { ProjectOverlay } from './components/ProjectOverlay'
 import { PlaceOverlay } from './components/PlaceOverlay'
 import { ProjectsFallback } from './components/ProjectsFallback/ProjectsFallback'
+import { FeedbackModal } from './components/FeedbackModal'
 import { BootLoader } from './components/BootLoader'
 import { SceneErrorBoundary } from './components/SceneErrorBoundary'
 import { TooltipLayer } from './components/TooltipLayer'
@@ -263,6 +264,7 @@ export default function App() {
       )}
 
       {overlays}
+      <FeedbackModal />
     </div>
   )
 }

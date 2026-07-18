@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { EMAIL, LINKEDIN, WHATSAPP_URL, FEEDBACK_URL } from '../../lib/contact'
+import { EMAIL, LINKEDIN, WHATSAPP_URL } from '../../lib/contact'
 import './projectsFallback.css'
 
 // The fast, no-three.js landing/projects page — a ported version of
@@ -65,6 +65,134 @@ function PfTrailBand({ flip = false }: { flip?: boolean }) {
         <g fill="#dfe9ec" opacity="0.8">
           <ellipse cx="1050" cy="52" rx="52" ry="17" />
           <ellipse cx="1092" cy="42" rx="34" ry="14" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
+// A richer, taller landscape — the backdrop the "Selected work" cards sit on,
+// tying the fast page to the 3D city's world (balloons, water, a lighthouse-ish
+// beacon, cottages). Rendered as a full-section background; the sky fills the
+// upper area so cards stay legible, with the detailed meadow along the bottom.
+function PfTrailScene() {
+  return (
+    <div className="pf-trailscene" aria-hidden>
+      <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
+        <defs>
+          <linearGradient id="pf-ts-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#eef6f6" />
+            <stop offset="0.6" stopColor="#e6f1ee" />
+            <stop offset="1" stopColor="#dcefe4" />
+          </linearGradient>
+          <linearGradient id="pf-ts-water" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#bfe2e6" />
+            <stop offset="1" stopColor="#a9d6dc" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1440" height="620" fill="url(#pf-ts-sky)" />
+
+        {/* sun + glow */}
+        <circle cx="1180" cy="120" r="46" fill="#ffe7a8" />
+        <circle cx="1180" cy="120" r="72" fill="#ffe7a8" opacity="0.28" />
+
+        {/* clouds */}
+        <g fill="#ffffff" opacity="0.9">
+          <ellipse cx="300" cy="120" rx="70" ry="22" />
+          <ellipse cx="352" cy="106" rx="46" ry="18" />
+          <ellipse cx="900" cy="80" rx="58" ry="18" />
+          <ellipse cx="946" cy="70" rx="36" ry="14" />
+        </g>
+
+        {/* birds */}
+        <g stroke="#5b6b63" strokeWidth="3" fill="none" strokeLinecap="round">
+          <path d="M560 150 q 12 -10 24 0 q 12 -10 24 0" />
+          <path d="M640 176 q 9 -8 18 0 q 9 -8 18 0" />
+        </g>
+
+        {/* hot-air balloons — a nod to the city sky */}
+        <g>
+          <path d="M480 200 a 26 28 0 1 1 52 0 c 0 20 -16 34 -26 44 c -10 -10 -26 -24 -26 -44 Z" fill="#e88a6a" />
+          <path d="M506 172 v72" stroke="#c96f4a" strokeWidth="1.5" />
+          <rect x="500" y="246" width="12" height="9" rx="1.5" fill="#8a5a3c" />
+        </g>
+        <g>
+          <path d="M756 232 a 20 22 0 1 1 40 0 c 0 15 -12 26 -20 34 c -8 -8 -20 -19 -20 -34 Z" fill="#7bb0c9" />
+          <rect x="770" y="266" width="10" height="8" rx="1.5" fill="#8a5a3c" />
+        </g>
+
+        {/* far mountains */}
+        <path d="M0 300 L 210 196 L 380 300 Z" fill="#9fc0a6" opacity="0.8" />
+        <path d="M300 300 L 520 176 L 760 300 Z" fill="#8fb79a" opacity="0.85" />
+
+        {/* rolling hills */}
+        <path d="M0 340 Q 260 250 560 312 T 1120 300 Q 1300 268 1440 322 V 620 H 0 Z" fill="#8fbf8a" />
+        <path d="M760 620 Q 1020 250 1440 300 V 620 Z" fill="#5f9463" />
+        <path d="M0 620 V 380 Q 220 320 460 372 Q 720 430 980 398 Q 1220 368 1440 402 V 620 Z" fill="#6fae6a" />
+
+        {/* a cove of water */}
+        <path d="M0 620 V 486 Q 180 452 360 486 Q 300 560 150 566 Q 60 568 0 552 Z" fill="url(#pf-ts-water)" />
+        <ellipse cx="150" cy="512" rx="60" ry="9" fill="#ffffff" opacity="0.35" />
+
+        {/* meadow foreground */}
+        <path d="M0 620 V 470 Q 360 424 720 470 Q 1080 516 1440 480 V 620 Z" fill="#9dcf74" />
+
+        {/* winding trail */}
+        <path
+          d="M720 620 C 700 560 620 548 660 508 C 700 468 860 486 880 446 C 898 410 800 402 828 372 C 850 348 936 356 972 344"
+          fill="none" stroke="#fbf7ee" strokeWidth="22" strokeLinecap="round"
+        />
+
+        {/* little arched bridge over the cove */}
+        <g stroke="#b98a55" strokeWidth="6" fill="none">
+          <path d="M232 500 q 34 -30 68 0" />
+        </g>
+        <path d="M232 500 v14 M300 500 v14" stroke="#b98a55" strokeWidth="5" />
+
+        {/* pines — clusters */}
+        <g fill="#35604a">
+          <path d="M120 402 l20 -52 20 52 Z" />
+          <path d="M150 410 l15 -40 15 40 Z" />
+          <path d="M92 412 l13 -32 13 32 Z" />
+        </g>
+        <g fill="#2e5747">
+          <path d="M1290 396 l19 -46 19 46 Z" />
+          <path d="M1324 404 l14 -36 14 36 Z" />
+        </g>
+
+        {/* round trees */}
+        <g>
+          <rect x="1042" y="418" width="7" height="20" fill="#8a5a3c" />
+          <circle cx="1045" cy="410" r="22" fill="#6fae6a" />
+          <rect x="1108" y="432" width="6" height="16" fill="#8a5a3c" />
+          <circle cx="1111" cy="426" r="17" fill="#7cbb76" />
+        </g>
+
+        {/* two cottages — echoing the architecture corner */}
+        <g>
+          <rect x="392" y="392" width="40" height="28" rx="2" fill="#fffdf7" />
+          <path d="M386 394 L412 372 L438 394 Z" fill="#c96f4a" />
+          <rect x="405" y="402" width="10" height="18" fill="#c9a06a" />
+        </g>
+        <g>
+          <rect x="628" y="420" width="30" height="20" rx="2" fill="#fdf7ee" />
+          <path d="M623 422 L643 406 L663 422 Z" fill="#b5623f" />
+        </g>
+
+        {/* a slender beacon — the lighthouse motif */}
+        <g>
+          <rect x="965" y="360" width="12" height="60" rx="2" fill="#fbfbfb" />
+          <rect x="965" y="374" width="12" height="10" fill="#d9584f" />
+          <path d="M963 360 L971 348 L979 360 Z" fill="#d9584f" />
+        </g>
+
+        {/* wildflowers */}
+        <g>
+          <circle cx="240" cy="556" r="4" fill="#e8738f" />
+          <circle cx="268" cy="572" r="4" fill="#ffd27a" />
+          <circle cx="520" cy="560" r="4" fill="#e8738f" />
+          <circle cx="1180" cy="540" r="4" fill="#ffd27a" />
+          <circle cx="1210" cy="560" r="4" fill="#e8738f" />
         </g>
       </svg>
     </div>
@@ -269,16 +397,14 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
           </div>
         </header>
 
-        <PfTrailBand />
-
-        {/* FEATURED */}
-        <section className="pf-sec" id="pf-work">
+        {/* FEATURED — cards arranged cleanly over a trail-landscape backdrop */}
+        <section className="pf-sec pf-work" id="pf-work">
+          <PfTrailScene />
           <div className="pf-wrap">
             <p className="pf-slabel pf-rv">Selected work</p>
-            <div className="pf-float">
+            <div className="pf-featured">
               <button
-                className="pf-fcard pf-fcard--wide pf-rv"
-                data-speed="-0.05"
+                className="pf-fcard pf-fcard--hero pf-rv"
                 aria-label="SnapLogic Documentation case study"
                 onClick={() => onOpenProject('snaplogic')}
               >
@@ -298,42 +424,39 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
                 </div>
               </button>
 
-              <button className="pf-fcard pf-rv" data-speed="0.045" aria-label="Ved case study" onClick={() => onOpenProject('paas')}>
-                <div className="pf-fcard__media">
-                  <img src="/IMAGES/Ved/VED_canvas_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
-                  <div className="pf-fcard__sig pf-fcard__sig--line">
-                    <div className="pf-sm">V2 shipped 2026 · in engineering build</div>
+              <div className="pf-featured__row">
+                <button className="pf-fcard pf-rv" aria-label="Ved case study" onClick={() => onOpenProject('paas')}>
+                  <div className="pf-fcard__media">
+                    <img src="/IMAGES/Ved/VED_canvas_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
+                    <div className="pf-fcard__sig pf-fcard__sig--line">
+                      <div className="pf-sm">V2 shipped 2026 · in engineering build</div>
+                    </div>
                   </div>
-                </div>
-                <div className="pf-fcard__body">
-                  <div className="pf-fcard__meta">
-                    2025 · Enterprise CMS · Agentic AI
-                    <b>Ved — DITA Builder</b>
+                  <div className="pf-fcard__body">
+                    <div className="pf-fcard__meta">
+                      2025 · Enterprise CMS · Agentic AI
+                      <b>Ved — DITA Builder</b>
+                    </div>
+                    <span className="pf-fcard__go">→</span>
                   </div>
-                  <span className="pf-fcard__go">→</span>
-                </div>
-              </button>
+                </button>
 
-              <button
-                className="pf-fcard pf-fcard--right pf-fcard--up pf-rv"
-                data-speed="-0.03"
-                aria-label="Revee and Mo case study"
-                onClick={() => onOpenProject('revee')}
-              >
-                <div className="pf-fcard__media">
-                  <img src="/IMAGES/Revee-Mo/REV_mohome_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
-                  <div className="pf-fcard__sig pf-fcard__sig--line">
-                    <div className="pf-sm">Showcased at CES 2024</div>
+                <button className="pf-fcard pf-rv" aria-label="Revee and Mo case study" onClick={() => onOpenProject('revee')}>
+                  <div className="pf-fcard__media">
+                    <img src="/IMAGES/Revee-Mo/REV_mohome_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
+                    <div className="pf-fcard__sig pf-fcard__sig--line">
+                      <div className="pf-sm">Showcased at CES 2024</div>
+                    </div>
                   </div>
-                </div>
-                <div className="pf-fcard__body">
-                  <div className="pf-fcard__meta">
-                    2024 · Smart TV super-apps · End-to-end
-                    <b>Revee &amp; Mo</b>
+                  <div className="pf-fcard__body">
+                    <div className="pf-fcard__meta">
+                      2024 · Smart TV super-apps · End-to-end
+                      <b>Revee &amp; Mo</b>
+                    </div>
+                    <span className="pf-fcard__go">→</span>
                   </div>
-                  <span className="pf-fcard__go">→</span>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -465,9 +588,13 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
               <a className="pf-btn pf-btn--ghost" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
                 LinkedIn ↗
               </a>
-              <a className="pf-btn pf-btn--ghost" href={FEEDBACK_URL}>
+              <button
+                type="button"
+                className="pf-btn pf-btn--ghost"
+                onClick={() => window.dispatchEvent(new Event('pm:feedback-open'))}
+              >
                 Leave feedback
-              </a>
+              </button>
             </div>
           </div>
         </section>
@@ -486,7 +613,7 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
             {WHATSAPP_URL && (
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
             )}
-            <a href={FEEDBACK_URL}>Feedback</a>
+            <button onClick={() => window.dispatchEvent(new Event('pm:feedback-open'))}>Feedback</button>
           </div>
         </div>
       </footer>

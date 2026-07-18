@@ -151,16 +151,32 @@ export function Hero({ docked }: { docked: boolean }) {
               <div className="hud-text mb-[10px] text-[19px] font-bold tracking-[-0.01em]">{greeting()}</div>
               <p className="hud-soft mb-3 text-[13px] leading-[1.55]">{BLURB}</p>
               <div className="flex flex-wrap gap-[6px]">
-                {LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className={linkClass(link.solid)}
-                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {LINKS.map((link) =>
+                  link.label === 'Feedback' ? (
+                    // Opens the feedback modal (mounted at App level) rather than
+                    // navigating; close the menu so the modal isn't behind it.
+                    <button
+                      key={link.label}
+                      type="button"
+                      className={linkClass(link.solid)}
+                      onClick={() => {
+                        setOpen(false)
+                        window.dispatchEvent(new Event('pm:feedback-open'))
+                      }}
+                    >
+                      {link.label}
+                    </button>
+                  ) : (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      className={linkClass(link.solid)}
+                      {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      {link.label}
+                    </a>
+                  ),
+                )}
               </div>
             </div>
           </>,
