@@ -3,13 +3,17 @@ import { createPortal } from 'react-dom'
 import { useIsMobile } from '../lib/useIsMobile'
 import { useIsNight } from '../lib/useIsNight'
 import { getHyderabadTime } from '../lib/sky'
+import { WHATSAPP_URL, FEEDBACK_URL } from '../lib/contact'
 
 const LINKS = [
-  { label: 'hello@', href: 'mailto:hello@mittal.design', solid: true },
+  { label: 'hello@', href: 'mailto:hello@mittal.design', solid: true, external: false },
   { label: 'About', href: '/about.html', solid: false, external: true },
   { label: 'Resume', href: '/Prachi-Mittal-Resume-2026.pdf', solid: false, external: true },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/prachi15mittal', solid: false, external: true },
   { label: 'Behance', href: 'https://www.behance.net/prachimittal2', solid: false, external: true },
+  // WhatsApp only appears once a number is configured (src/lib/contact.ts).
+  ...(WHATSAPP_URL ? [{ label: 'WhatsApp', href: WHATSAPP_URL, solid: false, external: true }] : []),
+  { label: 'Feedback', href: FEEDBACK_URL, solid: false, external: false },
 ]
 
 const BLURB =

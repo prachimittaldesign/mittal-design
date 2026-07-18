@@ -21,7 +21,11 @@
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* No overflow-x here on purpose: `overflow-x: hidden` makes .pf its own
+     scroll container, which breaks `position: sticky` on the stacking cards
+     (they'd have no scroll room to stick within). The App wrapper that hosts
+     this page is already `overflow-x-hidden`, so horizontal overflow is
+     clipped there and sticky can anchor to the real scroll container. */
   min-height: 100%;
 }
 .pf * { box-sizing: border-box; }
@@ -37,6 +41,9 @@
 .pf .pf-btn--solid:hover { background: #000; }
 .pf .pf-btn--ghost { border: 1px solid var(--pf-line); color: var(--pf-ink); background: transparent; }
 .pf .pf-btn--ghost:hover { border-color: var(--pf-accent); color: var(--pf-accent); }
+.pf .pf-btn--wa { background: #25d366; color: #06331a; display: inline-flex; align-items: center; gap: 8px; }
+.pf .pf-btn--wa:hover { background: #1fbe5a; }
+.pf .pf-btn__ico { width: 18px; height: 18px; }
 
 /* nav */
 .pf .pf-nav { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,0.75); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); border-bottom: 1px solid rgba(0,0,0,0.07); }

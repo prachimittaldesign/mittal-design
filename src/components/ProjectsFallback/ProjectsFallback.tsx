@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { EMAIL, LINKEDIN, WHATSAPP_URL, FEEDBACK_URL } from '../../lib/contact'
 import './projectsFallback.css'
 
 // The fast, no-three.js landing/projects page — a ported version of
@@ -9,8 +10,14 @@ import './projectsFallback.css'
 // plain DOM/Tailwind-adjacent CSS — no r3f, no lazy import, so it never
 // waits on the three.js bundle.
 
-const EMAIL = 'hello@mittal.design'
-const LINKEDIN = 'https://www.linkedin.com/in/prachi15mittal'
+// Small inline WhatsApp glyph (kept local so the page stays self-contained).
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden focusable="false">
+      <path d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.7 1.4 5.8 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.9.9.9-4.8-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C4.7 9.2 9.2 4.7 16 4.7c6.8 0 11.3 4.5 11.3 10.3S22.8 24.8 16 24.8zm5.6-7.6c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2c-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z" />
+    </svg>
+  )
+}
 
 interface ProjectsFallbackProps {
   /** Navigate to a case-study overlay (opens over the city backdrop). */
@@ -164,11 +171,15 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
         requestAnimationFrame(onScroll)
       }
     }
-    window.addEventListener('scroll', onScrollThrottled, { passive: true })
+    // Capture phase (true): on the /projects route this page scrolls inside an
+    // overflow-y-auto wrapper, not the window — scroll events don't bubble, but
+    // they DO fire on window during capture, so a capture listener catches the
+    // inner container's scroll and the parallax + stacking-card settle run.
+    window.addEventListener('scroll', onScrollThrottled, { passive: true, capture: true })
     window.addEventListener('resize', onScroll)
     onScroll()
     return () => {
-      window.removeEventListener('scroll', onScrollThrottled)
+      window.removeEventListener('scroll', onScrollThrottled, true)
       window.removeEventListener('resize', onScroll)
     }
   }, [])
@@ -446,8 +457,16 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
               <a className="pf-btn pf-btn--solid" href={`mailto:${EMAIL}`}>
                 Email me
               </a>
+              {WHATSAPP_URL && (
+                <a className="pf-btn pf-btn--wa" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="pf-btn__ico" /> WhatsApp
+                </a>
+              )}
               <a className="pf-btn pf-btn--ghost" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
                 LinkedIn ↗
+              </a>
+              <a className="pf-btn pf-btn--ghost" href={FEEDBACK_URL}>
+                Leave feedback
               </a>
             </div>
           </div>
@@ -464,6 +483,10 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
             <button onClick={() => goTo('pf-about')}>About</button>
             <button onClick={onEnterCity}>City</button>
             <a href={`mailto:${EMAIL}`}>Email</a>
+            {WHATSAPP_URL && (
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            )}
+            <a href={FEEDBACK_URL}>Feedback</a>
           </div>
         </div>
       </footer>
