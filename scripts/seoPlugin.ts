@@ -306,6 +306,29 @@ function projectsPage(builtIndex: string): string {
   html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${url}"`)
   html = html.replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${esc(title)}"`)
   html = html.replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${esc(desc)}"`)
+
+  // A unique crawlable lead so /projects isn't a near-duplicate of the home
+  // page (both otherwise carry the same site-index mirror — which triggers
+  // "Duplicate without user-selected canonical" in Search Console). This block
+  // mirrors the real fast-page content: a distinct H1 + intro, the three
+  // featured studies, and links to every project.
+  const featured = PROJECTS.filter((p) => p.featured)
+  const featuredLis = featured
+    .map((p) => `<li><a href="${projectUrl(p)}"><strong>${esc(p.label)}</strong></a> — ${esc(projectDesc(p))}</li>`)
+    .join('')
+  const allLis = PROJECTS.map((p) => `<li><a href="${projectUrl(p)}">${esc(p.label)}</a> — ${esc(titleCase(p.sub))}</li>`).join('')
+  const lead = `
+<section class="seo-mirror" id="projects-lead" aria-label="Selected work">
+  <h1>Selected work — ${AUTHOR}, Product Designer &amp; Architect</h1>
+  <p>A fast, text-first index of Prachi Mittal's design work — the same portfolio as the interactive 3D city at <a href="/">mittal.design</a>, without the WebGL. Featured case studies:</p>
+  <ul>${featuredLis}</ul>
+  <h2>All projects</h2>
+  <ul>${allLis}</ul>
+  <p><a href="/">Enter the 3D portfolio city →</a></p>
+</section>`
+  // Insert right after <body> so it's the FIRST crawlable content on the page,
+  // clearly distinguishing it from the home page's mirror.
+  html = html.replace('<body>', `<body>\n    ${lead}`)
   return html
 }
 
@@ -384,9 +407,15 @@ export function seoPlugin(): Plugin {
     name: 'seo-prerender',
     transformIndexHtml(html) {
       // Crawlable mirror + site-wide JSON-LD on every page that uses index.html.
-      // The mirror sits AFTER #root so keyboard users tab through the real app
-      // controls first and the hidden text index last.
-      return html.replace('<div id="root"></div>', `<div id="root"></div>\n    ${siteIndex()}`)
+      // Anchor on </body> (not the #root div — that now wraps the inline boot
+      // loader, so a `<div id="root"></div>` match would silently no-op and
+      // drop the whole crawlable layer). Injecting before </body> also keeps
+      // the hidden text index LAST, so keyboard users tab the real app first.
+      if (!html.includes('</body>')) {
+        throw new Error('[seo] index.html has no </body> to anchor the crawlable mirror')
+      }
+      return html
+        .replace('</body>', `    ${siteIndex()}\n  </body>`)
         .replace('</head>', `${ld(personLd)}${ld(websiteLd)}</head>`)
     },
     configResolved(config) {
