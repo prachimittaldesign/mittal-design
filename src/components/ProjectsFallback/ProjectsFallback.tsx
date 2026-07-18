@@ -251,7 +251,7 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
                 text button above is the low-key alternative. */}
             <div className="pf-city pf-rv">
               <button className="pf-citycard" onClick={onEnterCity} aria-label="Enter the interactive 3D portfolio city">
-                <img src="/IMAGES/city-og.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
+                <img src="/IMAGES/Cityview.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
                 <span className="pf-citycard__scrim" />
                 <span className="pf-citycard__body">
                   <span className="pf-citycard__eyebrow"><i />The full experience</span>
