@@ -38,14 +38,18 @@ function rich(text: string): ReactNode[] {
 
 // ---- screenshots ------------------------------------------------------------
 function Shot({ cs, id, eager = false }: { cs: RichCaseStudy; id: string | null | undefined; eager?: boolean }) {
+  const [failed, setFailed] = useState(false)
   const img = csImage(cs, id)
   if (!img) return null
-  if (img.status === 'planned') {
+  // 'planned' (no file yet) and a failed load (missing/corrupt file) both
+  // degrade to the same clean placeholder — never the browser's broken-image
+  // icon. `feature` names what the screenshot shows so the slot still reads.
+  if (img.status === 'planned' || failed) {
     return <div className="shot--planned">Screenshot coming soon — {img.feature}</div>
   }
   return (
     <div className="shot">
-      <img src={img.src} alt={img.alt} loading={eager ? 'eager' : 'lazy'} />
+      <img src={img.src} alt={img.alt} loading={eager ? 'eager' : 'lazy'} onError={() => setFailed(true)} />
     </div>
   )
 }
