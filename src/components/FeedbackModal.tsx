@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { EMAIL, WEB3FORMS_KEY } from '../lib/contact'
+import { EMAIL, WEB3FORMS_KEY, FEEDBACK_ENDPOINT } from '../lib/contact'
 
 /**
  * FeedbackModal — a name / email / message form anyone can submit.
@@ -68,28 +68,30 @@ export function FeedbackModal() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!canSubmit) return
-    if (!WEB3FORMS_KEY) {
-      // No form service configured — open a pre-filled email instead.
+    // No endpoint configured → open a pre-filled email instead (never a dead end).
+    if (!FEEDBACK_ENDPOINT && !WEB3FORMS_KEY) {
       mailtoFallback()
       return
     }
     setStatus('sending')
     setErrorMsg('')
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      // Prefer a custom endpoint (e.g. a Cloudflare Worker) that takes a plain
+      // { name, email, message } JSON POST; otherwise fall to Web3Forms' shape.
+      const [url, payload] = FEEDBACK_ENDPOINT
+        ? [FEEDBACK_ENDPOINT, { name, email, message }]
+        : [
+            'https://api.web3forms.com/submit',
+            { access_key: WEB3FORMS_KEY, subject: 'New feedback from mittal.design', from_name: name, name, email, message },
+          ]
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: 'New feedback from mittal.design',
-          from_name: name,
-          name,
-          email,
-          message,
-        }),
+        body: JSON.stringify(payload),
       })
       const data = await res.json().catch(() => ({}))
-      if (res.ok && data.success) {
+      // Web3Forms returns { success }; a custom endpoint just needs a 2xx.
+      if (res.ok && (FEEDBACK_ENDPOINT ? true : data.success)) {
         setStatus('sent')
       } else {
         setStatus('error')

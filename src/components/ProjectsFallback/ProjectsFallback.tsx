@@ -81,9 +81,9 @@ function PfTrailScene() {
       <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax slice" role="presentation" focusable="false">
         <defs>
           <linearGradient id="pf-ts-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#eef6f6" />
-            <stop offset="0.6" stopColor="#e6f1ee" />
-            <stop offset="1" stopColor="#dcefe4" />
+            <stop offset="0" stopColor="#d3eaf1" />
+            <stop offset="0.45" stopColor="#dcefe0" />
+            <stop offset="1" stopColor="#c7e6b4" />
           </linearGradient>
           <linearGradient id="pf-ts-water" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#bfe2e6" />
@@ -137,18 +137,6 @@ function PfTrailScene() {
         {/* meadow foreground */}
         <path d="M0 620 V 470 Q 360 424 720 470 Q 1080 516 1440 480 V 620 Z" fill="#9dcf74" />
 
-        {/* winding trail */}
-        <path
-          d="M720 620 C 700 560 620 548 660 508 C 700 468 860 486 880 446 C 898 410 800 402 828 372 C 850 348 936 356 972 344"
-          fill="none" stroke="#fbf7ee" strokeWidth="22" strokeLinecap="round"
-        />
-
-        {/* little arched bridge over the cove */}
-        <g stroke="#b98a55" strokeWidth="6" fill="none">
-          <path d="M232 500 q 34 -30 68 0" />
-        </g>
-        <path d="M232 500 v14 M300 500 v14" stroke="#b98a55" strokeWidth="5" />
-
         {/* pines — clusters */}
         <g fill="#35604a">
           <path d="M120 402 l20 -52 20 52 Z" />
@@ -199,6 +187,42 @@ function PfTrailScene() {
   )
 }
 
+// The featured projects, as stops along the trail (alternating sides).
+type Stop = {
+  id: string
+  side: 'left' | 'right'
+  img: string
+  meta: React.ReactNode
+  label: string
+  sig: { big?: string; sm: string }
+}
+const TRAIL_STOPS: Stop[] = [
+  {
+    id: 'snaplogic',
+    side: 'left',
+    img: '/IMAGES/Snap/SNAP_home_01.png',
+    meta: (<>2025 · Enterprise documentation · <i>Sole designer</i></>),
+    label: 'SnapLogic Docs',
+    sig: { big: '40%', sm: 'Fewer clicks to target — validated across 5 scenarios' },
+  },
+  {
+    id: 'paas',
+    side: 'right',
+    img: '/IMAGES/Ved/VED_canvas_01.png',
+    meta: '2025 · Enterprise CMS · Agentic AI',
+    label: 'Ved — DITA Builder',
+    sig: { sm: 'V2 shipped 2026 · in engineering build' },
+  },
+  {
+    id: 'revee',
+    side: 'left',
+    img: '/IMAGES/Revee-Mo/REV_mohome_01.png',
+    meta: '2024 · Smart TV super-apps · End-to-end',
+    label: 'Revee & Mo',
+    sig: { sm: 'Showcased at CES 2024' },
+  },
+]
+
 const MORE_WORK: Array<{ year: string; id: string; label: string; cat: string }> = [
   { year: '2024', id: 'impressio', label: 'Impressio', cat: 'Robotics · Humanoid casting' },
   { year: '2024', id: 'izak', label: 'iZak', cat: 'Spatial · 3D scanning research' },
@@ -209,6 +233,7 @@ const MORE_WORK: Array<{ year: string; id: string; label: string; cat: string }>
 export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbackProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const rotRef = useRef<HTMLSpanElement>(null)
+  const trailRef = useRef<HTMLDivElement>(null)
   const [rotWord, setRotWord] = useState(ROTATING_WORDS[0])
   const [rotClass, setRotClass] = useState('')
 
@@ -312,6 +337,51 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
     }
   }, [])
 
+  // The horizontal trail: the winding path beneath the cards draws left→right
+  // as the section scrolls into view, each numbered marker lights as the path
+  // reaches it, and the cards rise in sequence — the featured projects read as
+  // waypoints on a walk.
+  useEffect(() => {
+    const trail = trailRef.current
+    if (!trail) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const drawPath = trail.querySelector<SVGPathElement>('.pf-trailrow__draw')
+    const markers = Array.from(trail.querySelectorAll<HTMLElement>('.pf-stop__marker'))
+    const len = drawPath?.getTotalLength() ?? 0
+    if (drawPath) drawPath.style.strokeDasharray = `${len}`
+
+    if (reduce) {
+      trail.classList.add('pf-in')
+      if (drawPath) drawPath.style.strokeDashoffset = '0'
+      markers.forEach((m) => m.classList.add('on'))
+      return
+    }
+    if (drawPath) drawPath.style.strokeDashoffset = `${len}`
+
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const r = trail.getBoundingClientRect()
+      const vh = window.innerHeight
+      // 0 as the row enters from the bottom → 1 once it's comfortably in view.
+      const p = Math.min(1, Math.max(0, (vh * 0.86 - r.top) / (r.height + vh * 0.22)))
+      if (p > 0.02) trail.classList.add('pf-in')
+      if (drawPath) drawPath.style.strokeDashoffset = `${len * (1 - p)}`
+      markers.forEach((m, i) => m.classList.toggle('on', p > (i + 0.4) / markers.length))
+    }
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', schedule, { passive: true, capture: true })
+    window.addEventListener('resize', schedule)
+    update()
+    return () => {
+      window.removeEventListener('scroll', schedule, true)
+      window.removeEventListener('resize', schedule)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   const goTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const goTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
@@ -397,66 +467,62 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
           </div>
         </header>
 
-        {/* FEATURED — cards arranged cleanly over a trail-landscape backdrop */}
+        {/* FEATURED — three flagship projects as waypoints on a trail. The cards
+            sit in a clean row over the landscape; a winding path draws left→
+            right beneath them and each numbered marker lights as you reach it. */}
         <section className="pf-sec pf-work" id="pf-work">
           <PfTrailScene />
           <div className="pf-wrap">
             <p className="pf-slabel pf-rv">Selected work</p>
-            <div className="pf-featured">
-              <button
-                className="pf-fcard pf-fcard--hero pf-rv"
-                aria-label="SnapLogic Documentation case study"
-                onClick={() => onOpenProject('snaplogic')}
-              >
-                <div className="pf-fcard__media">
-                  <img src="/IMAGES/Snap/SNAP_home_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
-                  <div className="pf-fcard__sig">
-                    <div className="pf-big">40%</div>
-                    <div className="pf-sm">Fewer clicks to target — validated across 5 scenarios</div>
-                  </div>
-                </div>
-                <div className="pf-fcard__body">
-                  <div className="pf-fcard__meta">
-                    2025 · Enterprise documentation · <i>Sole designer</i>
-                    <b>SnapLogic Docs</b>
-                  </div>
-                  <span className="pf-fcard__go">→</span>
-                </div>
-              </button>
+            <p className="pf-trail-lead pf-rv">Three flagship projects — follow the trail.</p>
 
-              <div className="pf-featured__row">
-                <button className="pf-fcard pf-rv" aria-label="Ved case study" onClick={() => onOpenProject('paas')}>
-                  <div className="pf-fcard__media">
-                    <img src="/IMAGES/Ved/VED_canvas_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
-                    <div className="pf-fcard__sig pf-fcard__sig--line">
-                      <div className="pf-sm">V2 shipped 2026 · in engineering build</div>
-                    </div>
-                  </div>
-                  <div className="pf-fcard__body">
-                    <div className="pf-fcard__meta">
-                      2025 · Enterprise CMS · Agentic AI
-                      <b>Ved — DITA Builder</b>
-                    </div>
-                    <span className="pf-fcard__go">→</span>
-                  </div>
-                </button>
-
-                <button className="pf-fcard pf-rv" aria-label="Revee and Mo case study" onClick={() => onOpenProject('revee')}>
-                  <div className="pf-fcard__media">
-                    <img src="/IMAGES/Revee-Mo/REV_mohome_01.png" alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
-                    <div className="pf-fcard__sig pf-fcard__sig--line">
-                      <div className="pf-sm">Showcased at CES 2024</div>
-                    </div>
-                  </div>
-                  <div className="pf-fcard__body">
-                    <div className="pf-fcard__meta">
-                      2024 · Smart TV super-apps · End-to-end
-                      <b>Revee &amp; Mo</b>
-                    </div>
-                    <span className="pf-fcard__go">→</span>
-                  </div>
-                </button>
+            <div className="pf-trailrow" ref={trailRef}>
+              <div className="pf-trailrow__cards">
+                {TRAIL_STOPS.map((s, i) => (
+                  <article className="pf-stop" style={{ '--i': i } as React.CSSProperties} key={s.id}>
+                    <button className="pf-fcard" aria-label={`${s.label} case study`} onClick={() => onOpenProject(s.id)}>
+                      <div className="pf-fcard__media">
+                        <img src={s.img} alt="" loading="lazy" onError={(e) => e.currentTarget.remove()} />
+                        <div className={`pf-fcard__sig${s.sig.big ? '' : ' pf-fcard__sig--line'}`}>
+                          {s.sig.big && <div className="pf-big">{s.sig.big}</div>}
+                          <div className="pf-sm">{s.sig.sm}</div>
+                        </div>
+                      </div>
+                      <div className="pf-fcard__body">
+                        <div className="pf-fcard__meta">
+                          {s.meta}
+                          <b>{s.label}</b>
+                        </div>
+                        <span className="pf-fcard__go">→</span>
+                      </div>
+                    </button>
+                  </article>
+                ))}
               </div>
+
+              {/* winding trail beneath the cards — draws with scroll */}
+              <div className="pf-trailrow__track" aria-hidden>
+                <svg className="pf-trailrow__svg" viewBox="0 0 1200 90" preserveAspectRatio="none" focusable="false">
+                  <path
+                    className="pf-trailrow__base"
+                    d="M0 58 C 90 30 150 30 200 48 C 280 74 520 74 600 48 C 690 26 910 26 1000 48 C 1060 62 1150 66 1200 52"
+                  />
+                  <path
+                    className="pf-trailrow__draw"
+                    d="M0 58 C 90 30 150 30 200 48 C 280 74 520 74 600 48 C 690 26 910 26 1000 48 C 1060 62 1150 66 1200 52"
+                  />
+                </svg>
+                {TRAIL_STOPS.map((s, i) => (
+                  <span className="pf-stop__marker" key={s.id} style={{ left: `${((i * 2 + 1) / 6) * 100}%` }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                ))}
+              </div>
+
+              <button className="pf-trailrow__end" onClick={onEnterCity} aria-label="Enter the 3D city">
+                <span className="pf-trailrow__flag" aria-hidden>⛳</span>
+                See them all in the 3D city →
+              </button>
             </div>
           </div>
         </section>
