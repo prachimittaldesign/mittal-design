@@ -1,0 +1,13 @@
+import { chromium } from 'playwright'
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const p = await b.newPage({ viewport: { width: 1280, height: 900 } })
+p.on('console', m => console.log('PAGE:', m.text()))
+await p.goto('http://localhost:4173/projects', { waitUntil: 'networkidle' })
+await p.evaluate(() => window.dispatchEvent(new Event('pm:feedback-open')))
+const dlg = await p.waitForSelector('[role=dialog]', { timeout: 4000 }).then(()=> 'opened').catch(()=> 'NO DIALOG')
+console.log('dialog:', dlg)
+const inputs = await p.$$eval('[role=dialog] input, [role=dialog] textarea', els => els.map(e => e.tagName+':'+(e.type||'')+':'+(e.getAttribute('autocomplete')||'')))
+console.log('fields:', JSON.stringify(inputs))
+const btn = await p.$eval('[role=dialog] button[type=submit]', b => b.textContent+' disabled='+b.disabled).catch(e=>'no submit btn:'+e.message)
+console.log('submit before fill:', btn)
+await b.close()

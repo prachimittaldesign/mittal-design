@@ -20,7 +20,7 @@ export const WHATSAPP_URL = WHATSAPP_NUMBER
 //   2. WEB3FORMS_KEY — alternatively, a free Web3Forms access key.
 //   3. Neither set → opens a pre-filled email, so the form is never a dead end.
 export const FEEDBACK_ENDPOINT = ''
-export const WEB3FORMS_KEY = ''
+export const WEB3FORMS_KEY = '84dba759-8337-4ff8-9876-324475f5aa9d'
 
 // Fallback used when nothing above is set (and as the modal's "email instead" link).
 export const FEEDBACK_URL = `mailto:${EMAIL}?subject=${encodeURIComponent('Feedback on mittal.design')}`
