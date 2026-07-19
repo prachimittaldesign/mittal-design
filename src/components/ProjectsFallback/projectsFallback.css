@@ -111,7 +111,9 @@
 .pf .pf-stack__b h3 { font-size: clamp(24px,3.4vw,38px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
 .pf .pf-stack__b p { font-size: clamp(16px,1.9vw,19px); color: var(--pf-ink-2); line-height: 1.5; margin-top: 14px; }
 .pf .pf-stack__b p strong { color: var(--pf-ink); font-weight: 600; }
-@media (max-width: 600px) { .pf .pf-stack__card { grid-template-columns: 1fr; min-height: auto; } .pf .pf-stack__num { grid-column: 1; justify-self: start; } }
+/* Keep the two-column header (kicker | number) on mobile too — collapsing to a
+   single column put the number and the kicker in the same cell, overlapping. */
+@media (max-width: 600px) { .pf .pf-stack__card { min-height: auto; } .pf .pf-stack__num { justify-self: end; } }
 
 /* more work rows */
 .pf .pf-rows { border-top: 1px solid var(--pf-line); }
