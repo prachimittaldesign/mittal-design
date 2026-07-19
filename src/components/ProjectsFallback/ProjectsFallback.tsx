@@ -203,7 +203,7 @@ const TRAIL_STOPS: Stop[] = [
     img: '/IMAGES/Snap/SNAP_home_01.png',
     meta: (<>2025 · Enterprise documentation · <i>Sole designer</i></>),
     label: 'SnapLogic Docs',
-    sig: { big: '40%', sm: 'Fewer clicks to target — validated across 5 scenarios' },
+    sig: { sm: '40% fewer clicks to target' },
   },
   {
     id: 'paas',

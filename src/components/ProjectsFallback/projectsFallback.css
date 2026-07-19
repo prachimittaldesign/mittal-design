@@ -196,13 +196,18 @@
 /* ---- the trail: three cards in a row over the landscape, a winding path
        drawing left→right beneath them with a numbered marker per card ---- */
 .pf .pf-trailrow { position: relative; }
-.pf .pf-trailrow__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 30px); align-items: start; }
+/* stretch so all three cards share the tallest card's height (identical) */
+.pf .pf-trailrow__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 30px); align-items: stretch; }
 
-/* cards lift off the landscape and rise in, staggered */
-.pf .pf-work .pf-fcard { background: #fff; box-shadow: 0 18px 44px rgba(31, 56, 42, 0.16); height: 100%; }
-.pf .pf-work .pf-fcard:hover { border-color: #d3d3da; box-shadow: 0 28px 62px rgba(31, 56, 42, 0.26); }
-.pf .pf-stop { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1); transition-delay: calc(var(--i) * 0.12s); }
+/* cards lift off the landscape and rise in, staggered — and are laid out as
+   equal-height flex columns: fixed-aspect media on top, body fills the rest so
+   the title/arrow sit at a consistent bottom across all three. */
+.pf .pf-stop { min-width: 0; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1); transition-delay: calc(var(--i) * 0.12s); }
 .pf .pf-trailrow.pf-in .pf-stop { opacity: 1; transform: none; }
+.pf .pf-work .pf-fcard { width: 100%; background: #fff; box-shadow: 0 18px 44px rgba(31, 56, 42, 0.16); height: 100%; display: flex; flex-direction: column; }
+.pf .pf-work .pf-fcard:hover { border-color: #d3d3da; box-shadow: 0 28px 62px rgba(31, 56, 42, 0.26); }
+.pf .pf-work .pf-fcard__media { flex: 0 0 auto; }
+.pf .pf-work .pf-fcard__body { flex: 1 1 auto; }
 
 /* the winding trail track beneath the cards */
 .pf .pf-trailrow__track { position: relative; height: 74px; margin-top: clamp(6px, 1.4vw, 16px); }
