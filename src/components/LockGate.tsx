@@ -198,9 +198,8 @@ export function LockGate({
         )}
 
         <p className="mt-4 max-w-[52ch] text-[13.5px] leading-[1.55] text-ink-soft">
-          The detailed write-up — problem, process, decisions, and outcomes — is private.{' '}
-          <span className="font-semibold text-ink">The password is on the last page of my résumé.</span> Enter it to
-          continue.
+          The detailed write-up — problem, process, decisions, and outcomes — is private. Enter the password I shared
+          with you, or <span className="font-semibold text-ink">request it below</span> — I send it over the same day.
         </p>
         <div className="mt-4 flex gap-[10px] max-[440px]:flex-col">
           <input
@@ -235,23 +234,13 @@ export function LockGate({
           </p>
         )}
         <p className="mt-[14px] text-[12px] leading-[1.5] text-ink-soft">
-          Don’t have it?{' '}
-          <a
-            href="/Prachi-Mittal-Resume-2026.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold underline"
-            style={{ color: accent }}
-          >
-            Open my résumé
-          </a>{' '}
-          (password on the last page), or{' '}
+          No password yet? Recruiters and hiring managers, just{' '}
           <a href={requestMail} className="font-semibold underline" style={{ color: accent }}>
             ask by email
           </a>
           {requestWhats && (
             <>
-              {' / '}
+              {' '}or{' '}
               <a
                 href={requestWhats}
                 target="_blank"
@@ -262,8 +251,8 @@ export function LockGate({
                 WhatsApp
               </a>
             </>
-          )}
-          . I usually reply within a day.
+          )}{' '}
+          — happy to share it, usually the same day.
         </p>
       </form>
     </div>
