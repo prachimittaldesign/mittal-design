@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { LockedPayload, Project } from '../types'
 import { unlock, rememberPassword, getRememberedPassword, WrongPasswordError } from '../lib/lock'
+import { EMAIL, WHATSAPP_URL } from '../lib/contact'
 
 /**
  * The public face of a password-gated case study: a real teaser (title,
@@ -63,6 +64,16 @@ export function LockGate({
   }
 
   const previews = project.imageGroups?.[0]?.images.slice(0, 2) ?? []
+
+  // Prefilled "request access" links so the highest-friction screen (the three
+  // featured case studies are gated) never dead-ends: the email carries a
+  // subject + which study, and WhatsApp mirrors the site's other contact points.
+  const accessSubject = `Case study access — ${project.label}`
+  const accessBody = `Hi Prachi — I'd love to read the full ${project.label} case study on mittal.design. Could you share the password?`
+  const requestMail = `mailto:${EMAIL}?subject=${encodeURIComponent(accessSubject)}&body=${encodeURIComponent(accessBody)}`
+  const requestWhats = WHATSAPP_URL
+    ? `https://wa.me/${WHATSAPP_URL.replace(/^https:\/\/wa\.me\//, '').replace(/\?.*$/, '')}?text=${encodeURIComponent(accessBody)}`
+    : ''
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-[min(8vw,64px)] pt-[calc(96px+env(safe-area-inset-top))] pb-[calc(80px+env(safe-area-inset-bottom))]">
@@ -181,10 +192,24 @@ export function LockGate({
         )}
         <p className="mt-[14px] text-[12px] leading-[1.5] text-ink-soft">
           Don’t have the password?{' '}
-          <a href="mailto:hello@mittal.design" className="font-semibold underline" style={{ color: accent }}>
-            Request access
+          <a href={requestMail} className="font-semibold underline" style={{ color: accent }}>
+            Request access by email
           </a>
-          .
+          {requestWhats && (
+            <>
+              {' '}or{' '}
+              <a
+                href={requestWhats}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold underline"
+                style={{ color: accent }}
+              >
+                on WhatsApp
+              </a>
+            </>
+          )}
+          . Prachi usually replies within a day.
         </p>
       </form>
     </div>
