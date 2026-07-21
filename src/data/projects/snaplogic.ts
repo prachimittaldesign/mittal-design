@@ -2,8 +2,8 @@ import type { RichCaseStudy } from '../caseStudyTypes'
 
 // SnapLogic Documentation — rich case-study content (portfolio-schema v0.1,
 // session 3). Source: snaplogic.json + manifest.json (captions/alt). All 23
-// screenshots received and living in public/IMAGES/Snap/; one process artifact
-// (the UX audit PDF) stays 'planned' until page exports are provided.
+// screenshots received and living in public/IMAGES/Snap/, including the UX
+// audit deliverable (SNAP_audit_01).
 // The competitor matrix's non-SnapLogic cells were researched Jul 2026 from
 // vendor documentation and release notes: help.boomi.com (goal-based homepage,
 // Boomi Answers AI search — login-gated), docs.mulesoft.com (lifecycle
@@ -173,7 +173,7 @@ export const SNAPLOGIC_CASE_STUDY: RichCaseStudy = {
     ],
     modal: {
       title: 'The IA foundation & the audit',
-      image: null,
+      image: 'SNAP_audit_01',
       sections: [
         {
           heading: 'The org-chart anti-pattern',
@@ -276,6 +276,6 @@ export const SNAPLOGIC_CASE_STUDY: RichCaseStudy = {
     { id: 'SNAP_illustration_02', status: 'received', feature: 'icon system specs', alt: 'Illustration guide icon specifications for Database, Customer application, FeedMaster Node, and Execution Node', caption: 'Illustration guide — icon specs.', tags: ['illustration guide', 'icons', 'specs', 'iconography'] },
     { id: 'SNAP_illustration_03', status: 'received', ext: 'jpg', feature: 'step-flow diagram', alt: 'Five-step arrow diagram for setting up a Snap Account: Create, Define, Locate, Authorize, Validate', caption: 'A step-flow diagram from the guide.', tags: ['illustration guide', 'diagram', 'step flow'] },
     { id: 'SNAP_illustration_04', status: 'received', ext: 'jpg', feature: 'architecture diagram', alt: 'SnapLogic control-plane / data-plane architecture diagram with Cloudplex, Groundplex, and firewall', caption: 'A control/data-plane architecture diagram.', tags: ['illustration guide', 'diagram', 'architecture', 'control plane', 'data plane'] },
-    { id: 'SNAP_audit_01', status: 'planned', ext: 'pdf', feature: 'UX audit deliverable', alt: 'UX audit of the SnapLogic documentation side navigation panel with marked good-to-have and not-to-have feedback', caption: 'The UX audit deliverable.', tags: ['UX audit', 'process', 'IA', 'feedback'] },
+    { id: 'SNAP_audit_01', status: 'received', feature: 'UX audit deliverable', alt: 'UX audit of the SnapLogic documentation side navigation panel with marked good-to-have and not-to-have feedback', caption: 'The UX audit deliverable.', tags: ['UX audit', 'process', 'IA', 'feedback'] },
   ],
 }
