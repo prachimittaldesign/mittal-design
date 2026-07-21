@@ -197,9 +197,9 @@ export function LockGate({
           </div>
         )}
 
-        <p className="mt-4 max-w-[52ch] text-[13.5px] leading-[1.55] text-ink-soft">
-          The detailed write-up — problem, process, decisions, and outcomes — is private. Enter the password I shared
-          with you, or <span className="font-semibold text-ink">request it below</span> — I send it over the same day.
+        <p className="mt-4 text-[13.5px] leading-[1.55] text-ink-soft">
+          The full write-up covers the problem, process, decisions, and outcomes. Enter the password I shared with you,
+          or <span className="font-semibold text-ink">request it below</span> and I'll send it the same day.
         </p>
         <div className="mt-4 flex gap-[10px] max-[440px]:flex-col">
           <input
@@ -251,8 +251,8 @@ export function LockGate({
                 WhatsApp
               </a>
             </>
-          )}{' '}
-          — happy to share it, usually the same day.
+          )}
+          . I'm happy to share it, usually the same day.
         </p>
       </form>
     </div>
