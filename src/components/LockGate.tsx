@@ -100,8 +100,15 @@ export function LockGate({
         </span>
       </div>
 
+      {/* Role / scope line */}
+      {project.teaser?.role && (
+        <p className="mt-5 font-mono text-[12px] font-semibold uppercase tracking-[0.1em] text-ink-soft">
+          {project.teaser.role}
+        </p>
+      )}
+
       {/* Teaser summary + hero metric */}
-      <div className="mt-8 grid grid-cols-[1fr_auto] items-start gap-10 max-[720px]:grid-cols-1 max-[720px]:gap-6">
+      <div className="mt-6 grid grid-cols-[1fr_auto] items-start gap-10 max-[720px]:grid-cols-1 max-[720px]:gap-6">
         <p className="max-w-[60ch] text-[clamp(17px,2vw,22px)] leading-[1.6] text-[#2a2622]">
           {project.teaser?.summary ?? project.desc}
         </p>
@@ -116,6 +123,21 @@ export function LockGate({
           </div>
         )}
       </div>
+
+      {/* Highlights — the teaser's real selling, public-safe outcomes */}
+      {project.teaser?.highlights && project.teaser.highlights.length > 0 && (
+        <ul className="mt-8 grid gap-[10px]">
+          {project.teaser.highlights.map((h, i) => (
+            <li key={i} className="flex gap-3 text-[clamp(14px,1.6vw,16px)] leading-[1.5] text-[#2a2622]">
+              <svg viewBox="0 0 20 20" className="mt-[3px] h-[15px] w-[15px] flex-shrink-0" fill="none" aria-hidden>
+                <circle cx="10" cy="10" r="9" fill={`${accent}22`} />
+                <path d="M6 10.5l2.5 2.5L14 7" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{h}</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* A visual or two */}
       {previews.length > 0 && (
@@ -154,9 +176,31 @@ export function LockGate({
         aria-label={`Unlock the ${project.label} case study`}
       >
         <h2 className="text-[16px] font-bold tracking-[-0.01em] text-ink">Read the full case study</h2>
-        <p className="mt-[6px] max-w-[52ch] text-[13.5px] leading-[1.55] text-ink-soft">
-          The detailed write-up — problem, process, decisions, and outcomes — is private. Enter the password Prachi
-          shared with you to continue.
+
+        {/* What's inside — tells the reader exactly what the password unlocks */}
+        {project.teaser?.covers && project.teaser.covers.length > 0 && (
+          <div className="mt-3">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-ink-soft">
+              Inside
+            </span>
+            <div className="mt-2 flex flex-wrap gap-[6px]">
+              {project.teaser.covers.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full border px-[11px] py-[5px] text-[12px] font-medium text-ink"
+                  style={{ borderColor: `${accent}44`, background: `${accent}10` }}
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="mt-4 max-w-[52ch] text-[13.5px] leading-[1.55] text-ink-soft">
+          The detailed write-up — problem, process, decisions, and outcomes — is private.{' '}
+          <span className="font-semibold text-ink">The password is on the last page of my résumé.</span> Enter it to
+          continue.
         </p>
         <div className="mt-4 flex gap-[10px] max-[440px]:flex-col">
           <input
@@ -191,13 +235,23 @@ export function LockGate({
           </p>
         )}
         <p className="mt-[14px] text-[12px] leading-[1.5] text-ink-soft">
-          Don’t have the password?{' '}
+          Don’t have it?{' '}
+          <a
+            href="/Prachi-Mittal-Resume-2026.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline"
+            style={{ color: accent }}
+          >
+            Open my résumé
+          </a>{' '}
+          (password on the last page), or{' '}
           <a href={requestMail} className="font-semibold underline" style={{ color: accent }}>
-            Request access by email
+            ask by email
           </a>
           {requestWhats && (
             <>
-              {' '}or{' '}
+              {' / '}
               <a
                 href={requestWhats}
                 target="_blank"
@@ -205,11 +259,11 @@ export function LockGate({
                 className="font-semibold underline"
                 style={{ color: accent }}
               >
-                on WhatsApp
+                WhatsApp
               </a>
             </>
           )}
-          . Prachi usually replies within a day.
+          . I usually reply within a day.
         </p>
       </form>
     </div>

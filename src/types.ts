@@ -95,6 +95,13 @@ export interface ProjectTeaser {
   summary: string
   /** Single hero stat shown on the teaser. */
   metric?: { value: string; label: string }
+  /** Role + scope line, e.g. "Solo Product Designer · UX Research → IA → UI". */
+  role?: string
+  /** 3–4 crisp, public-safe outcome bullets — the teaser's real selling. */
+  highlights?: string[]
+  /** What the full (gated) write-up covers, shown as chips so a reader knows
+   *  exactly what they'd unlock. */
+  covers?: string[]
 }
 
 /** The decrypted payload shape (type only — the data lives Node-side). */

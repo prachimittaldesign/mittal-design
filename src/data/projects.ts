@@ -51,6 +51,20 @@ export const PROJECTS: Project[] = [
       summary:
         'A DITA CMS that makes structured authoring feel like writing a document — with AI assistance, content governance, and monetization built into one stack no competitor matches.',
       metric: { value: 'V2', label: 'CEO-approved, in engineering build' },
+      role: 'Product Designer · lead on the authoring canvas · 2025',
+      highlights: [
+        'Designed the DITA Builder canvas — a three-panel workspace (outline tree, WYSIWYG editor, content blocks) that hides XML complexity without ever breaking structural validity.',
+        'Shaped Prompt-as-a-Service: prompts treated as first-class, governed, monetizable content rather than throwaway text.',
+        'Folded authoring, content governance, and monetization into one stack — a combination no competitor currently ships.',
+        'V2 approved by the CEO and handed to engineering for build.',
+      ],
+      covers: [
+        'The three-panel canvas',
+        'Prompt-as-a-Service UX',
+        'Content governance model',
+        'Monetization design',
+        'XML-abstraction decisions',
+      ],
     },
     imageGroups: [
       {
@@ -88,6 +102,20 @@ export const PROJECTS: Project[] = [
       summary:
         "SnapLogic's enterprise docs lived on Confluence — never built for external product documentation. I rebuilt the experience around a dual-navigation system that lets users browse by product taxonomy or by task intent, reducing clicks-to-target by a validated 40%.",
       metric: { value: '40%', label: 'fewer clicks to target' },
+      role: 'Solo Product Designer · UX Research → IA → UI · 2026',
+      highlights: [
+        'Rebuilt 700+ pages of enterprise documentation from a sprawling Confluence tree into a purpose-built product portal.',
+        'Designed a dual-navigation system — browse by product taxonomy or by task intent — serving one source of content with zero duplication.',
+        'Validated a 40% cut in clicks-to-target through task-based user research, not guesswork.',
+        'Delivered a responsive, DITA-backed information architecture built to scale with the product.',
+      ],
+      covers: [
+        'The research & findings',
+        'Dual-navigation IA',
+        'Before / after the Confluence tree',
+        'The responsive system',
+        'How the 40% was validated',
+      ],
     },
     imageGroups: [
       {
@@ -215,6 +243,20 @@ export const PROJECTS: Project[] = [
       summary:
         'Two apps that reclaim the TV home screen for local communities and replace interruptive advertising with contextual companion experiences — part of a 12-app MIAs suite shown at CES 2024 and handed off for partnership.',
       metric: { value: 'CES 2024', label: 'showcased · Las Vegas' },
+      role: 'Lead Designer · end-to-end · 2 of a 12-app suite · 2024',
+      highlights: [
+        'Designed two smart-TV apps end to end — Mo, a community-first home screen, and Revee, adaptive streaming.',
+        'Replaced interruptive advertising with contextual, non-interruptive companion experiences that respect lean-back viewing.',
+        'Built for the ten-foot TV experience across a coherent 12-app MIAs system.',
+        'Showcased at CES 2024 in Las Vegas and handed off for partnership.',
+      ],
+      covers: [
+        'Lean-back TV patterns',
+        'The community home screen',
+        'The non-interruptive ad model',
+        'The 12-app system',
+        'The CES handoff',
+      ],
     },
     imageGroups: [
       {
