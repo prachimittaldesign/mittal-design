@@ -403,3 +403,38 @@
   .cs .is-animated .bar__before, .cs .is-animated .bar__after { transition: none; }
   .cs .tile { transition: none; }
 }
+
+/* ---- gamification: Octalysis octagon ------------------------------------- */
+.cs .octa__attr { color: var(--ink-2); font-size: 13px; margin: 10px auto 0; text-align: center; font-style: italic; }
+.cs .octa__grid {
+  display: grid; grid-template-columns: minmax(300px, 440px) 1fr; gap: clamp(28px, 4vw, 56px);
+  align-items: center; margin-top: clamp(32px, 5vw, 52px);
+}
+@media (max-width: 820px) { .cs .octa__grid { grid-template-columns: 1fr; gap: 34px; } }
+.cs .octa__viz { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cs .octa { width: 100%; max-width: 440px; height: auto; overflow: visible; }
+.cs .octa__ring { fill: rgba(91, 75, 222, 0.04); stroke: var(--line); stroke-width: 1.5; }
+.cs .octa__spoke { stroke: var(--line); stroke-width: 1; opacity: 0.55; }
+.cs .octa__center { fill: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: 0.14em; }
+.cs .octa__center-sub { fill: var(--ink-2); font-size: 11px; letter-spacing: 0.02em; }
+.cs .octa__node--on { fill: var(--accent); stroke: none; }
+.cs .octa__node--off { fill: var(--bg); stroke: var(--ink-2); stroke-width: 1.4; stroke-dasharray: 3 3; opacity: 0.7; }
+.cs .octa__check { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.cs .octa__dash { stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; opacity: 0.8; }
+.cs .octa__label { fill: var(--ink-2); font-size: 12px; font-weight: 500; }
+.cs .octa__label--on { fill: var(--ink); font-weight: 650; }
+.cs .octa__legend { display: flex; gap: 22px; }
+.cs .octa__key { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.cs .octa__swatch { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
+.cs .octa__swatch--on { background: var(--accent); }
+.cs .octa__swatch--off { background: var(--bg); border: 1.4px dashed var(--ink-2); }
+.cs .octa__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+@media (max-width: 560px) { .cs .octa__cols { grid-template-columns: 1fr; gap: 22px; } }
+.cs .octa__col-h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.cs .octa__col-h--on { color: var(--accent); }
+.cs .octa__col-h--off { color: var(--ink-2); }
+.cs .octa__col ul { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+.cs .octa__col li { display: flex; flex-direction: column; gap: 2px; }
+.cs .octa__col li b { font-size: 14px; font-weight: 650; color: var(--ink); }
+.cs .octa__col li span { font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+.cs .octa__caption { color: var(--ink-2); font-size: 14px; line-height: 1.6; max-width: 68ch; margin: clamp(28px, 4vw, 44px) auto 0; text-align: center; }

@@ -177,6 +177,55 @@ function Mark({ value }: { value: boolean | null }) {
   return <span className="mk mk-no" role="img" aria-label="No">—</span>
 }
 
+// Octalysis octagon — the eight core drives on a ring, `used` ones lit in the
+// accent, `refused` ones dimmed and dashed. Drives are authored clockwise from
+// the top, so vertex i sits at angle (-90 + 45·i)°. Labels anchor by side so
+// they never collide with the ring; the detail lives in the lists below.
+function Octagon({ drives }: { drives: { name: string; used: boolean }[] }) {
+  const cx = 220
+  const cy = 200
+  const R = 132
+  const pts = drives.slice(0, 8).map((d, i) => {
+    const a = ((-90 + i * 45) * Math.PI) / 180
+    return { ...d, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a), i }
+  })
+  const anchor = (x: number) => (x > cx + 8 ? 'start' : x < cx - 8 ? 'end' : 'middle')
+  const dx = (x: number) => (x > cx + 8 ? 20 : x < cx - 8 ? -20 : 0)
+  const dy = (y: number) => (y > cy + 40 ? 26 : y < cy - 40 ? -18 : 5)
+  return (
+    <svg className="octa" viewBox="0 0 440 400" role="img"
+      aria-label="Octalysis octagon: five core drives used (epic meaning, accomplishment, empowerment, ownership, social influence) and three refused (unpredictability, loss and avoidance, scarcity)">
+      <polygon
+        points={pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}
+        className="octa__ring"
+      />
+      {pts.map((p) => (
+        <line key={`s${p.i}`} x1={cx} y1={cy} x2={p.x} y2={p.y} className="octa__spoke" />
+      ))}
+      <text x={cx} y={cy - 6} className="octa__center" textAnchor="middle">OCTALYSIS</text>
+      <text x={cx} y={cy + 12} className="octa__center-sub" textAnchor="middle">8 core drives</text>
+      {pts.map((p) => (
+        <g key={p.i}>
+          <circle cx={p.x} cy={p.y} r={13} className={p.used ? 'octa__node octa__node--on' : 'octa__node octa__node--off'} />
+          {p.used ? (
+            <path d={`M${p.x - 5} ${p.y} l3.4 3.6 L${p.x + 6} ${p.y - 4.5}`} className="octa__check" />
+          ) : (
+            <line x1={p.x - 5} y1={p.y} x2={p.x + 5} y2={p.y} className="octa__dash" />
+          )}
+          <text
+            x={p.x + dx(p.x)}
+            y={p.y + dy(p.y)}
+            textAnchor={anchor(p.x)}
+            className={p.used ? 'octa__label octa__label--on' : 'octa__label'}
+          >
+            {p.name}
+          </text>
+        </g>
+      ))}
+    </svg>
+  )
+}
+
 const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
 export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
@@ -658,6 +707,46 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                   ))}
                 </div>
               )}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 10b · gamification: Octalysis octagon + leaned-in / refused ---- */}
+        {data.gamification && data.gamification.drives.length >= 8 && (
+          <section className="section section--gray" id="cs-gamification" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow center">{data.gamification.eyebrow}</p>
+              <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto 8px' }}>{data.gamification.headline}</h2>
+              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.gamification.lead)}</p>
+              {data.gamification.framework && <p className="octa__attr center">{data.gamification.framework}</p>}
+              <div className="octa__grid">
+                <div className="octa__viz">
+                  <Octagon drives={data.gamification.drives} />
+                  <div className="octa__legend">
+                    <span className="octa__key"><i className="octa__swatch octa__swatch--on" />Leaned in</span>
+                    <span className="octa__key"><i className="octa__swatch octa__swatch--off" />Refused</span>
+                  </div>
+                </div>
+                <div className="octa__cols">
+                  <div className="octa__col">
+                    <h3 className="octa__col-h octa__col-h--on">Leaned into</h3>
+                    <ul>
+                      {data.gamification.drives.filter((d) => d.used).map((d) => (
+                        <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="octa__col">
+                    <h3 className="octa__col-h octa__col-h--off">Deliberately refused</h3>
+                    <ul>
+                      {data.gamification.drives.filter((d) => !d.used).map((d) => (
+                        <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {data.gamification.caption && <p className="octa__caption center">{rich(data.gamification.caption)}</p>}
             </div>
           </section>
         )}

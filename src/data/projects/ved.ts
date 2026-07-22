@@ -50,7 +50,7 @@ export const VED_CASE_STUDY: RichCaseStudy = {
       body: 'Mark, select on the canvas, preview live, confirm — conditional logic at the Map, Topic, and Variable level with no rules to write.',
     },
     {
-      kicker: 'Ask Kya',
+      kicker: 'Ask Aeon',
       title: 'An AI layer that speaks your content.',
       body: 'Sessionized chat with tappable variable chips, entity-linked answers, and suggested next actions — every prompt a rateable, reusable asset.',
     },
@@ -127,7 +127,7 @@ export const VED_CASE_STUDY: RichCaseStudy = {
     eyebrow: 'The system',
     headline: 'One library, every surface.',
     lead:
-      'A full Figma component library — **canvas, Ask Kya, PaaS, no-code conditionals, Media Library, and DRM** — that passed design-system review before handoff, with a complete token map delivered to engineering.',
+      'A full Figma component library — **canvas, Ask Aeon, PaaS, no-code conditionals, Media Library, and DRM** — that passed design-system review before handoff, with a complete token map delivered to engineering.',
     cards: [
       { title: 'Blocks that assemble', body: 'Topic Blocks, Content Blocks, and Layout Blocks (Full-Width, 2×1, 3×1, 2×2) drag straight onto the canvas.', image: 'VED_block_01' },
       { title: 'Card-based everything', body: 'Assets, documents, and prompts share one card language — thumbnail, type badge, metadata, and a contextual menu.', image: 'VED_media_02' },
@@ -138,7 +138,7 @@ export const VED_CASE_STUDY: RichCaseStudy = {
 
   aiLayer: {
     eyebrow: 'The intelligence layer',
-    headline: 'Ask Kya.',
+    headline: 'Ask Aeon.',
     lead:
       'Most tools bolt AI on as a side panel. Ved makes it a **governed, sessionized layer**. Ask in plain language, steer the answer with **tappable variable chips**, follow **entity links** back to your content, and act on **suggested next steps** — with every prompt saved as a rateable, reusable asset.',
     cards: [
@@ -158,7 +158,7 @@ export const VED_CASE_STUDY: RichCaseStudy = {
       { no: '02', title: 'Research', body: 'Jobs-to-be-done interviews across three roles: tech writer, department author, and content manager; studied Quillbot, Scalenut, and Oxygen XML for in-context AI patterns.' },
       { no: '03', title: 'Define', body: 'Two opposed personas, one canvas — resolved through progressive disclosure.' },
       { no: '04', title: 'Explore', body: 'Three canvas architectures, each tested against four core authoring tasks.' },
-      { no: '05', title: 'Design', body: 'The canvas, Ask Kya, and the no-code conditional flow — reframed from the author\'s point of view.' },
+      { no: '05', title: 'Design', body: 'The canvas, Ask Aeon, and the no-code conditional flow — reframed from the author\'s point of view.' },
       { no: '06', title: 'Handoff', body: 'Annotated DITA semantics, a token map, and an IA rationale doc, delivered inside the engineering scrum.' },
     ],
     modal: {
@@ -235,13 +235,13 @@ export const VED_CASE_STUDY: RichCaseStudy = {
     role: 'Product Designer',
     ownershipType: 'collab',
     ownership:
-      'Owned the authoring canvas, the Ask Kya conversational layer, the dynamic-content system, the Media Library, and DRM — CEO-approved before handoff.',
+      'Owned the authoring canvas, the Ask Aeon conversational layer, the dynamic-content system, the Media Library, and DRM — CEO-approved before handoff.',
     timeline: 'Mid 2025 – Ongoing',
     team: 'Collaborated with one other designer; embedded in the engineering scrum',
     tools: ['Figma', 'Confluence'],
     responsibilities: [
       'DITA Builder canvas',
-      'Conversational UX (Ask Kya / Prompt-as-a-Service)',
+      'Conversational UX (Ask Aeon / Prompt-as-a-Service)',
       'No-code conditional content',
       'Media Library',
       'DRM & compliance',
@@ -253,7 +253,7 @@ export const VED_CASE_STUDY: RichCaseStudy = {
   images: [
     { id: 'VED_canvas_01', status: 'received', highlight: true, feature: 'authoring canvas', alt: 'The Ved DITA Builder canvas with DITA Outline, WYSIWYG editor, and the Content/Variable/Integrate panel', caption: 'The three-panel DITA Builder canvas.', tags: ['canvas', 'DITA', 'WYSIWYG', 'authoring', 'three-panel'] },
     { id: 'VED_conditional_01', status: 'received', highlight: true, feature: 'no-code conditional content', alt: 'Editing a variable in Ved and marking it non-mandatory for no-code conditional content', caption: 'Marking a variable non-mandatory for no-code conditional content.', tags: ['conditional', 'no-code', 'variable', 'dynamic-content'] },
-    { id: 'VED_askkya_01', status: 'received', highlight: true, feature: 'Ask Kya conversational layer', alt: 'Ask Kya conversational panel with prompt sessions, variable-token chips, entity links, and suggested actions', caption: 'Ask Kya — sessionized, governed, conversational authoring.', tags: ['Ask Kya', 'AI', 'conversational', 'prompt-as-a-service'] },
+    { id: 'VED_askkya_01', status: 'received', highlight: true, feature: 'Ask Aeon conversational layer', alt: 'Ask Aeon conversational panel with prompt sessions, variable-token chips, entity links, and suggested actions', caption: 'Ask Aeon — sessionized, governed, conversational authoring.', tags: ['Ask Aeon', 'AI', 'conversational', 'prompt-as-a-service'] },
     { id: 'VED_relationship_01', status: 'received', highlight: true, feature: 'Relationship view (radial DITA graph)', alt: 'Radial relationship graph of a DITA map in Ved showing topic types, reuse, and keyref relationships', caption: 'The Relationship view — a radial graph of the DITA map.', tags: ['relationship', 'DITA map', 'graph', 'visualization'] },
     { id: 'VED_ops_01', status: 'received', highlight: true, feature: 'Operations / governance dashboard', alt: 'Ved Operations view governance dashboard with document, topic, and content-block metrics and activity breakdowns', caption: 'The Operations view governance dashboard.', tags: ['operations', 'governance', 'dashboard', 'analytics'] },
     { id: 'VED_block_01', status: 'received', feature: 'content & layout blocks (drag-drop)', alt: 'Dragging an Image content block onto a topic in the Ved canvas', caption: 'Drag-and-drop content and layout blocks.', tags: ['content blocks', 'drag-drop', 'layout blocks'] },

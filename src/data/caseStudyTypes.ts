@@ -125,6 +125,31 @@ export interface CSInteractions {
   signatureFlow?: string[]
 }
 
+/** One motivational drive on the Octalysis octagon. */
+export interface CSDrive {
+  /** Short drive name shown at its octagon vertex, e.g. 'Epic Meaning'. */
+  name: string
+  /** true = leaned into it; false = deliberately refused it. */
+  used: boolean
+  /** How it was applied, or why it was refused. */
+  note: string
+}
+/**
+ * A gamification / behavioural-design section rendered as an Octalysis octagon
+ * (Yu-kai Chou's eight core drives) plus a "leaned in / refused" breakdown.
+ * `drives` must hold exactly eight, authored clockwise from the top so the
+ * renderer can place each at its vertex.
+ */
+export interface CSGamification {
+  eyebrow: string
+  headline: string
+  lead: string
+  /** Attribution / framing line under the headline. */
+  framework?: string
+  drives: CSDrive[]
+  caption?: string
+}
+
 export interface CSCapabilitiesGrid {
   type: 'grid'
   headline?: string
@@ -174,6 +199,7 @@ export interface RichCaseStudy {
   aiLayer?: CSCardSection
   process?: CSProcess
   interactions?: CSInteractions
+  gamification?: CSGamification
   capabilities?: CSCapabilities
   techHandoff?: CSTechHandoff
   role?: CSRole

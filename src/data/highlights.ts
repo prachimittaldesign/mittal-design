@@ -42,10 +42,10 @@ export const REEL_HIGHLIGHTS: ReelHighlight[] = [
     projectName: 'Ved',
     order: 2,
     image: 'VED_askkya_01',
-    feature: 'Ask Kya — conversational layer',
-    headline: 'Ask Kya. Answers, not links.',
+    feature: 'Ask Aeon — conversational layer',
+    headline: 'Ask Aeon. Answers, not links.',
     blurb: 'A governed, sessionized AI layer with variable-token chips, entity links, and suggested next actions — every prompt a reusable asset.',
-    tags: ['Ask Kya', 'AI', 'conversational', 'prompt-as-a-service'],
+    tags: ['Ask Aeon', 'AI', 'conversational', 'prompt-as-a-service'],
     duration: 5000,
   },
   {

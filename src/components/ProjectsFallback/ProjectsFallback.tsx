@@ -550,7 +550,7 @@ export function ProjectsFallback({ onOpenProject, onEnterCity }: ProjectsFallbac
                 <div className="pf-stack__b">
                   <h3>AI that behaves like a governed product.</h3>
                   <p>
-                    Ask Kya, Prompt-as-a-Service, DocGPT — <strong>conversational and agentic layers</strong> designed
+                    Ask Aeon, Prompt-as-a-Service, DocGPT — <strong>conversational and agentic layers</strong> designed
                     with versioning, quality scoring, and cited answers, not a bolted-on chatbot.
                   </p>
                 </div>

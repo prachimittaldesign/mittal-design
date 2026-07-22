@@ -187,6 +187,27 @@ export const REVEE_CASE_STUDY: RichCaseStudy = {
     ],
   },
 
+  gamification: {
+    eyebrow: 'The rewards system',
+    headline: 'Recognition that never manipulates.',
+    lead:
+      "Mo rewards real civic participation — reporting an issue, giving to a local cause, saving energy, showing up. The risk with any points system is that it curdles into a slot machine: streaks you can't miss, timers that pressure, rewards that hook. I mapped Mo's rewards against the **eight core drives of motivation** and drew a hard line — lean only on the drives that recognise genuine contribution, and refuse the ones that manufacture compulsion.",
+    framework: 'Framework: Octalysis (Yu-kai Chou). The application, the cut, and the reasoning are mine.',
+    drives: [
+      // Authored clockwise from the top; the three refused sit toward the bottom.
+      { name: 'Epic Meaning', used: true, note: 'Points attach to acts that matter — reporting, donating, conserving, participating — so the reward means something.' },
+      { name: 'Accomplishment', used: true, note: 'A visible level and progress path; DoGooder points tally up as you contribute over time.' },
+      { name: 'Empowerment', used: true, note: 'Quests suggest a next action but never require one — skipping costs nothing.' },
+      { name: 'Ownership', used: true, note: 'A badge shelf on the profile: earned badges in colour, the rest visible but locked, so progress is yours to see.' },
+      { name: 'Scarcity', used: false, note: 'No countdown timers on civic actions. Nothing here expires, so urgency is never manufactured.' },
+      { name: 'Loss & Avoidance', used: false, note: 'No streaks, no decaying points. Missing a week never punishes you — participation stays voluntary.' },
+      { name: 'Unpredictability', used: false, note: "No random reward drops. Every reward states its condition up front, so nothing nudges compulsive checking." },
+      { name: 'Social Influence', used: true, note: 'Ambassador standing shows on the profile card, visible to everyone around the shared TV — recognition, not competition.' },
+    ],
+    caption:
+      'The result is a system that makes contributing feel worthwhile on a screen the whole household shares — without borrowing the dark patterns that make people resent the apps on their phones.',
+  },
+
   capabilities: {
     type: 'comparison',
     headline: 'Where Mo & Revee still lead.',
