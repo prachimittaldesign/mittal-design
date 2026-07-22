@@ -69,6 +69,25 @@ export const REVEE_CASE_STUDY: RichCaseStudy = {
     },
   ],
 
+  figures: {
+    eyebrow: 'Why television',
+    headline: 'Why a community belongs on the biggest screen.',
+    lead:
+      'Two things make a 12-app civic ecosystem on TV possible — and both shaped every decision in Mo and Revee.',
+    items: [
+      {
+        kind: 'broadcast',
+        title: 'One signal, every home.',
+        body: "NextGenTV (ATSC 3.0) lets app data ride alongside the video on a single broadcast — at zero per-user delivery cost — and adds a broadband return path so the TV can answer back. That economics is what lets local institutions reach every household on the most prominent screen in the home.",
+      },
+      {
+        kind: 'leanback',
+        title: 'The couch is not a pocket.',
+        body: 'A phone is at arm’s length, typed on, and private. A television is across the room, driven by five keys, and shared by the whole household. Every Mo and Revee screen is built for that reality — legible at distance, navigable by d-pad, and safe to show to everyone in the room.',
+      },
+    ],
+  },
+
   closerLook: {
     themes: [],
     items: [
@@ -111,6 +130,18 @@ export const REVEE_CASE_STUDY: RichCaseStudy = {
         },
       ],
     },
+    diagrams: [
+      {
+        kind: 'besideNotOver',
+        title: 'Beside, not over.',
+        body: "Traditional TV advertising takes the screen. The companion format keeps the content full-screen and places the ad in a panel beside it — visible, contextual, but never covering what's playing.",
+      },
+      {
+        kind: 'extendedPanel',
+        title: "Killing the 'sticker' effect.",
+        body: "A team call I helped shape on the rendering side: rather than dropping a creative onto a clashing panel, the ad's dominant colour is pulled into a full-width background — so it reads as part of the broadcast, not a sticker slapped on top.",
+      },
+    ],
   },
 
   metrics: [

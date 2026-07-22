@@ -438,3 +438,49 @@
 .cs .octa__col li b { font-size: 14px; font-weight: 650; color: var(--ink); }
 .cs .octa__col li span { font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 .cs .octa__caption { color: var(--ink-2); font-size: 14px; line-height: 1.6; max-width: 68ch; margin: clamp(28px, 4vw, 44px) auto 0; text-align: center; }
+
+/* ---- conceptual diagrams (figures) -------------------------------------- */
+.cs .figstack { display: flex; flex-direction: column; gap: clamp(28px, 4vw, 48px); margin-top: clamp(34px, 5vw, 56px); }
+.cs .figstack--flag { margin-top: clamp(30px, 4vw, 48px); }
+.cs .figblock {
+  display: grid; grid-template-columns: minmax(300px, 1.1fr) 1fr; gap: clamp(24px, 4vw, 52px);
+  align-items: center;
+}
+.cs .figblock:nth-child(even) { grid-template-columns: 1fr minmax(300px, 1.1fr); }
+.cs .figblock:nth-child(even) .figblock__viz { order: 2; }
+@media (max-width: 760px) {
+  .cs .figblock, .cs .figblock:nth-child(even) { grid-template-columns: 1fr; gap: 18px; }
+  .cs .figblock:nth-child(even) .figblock__viz { order: 0; }
+}
+.cs .figblock__viz {
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: clamp(18px, 2.5vw, 30px); display: flex; align-items: center; justify-content: center;
+}
+.cs .figblock__txt h3 { font-size: clamp(19px, 2.4vw, 25px); letter-spacing: -0.02em; margin-bottom: 10px; }
+.cs .figblock__txt p { color: var(--ink-2); font-size: clamp(15px, 1.8vw, 17px); line-height: 1.6; max-width: 46ch; }
+.cs .fig { width: 100%; height: auto; overflow: visible; }
+
+/* diagram primitives — all reference the case-study tokens */
+.cs .fig__stroke { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs .fig__arc { fill: none; stroke: var(--accent); stroke-width: 1.6; opacity: 0.5; }
+.cs .fig__accentFill { fill: var(--accent); }
+.cs .fig__accentSoft { fill: rgba(91, 75, 222, 0.14); }
+.cs .fig__mutedFill { fill: var(--ink-2); opacity: 0.55; }
+.cs .fig__line { stroke: var(--line); stroke-width: 1; }
+.cs .fig__dash { fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-dasharray: 4 4; stroke-linecap: round; }
+.cs .fig__panelStroke { fill: var(--bg-gray); stroke: var(--line); stroke-width: 1.4; }
+.cs .fig__panelStrokeOnly { fill: none; stroke: var(--line); stroke-width: 1.4; }
+.cs .fig__panelSoft { fill: var(--bg-gray); }
+.cs .fig__dimFill { fill: rgba(0, 0, 0, 0.06); }
+.cs .fig__clashFill { fill: rgba(0, 0, 0, 0.05); }
+.cs .fig__contentFill { fill: #1d1d1f; }
+.cs .fig__playGlyph { fill: rgba(255, 255, 255, 0.85); }
+.cs .fig__cap { fill: var(--ink-2); font-size: 12px; font-weight: 500; }
+.cs .fig__cap--accent { fill: var(--accent); font-weight: 600; }
+.cs .fig__cap--muted { fill: var(--ink-2); }
+.cs .fig__figTitle { fill: var(--ink); font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+.cs .fig__kv-k { fill: var(--ink-2); font-size: 11.5px; }
+.cs .fig__kv-v { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.cs .fig__vs { fill: var(--ink-2); font-size: 13px; font-weight: 700; font-style: italic; }
+.cs .fig__adLabel { fill: #fff; font-size: 15px; font-weight: 800; letter-spacing: 0.05em; }
+.cs .fig__adLabel--sm { fill: var(--accent); font-size: 11px; }

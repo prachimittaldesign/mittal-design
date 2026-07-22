@@ -226,6 +226,141 @@ function Octagon({ drives }: { drives: { name: string; used: boolean }[] }) {
   )
 }
 
+// ---- conceptual diagrams (kind-selected SVG schematics) ---------------------
+function FigBroadcast() {
+  return (
+    <svg className="fig" viewBox="0 0 440 210" role="img" aria-label="One broadcast tower sends one signal carrying twelve app services to every TV in range, with a broadband return path so the TV can answer back">
+      <path d="M64 150 L52 60 M64 150 L76 60 M52 60 L76 60 M46 96 L82 96 M43 118 L85 118" className="fig__stroke" />
+      <circle cx="64" cy="52" r="6" className="fig__accentFill" />
+      <path d="M92 60 A70 70 0 0 1 92 140" className="fig__arc" />
+      <path d="M108 44 A96 96 0 0 1 108 156" className="fig__arc" />
+      <path d="M124 30 A122 122 0 0 1 124 170" className="fig__arc" />
+      {[0, 1, 2].map((i) => (
+        <g key={i} transform={`translate(330, ${44 + i * 52})`}>
+          <rect x="0" y="0" width="56" height="34" rx="4" className="fig__panelStroke" />
+          <rect x="22" y="34" width="12" height="5" rx="1" className="fig__mutedFill" />
+        </g>
+      ))}
+      <path d="M330 168 C 230 210 130 200 96 150" className="fig__dash" markerEnd="url(#figArrow)" />
+      <defs>
+        <marker id="figArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" className="fig__accentFill" />
+        </marker>
+      </defs>
+      <text x="150" y="22" className="fig__cap">one signal · 12 app services</text>
+      <text x="358" y="26" className="fig__cap" textAnchor="middle">every TV in range</text>
+      <text x="210" y="205" className="fig__cap fig__cap--accent" textAnchor="middle">broadband return path — the TV answers back</text>
+    </svg>
+  )
+}
+
+function FigLeanback() {
+  const Panel = ({ x, label, dist, input, who, far }: { x: number; label: string; dist: string; input: string; who: string; far: boolean }) => (
+    <g transform={`translate(${x}, 0)`}>
+      <rect x="0" y="0" width="188" height="200" rx="12" className="fig__panelSoft" />
+      <text x="94" y="28" className="fig__figTitle" textAnchor="middle">{label}</text>
+      {far ? (
+        <>
+          <rect x="112" y="52" width="60" height="38" rx="4" className="fig__panelStroke" />
+          <circle cx="30" cy="74" r="9" className="fig__mutedFill" />
+          <circle cx="52" cy="78" r="9" className="fig__mutedFill" />
+          <path d="M84 71 L108 71" className="fig__dash" />
+        </>
+      ) : (
+        <>
+          <rect x="118" y="50" width="26" height="44" rx="4" className="fig__panelStroke" />
+          <circle cx="96" cy="72" r="9" className="fig__mutedFill" />
+          <path d="M110 72 L116 72" className="fig__dash" />
+        </>
+      )}
+      <line x1="20" y1="112" x2="168" y2="112" className="fig__line" />
+      {[['Distance', dist], ['Input', input], ['Audience', who]].map(([k, v], i) => (
+        <g key={k} transform={`translate(0, ${128 + i * 22})`}>
+          <text x="20" y="0" className="fig__kv-k">{k}</text>
+          <text x="168" y="0" className="fig__kv-v" textAnchor="end">{v}</text>
+        </g>
+      ))}
+    </g>
+  )
+  return (
+    <svg className="fig" viewBox="0 0 440 210" role="img" aria-label="Phone versus television: 0.4 meters with a full keyboard for one person, versus 3 meters with a five-key remote for the whole household">
+      <Panel x={6} label="Phone" dist="0.4 m" input="Full keyboard" who="One person" far={false} />
+      <text x="220" y="108" className="fig__vs" textAnchor="middle">vs</text>
+      <Panel x={246} label="Television" dist="3 m" input="5-key remote" who="The household" far={true} />
+    </svg>
+  )
+}
+
+function FigBesideNotOver() {
+  return (
+    <svg className="fig" viewBox="0 0 440 200" role="img" aria-label="Interruptive advertising covers the content; companion advertising keeps content full-screen with the ad beside it">
+      <g transform="translate(20, 20)">
+        <rect x="0" y="0" width="170" height="106" rx="8" className="fig__panelStroke" />
+        <rect x="0" y="0" width="170" height="106" rx="8" className="fig__dimFill" />
+        <rect x="34" y="26" width="102" height="54" rx="5" className="fig__accentFill" />
+        <text x="85" y="57" className="fig__adLabel" textAnchor="middle">AD</text>
+        <text x="85" y="128" className="fig__cap fig__cap--muted" textAnchor="middle">Interruptive — ad over content</text>
+      </g>
+      <path d="M206 73 L234 73" className="fig__dash" markerEnd="url(#figArrow2)" />
+      <defs>
+        <marker id="figArrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" className="fig__accentFill" />
+        </marker>
+      </defs>
+      <g transform="translate(250, 20)">
+        <rect x="0" y="0" width="170" height="106" rx="8" className="fig__panelStroke" />
+        <rect x="6" y="6" width="118" height="94" rx="5" className="fig__contentFill" />
+        <path d="M52 40 L78 53 L52 66 Z" className="fig__playGlyph" />
+        <rect x="130" y="6" width="34" height="94" rx="5" className="fig__accentSoft" />
+        <text x="147" y="57" className="fig__adLabel fig__adLabel--sm" textAnchor="middle" transform="rotate(90 147 53)">AD</text>
+        <text x="85" y="128" className="fig__cap fig__cap--accent" textAnchor="middle">Companion — content stays full-screen</text>
+      </g>
+    </svg>
+  )
+}
+
+function FigExtendedPanel() {
+  return (
+    <svg className="fig" viewBox="0 0 440 190" role="img" aria-label="Without treatment an ad reads as a sticker on a clashing panel; the extended-panel approach pulls the creative's dominant colour into a full-width background so the ad integrates with the broadcast">
+      <g transform="translate(20, 18)">
+        <rect x="0" y="0" width="170" height="100" rx="8" className="fig__panelStroke" />
+        <rect x="0" y="0" width="170" height="100" rx="8" className="fig__clashFill" />
+        <rect x="55" y="30" width="60" height="40" rx="6" className="fig__accentFill" />
+        <text x="85" y="120" className="fig__cap fig__cap--muted" textAnchor="middle">Sticker effect — creative floats</text>
+      </g>
+      <path d="M206 68 L234 68" className="fig__dash" markerEnd="url(#figArrow2)" />
+      <g transform="translate(250, 18)">
+        <rect x="0" y="0" width="170" height="100" rx="8" className="fig__accentSoft" />
+        <rect x="0" y="0" width="170" height="100" rx="8" className="fig__panelStrokeOnly" />
+        <rect x="55" y="30" width="60" height="40" rx="6" className="fig__accentFill" />
+        <text x="85" y="120" className="fig__cap fig__cap--accent" textAnchor="middle">Extended panel — colour bleeds full-width</text>
+      </g>
+    </svg>
+  )
+}
+
+function Figure({ kind }: { kind: string }) {
+  switch (kind) {
+    case 'broadcast': return <FigBroadcast />
+    case 'leanback': return <FigLeanback />
+    case 'besideNotOver': return <FigBesideNotOver />
+    case 'extendedPanel': return <FigExtendedPanel />
+    default: return null
+  }
+}
+
+function FigureBlock({ item }: { item: { kind: string; title: string; body: string } }) {
+  return (
+    <div className="figblock">
+      <div className="figblock__viz"><Figure kind={item.kind} /></div>
+      <div className="figblock__txt">
+        <h3>{item.title}</h3>
+        <p>{item.body}</p>
+      </div>
+    </div>
+  )
+}
+
 const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
 export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
@@ -452,6 +587,22 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
           </div>
         </section>
 
+        {/* ---- 2b · figures: conceptual diagrams (e.g. the TV context) ---- */}
+        {data.figures && data.figures.items.length > 0 && (
+          <section className="section section--gray" id="cs-figures" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow center">{data.figures.eyebrow}</p>
+              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 8px' }}>{data.figures.headline}</h2>
+              {data.figures.lead && <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.figures.lead)}</p>}
+              <div className="figstack">
+                {data.figures.items.map((f) => (
+                  <FigureBlock key={f.title} item={f} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ---- 3 · closer look ---- */}
         {data.closerLook && data.closerLook.items.length > 0 && (
           <section className="section section--gray center" id="cs-look" style={{ scrollMarginTop: 64 }}>
@@ -529,6 +680,13 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                   <Shot cs={data} id={data.flagship.image} />
                 </div>
               </div>
+              {data.flagship.diagrams && data.flagship.diagrams.length > 0 && (
+                <div className="figstack figstack--flag">
+                  {data.flagship.diagrams.map((f) => (
+                    <FigureBlock key={f.title} item={f} />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}

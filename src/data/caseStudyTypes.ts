@@ -67,6 +67,21 @@ export interface CSStat {
   label: string
 }
 
+/** A captioned conceptual diagram. `kind` selects the SVG the renderer draws. */
+export type CSFigureKind = 'broadcast' | 'leanback' | 'besideNotOver' | 'extendedPanel'
+export interface CSFigureItem {
+  kind: CSFigureKind
+  title: string
+  body: string
+}
+/** A standalone section of conceptual diagrams (e.g. "the television context"). */
+export interface CSFigures {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: CSFigureItem[]
+}
+
 export interface CSFlagship {
   eyebrow: string
   headline: string
@@ -74,6 +89,8 @@ export interface CSFlagship {
   stats: CSStat[]
   image: string
   modal?: CSModal | null
+  /** Optional conceptual diagrams rendered under the flagship story. */
+  diagrams?: CSFigureItem[]
 }
 
 export interface CSImpactBar {
@@ -191,6 +208,7 @@ export interface RichCaseStudy {
   imageBase: string
   hero: CSHero
   highlights: CSHighlightCard[]
+  figures?: CSFigures
   closerLook?: CSCloserLook
   flagship?: CSFlagship
   impact?: CSImpact
