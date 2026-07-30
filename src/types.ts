@@ -143,6 +143,13 @@ export interface Project {
   /** Hero projects get a floating star marker + a full case-study overlay. */
   featured?: boolean
   caseStudy?: CaseStudy
+  /**
+   * A full rich case study shipped PUBLICLY (no password). `locked` projects
+   * keep their rich body encrypted in lockedCaseStudies.ts instead; this field
+   * is for studies that are free to read, so the same rich renderer is used
+   * without a gate.
+   */
+  richCaseStudy?: import('./data/caseStudyTypes').RichCaseStudy
   /** One or more named carousels shown in the project overlay. Each group gets its own heading + carousel. */
   imageGroups?: Array<{
     title: string

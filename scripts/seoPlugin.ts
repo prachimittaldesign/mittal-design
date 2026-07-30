@@ -50,6 +50,7 @@ const projectImage = (p: Project) => {
 
 const ACRONYMS = new Set([
   'CMS', 'DITA', 'TV', 'AI', 'UX', 'UI', 'LMS', 'CES', 'RES.', '3D', 'LIDAR', 'B2B', 'AEON',
+  'PRISM', 'EQ',
 ])
 function titleCase(sub: string): string {
   return sub
@@ -78,6 +79,49 @@ function articleFor(p: Project): string {
     <p>${esc(teaser)}</p>
   </header>
   <p>The full case study for ${esc(p.label)} — problem, process, design decisions, and outcomes — is private and available on request. <a href="mailto:hello@mittal.design">Request access</a>, or <a href="/">explore the interactive portfolio city</a>.</p>
+  <footer><a href="/">← Explore the interactive portfolio city</a></footer>
+</article>`
+  }
+
+  // Public rich case studies (e.g. Samsung EQ) carry their body in
+  // `richCaseStudy` rather than `caseStudy`, so crawlers get the real content:
+  // the brief, the process, the research conclusion, and the outcome.
+  const rcs = p.richCaseStudy
+  if (rcs) {
+    const sec = (title: string, body: string) =>
+      body ? `<section aria-labelledby="${p.id}-${title.toLowerCase().replace(/\s+/g, '-')}"><h3 id="${p.id}-${title.toLowerCase().replace(/\s+/g, '-')}">${title}</h3>${body}</section>` : ''
+    const plain = (s: string) => esc(s.replace(/\*\*/g, '').replace(/\n\n/g, ' '))
+    const brief = rcs.flagship ? `<p>${plain(rcs.flagship.lead)}</p>` : `<p>${esc(p.desc)}</p>`
+    const highlights = rcs.highlights.length
+      ? `<ul>${rcs.highlights.map((h) => `<li><strong>${esc(h.title)}:</strong> ${plain(h.body)}</li>`).join('')}</ul>`
+      : ''
+    const process = rcs.process
+      ? `<ol>${rcs.process.steps.map((s) => `<li><strong>${esc(s.title)}:</strong> ${plain(s.body)}</li>`).join('')}</ol>`
+      : ''
+    const research = rcs.research?.converge ? `<p>${plain(rcs.research.converge.conclusion)}</p>` : ''
+    const principles = rcs.principles
+      ? `<ul>${rcs.principles.items.map((i) => `<li><strong>${esc(i.name)}</strong> (${esc(i.cat)}): ${plain(i.desc)}</li>`).join('')}</ul>`
+      : ''
+    const outcome = rcs.outcome
+      ? `<p>${plain(rcs.outcome.claim)}</p><ul>${rcs.outcome.nums.map((n) => `<li>${esc(n.num)} — ${esc(n.label)}</li>`).join('')}</ul>${rcs.outcome.footnote ? `<p>${plain(rcs.outcome.footnote)}</p>` : ''}`
+      : ''
+    const role = rcs.role
+      ? `<p>${esc(`${rcs.role.role} · ${rcs.role.timeline} · ${rcs.role.team}`)}</p><ul>${rcs.role.responsibilities.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`
+      : ''
+    return `
+<article aria-label="${esc(p.label)} case study (text version)">
+  <header>
+    <h1>${esc(p.label)} — ${esc(titleCase(p.sub))}</h1>
+    <p>${esc(rcs.hero.tagline)}</p>
+  </header>
+  ${sec('Overview', brief)}
+  ${sec('Highlights', highlights)}
+  ${sec('Process', process)}
+  ${sec('Research', research)}
+  ${sec('Principles', principles)}
+  ${sec('Outcome', outcome)}
+  ${sec('Role', role)}
+  ${sec('Skills', `<ul>${p.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`)}
   <footer><a href="/">← Explore the interactive portfolio city</a></footer>
 </article>`
   }

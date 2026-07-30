@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { csImage, type CSModal, type RichCaseStudy } from '../../data/caseStudyTypes'
+import { csImage, type CSModal, type CSPrinciple, type RichCaseStudy } from '../../data/caseStudyTypes'
 import { PROJECTS } from '../../data/projects'
 import './caseStudy.css'
 
@@ -357,6 +357,132 @@ function FigureBlock({ item }: { item: { kind: string; title: string; body: stri
         <h3>{item.title}</h3>
         <p>{item.body}</p>
       </div>
+    </div>
+  )
+}
+
+// ---- framework wheel: principles × levels of consciousness ------------------
+// Ported from the source page's inline SVG script. Each principle owns a
+// segment of the ring; inside it, three graded cells stand for the three
+// levels. Selecting a segment (click, Enter or Space) writes its readings into
+// the aria-live panel beside the wheel.
+function FrameworkWheel({
+  principles,
+  levelNames,
+  hint,
+}: {
+  principles: CSPrinciple[]
+  levelNames: [string, string, string]
+  hint?: string
+}) {
+  const [sel, setSel] = useState(0)
+  const CX = 250
+  const CY = 250
+  const STEP = 360 / principles.length
+  const OUT_O = 232
+  const OUT_I = 168
+  const R = [168, 132, 96, 60]
+
+  const pt = (r: number, deg: number) => {
+    const a = ((deg - 90) * Math.PI) / 180
+    return [CX + r * Math.cos(a), CY + r * Math.sin(a)] as const
+  }
+  const annulus = (ro: number, ri: number, a1: number, a2: number) => {
+    const p1 = pt(ro, a1), p2 = pt(ro, a2), p3 = pt(ri, a2), p4 = pt(ri, a1)
+    const large = a2 - a1 > 180 ? 1 : 0
+    return `M${p1[0].toFixed(2)} ${p1[1].toFixed(2)}A${ro} ${ro} 0 ${large} 1 ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}L${p3[0].toFixed(2)} ${p3[1].toFixed(2)}A${ri} ${ri} 0 ${large} 0 ${p4[0].toFixed(2)} ${p4[1].toFixed(2)}Z`
+  }
+
+  const active = principles[sel]
+  return (
+    <div className="wheelwrap">
+      <div>
+        <svg
+          className="wheel"
+          viewBox="0 0 500 500"
+          role="img"
+          aria-label={`Framework wheel: ${principles.length} emotional design principles crossed with three levels of consciousness`}
+        >
+          <g>
+            {principles.map((p, i) => {
+              const a1 = i * STEP
+              const a2 = (i + 1) * STEP
+              const mid = a1 + STEP / 2
+              const lp = pt((OUT_O + OUT_I) / 2, mid)
+              const rot = mid > 90 && mid < 270 ? mid + 180 : mid
+              return (
+                <g
+                  key={p.key}
+                  className="seg"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${p.name} — ${p.cat}`}
+                  aria-selected={i === sel}
+                  onClick={() => setSel(i)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSel(i)
+                    }
+                  }}
+                >
+                  <path className="segbase" d={annulus(OUT_O, OUT_I, a1, a2)} fill={p.colour} />
+                  {[0, 1, 2].map((r) => (
+                    <path key={r} d={annulus(R[r], R[r + 1], a1, a2)} fill={p.colour} fillOpacity={(0.3 - r * 0.09).toFixed(2)} />
+                  ))}
+                  <text
+                    className="plabel"
+                    x={lp[0].toFixed(1)}
+                    y={lp[1].toFixed(1)}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    transform={`rotate(${rot.toFixed(1)} ${lp[0].toFixed(1)} ${lp[1].toFixed(1)})`}
+                  >
+                    {p.name}
+                  </text>
+                </g>
+              )
+            })}
+          </g>
+          <g>
+            {R.map((r) => (
+              <circle key={r} className="ring" cx={CX} cy={CY} r={r} />
+            ))}
+            {[0, 1, 2].map((r) => {
+              const mp = pt((R[r] + R[r + 1]) / 2, STEP / 2)
+              return (
+                <text key={r} className="rlabel" x={mp[0].toFixed(1)} y={mp[1].toFixed(1)} textAnchor="middle" dominantBaseline="central">
+                  {r + 1}
+                </text>
+              )
+            })}
+          </g>
+          <circle className="hub" cx={CX} cy={CY} r={46} />
+          {levelNames.map((n, i) => (
+            <text key={n} className="hubtext" x={CX} y={240 + i * 13} textAnchor="middle">
+              {i + 1} · {n}
+            </text>
+          ))}
+        </svg>
+        {hint && <p className="hint">{hint}</p>}
+      </div>
+
+      <aside className="wdetail" aria-live="polite">
+        <div className="swatch" style={{ background: active.colour }} />
+        <h3>{active.name}</h3>
+        <p className="cat">{active.cat}</p>
+        <p>{active.desc}</p>
+        {active.levels && (
+          <dl>
+            {active.levels.map((lv, i) => (
+              <Fragment key={levelNames[i]}>
+                <dt>{levelNames[i]}</dt>
+                <dd>{lv}</dd>
+              </Fragment>
+            ))}
+          </dl>
+        )}
+      </aside>
     </div>
   )
 }
@@ -827,6 +953,201 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                   </button>
                 </div>
               )}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9b · research: tracks, snippets, convergence ---- */}
+        {data.research && (
+          <section className="section" id="cs-research" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.research.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.research.headline}</h2>
+              {data.research.lead && <p className="lead">{rich(data.research.lead)}</p>}
+              {data.research.groups.map((g) => (
+                <div key={g.label} className="rgroup">
+                  <p className="sublabel">{g.label}</p>
+                  <div className="snips">
+                    {g.snips.map((s, i) => (
+                      <div className="snip" key={i}>
+                        <p>{rich(s.body)}</p>
+                        <cite>{s.cite}</cite>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {data.research.converge && (
+                <div className="rgroup">
+                  <p className="sublabel">Where the tracks met</p>
+                  <div className="converge">
+                    {data.research.converge.tracks.map((t) => (
+                      <div key={t.title}>
+                        <h3>{t.title}</h3>
+                        <p className="n">{t.count}</p>
+                        <div className="themes">
+                          {t.themes.map((th) => (
+                            <span key={th.label} className={th.shared ? 'theme is-shared' : 'theme'}>{th.label}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="lead" style={{ marginTop: 32 }}>{rich(data.research.converge.conclusion)}</p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9c · hypotheses ---- */}
+        {data.hypotheses && (
+          <section className="section section--gray" id="cs-hypotheses" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.hypotheses.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.hypotheses.headline}</h2>
+              {data.hypotheses.lead && <p className="lead">{rich(data.hypotheses.lead)}</p>}
+              <div className="hyp">
+                {data.hypotheses.items.map((h) => (
+                  <article className="hypo" key={h.title}>
+                    <h3>
+                      {h.emphasis ? (
+                        <>
+                          {h.title.split(h.emphasis)[0]}
+                          <em>{h.emphasis}</em>
+                          {h.title.split(h.emphasis)[1]}
+                        </>
+                      ) : (
+                        h.title
+                      )}
+                    </h3>
+                    <p>{h.body}</p>
+                    <div className="scale">
+                      {h.rungs.map((r, i) => (
+                        <div className="rung" key={r}>
+                          <b>{String(i + 1).padStart(2, '0')}</b>
+                          {r}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="scale-ends">
+                      <span>{h.scaleStart}</span>
+                      <span>{h.scaleEnd}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9d · principles ---- */}
+        {data.principles && (
+          <section className="section" id="cs-principles" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.principles.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.principles.headline}</h2>
+              {data.principles.lead && <p className="lead">{rich(data.principles.lead)}</p>}
+              <div className="prins">
+                {data.principles.items.map((p) => (
+                  <div className="prin" key={p.key} style={{ borderTopColor: p.colour }}>
+                    <h3>{p.name}</h3>
+                    <p className="cat">{p.cat}</p>
+                    <p>{p.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9e · the framework wheel (interactive) ---- */}
+        {data.wheel && data.principles && (
+          <section className="section section--gray" id="cs-wheel" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.wheel.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.wheel.headline}</h2>
+              {data.wheel.lead.map((l, i) => (
+                <p className="lead" key={i} style={i > 0 ? { marginTop: 16 } : undefined}>{rich(l)}</p>
+              ))}
+              <FrameworkWheel principles={data.principles.items} levelNames={data.wheel.levelNames} hint={data.wheel.hint} />
+              {data.wheel.footnote && <p className="cmp__note">{data.wheel.footnote}</p>}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9f · matrix (a journey read through the framework) ---- */}
+        {data.matrix && (
+          <section className="section" id="cs-matrix" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.matrix.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.matrix.headline}</h2>
+              {data.matrix.lead && <p className="lead">{rich(data.matrix.lead)}</p>}
+              <div className="jscroll" role="region" aria-label={data.matrix.headline} tabIndex={0}>
+                <table className="jtable">
+                  <thead>
+                    <tr>
+                      {data.matrix.columns.map((c) => (
+                        <th key={c} scope="col">{c}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.matrix.rows.map((r) => (
+                      <tr key={r.label} className={r.hot ? 'hot' : undefined}>
+                        <th scope="row">{r.label}</th>
+                        {r.cells.map((c, i) => (
+                          <td key={i}>{rich(c)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {data.matrix.footnote && <p className="cmp__note">{data.matrix.footnote}</p>}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9g · decisions ---- */}
+        {data.decisions && (
+          <section className="section section--gray" id="cs-decisions" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow">{data.decisions.eyebrow}</p>
+              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.decisions.headline}</h2>
+              {data.decisions.lead && <p className="lead">{rich(data.decisions.lead)}</p>}
+              <ul className="decisions">
+                {data.decisions.items.map((d) => (
+                  <li className="decision" key={d.title}>
+                    <h3>{d.title}</h3>
+                    <dl>
+                      <div><dt>Chose</dt><dd>{d.chose}</dd></div>
+                      <div><dt>Instead of</dt><dd>{d.instead}</dd></div>
+                      <div><dt>Cost</dt><dd className="cost">{d.cost}</dd></div>
+                    </dl>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
+        {/* ---- 9h · outcome (dark band) ---- */}
+        {data.outcome && (
+          <section className="section section--dark" id="cs-outcome" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap">
+              <p className="eyebrow">{data.outcome.eyebrow}</p>
+              <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.outcome.headline}</h2>
+              <p className="claim">{data.outcome.claim}</p>
+              <div className="nums">
+                {data.outcome.nums.map((n) => (
+                  <div className="num" key={n.label}>
+                    <b>{n.num}</b>
+                    <span>{n.label}</span>
+                  </div>
+                ))}
+              </div>
+              {data.outcome.footnote && <p className="onote">{data.outcome.footnote}</p>}
             </div>
           </section>
         )}

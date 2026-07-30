@@ -1,4 +1,5 @@
 import type { Project, FillerTile } from '../types'
+import { SAMSUNG_EQ_CASE_STUDY } from './projects/samsungeq'
 
 // Twelve shipped surfaces + the architecture "Studio" cottage, mapped onto the
 // complexity (x) / audience (y) graph.
@@ -132,17 +133,19 @@ export const PROJECTS: Project[] = [
   },
   // Q2 — Enterprise + Simple
   {
-    id: 'lms',
-    effort: 2,
-    ownership: 'lead',
+    id: 'samsungeq',
+    effort: 4,
+    ownership: 'collab',
     gx: -2,
     gy: 2,
-    scale: 0.9,
-    label: 'SnapLogic LMS',
-    sub: 'ACADEMY · 6 COURSES',
-    glyph: 'book',
-    desc: 'Redesign of 6 internal SnapLogic Academy course pages. Ran weekly review cycles across stakeholders, built high-fidelity prototypes, and managed developer handoff.',
-    tags: ['Enterprise', 'Education', 'B2B'],
+    scale: 1.05,
+    label: 'Samsung EQ',
+    sub: 'EMOTIONAL UX · SAMSUNG PRISM',
+    glyph: 'heart',
+    desc: 'A Samsung PRISM research programme with MIT ID Pune — four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
+    tags: ['Research', 'Emotional Design', 'Mobile', 'Framework'],
+    // Public rich case study — no password (see src/data/projects/samsungeq.ts).
+    richCaseStudy: SAMSUNG_EQ_CASE_STUDY,
   },
   {
     id: 'holacracy',

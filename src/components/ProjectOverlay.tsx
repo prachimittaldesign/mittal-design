@@ -89,6 +89,27 @@ export function ProjectOverlay({ project, tileRect, onClose }: ProjectOverlayPro
     )
   }
 
+  // Public rich case study — the same renderer the gated studies use once
+  // unlocked, but shipped open (no LockGate in front of it).
+  if (project.richCaseStudy) {
+    const navigate = (id: string) => {
+      history.pushState({ project: id }, '', `/projects/${id}`)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }
+    return (
+      <TakeoverShell
+        bare
+        tileRect={tileRect}
+        accent={accent}
+        onClose={onClose}
+        ariaLabel={`${project.label} case study`}
+        contentKey={project.id}
+      >
+        <RichCaseStudyView data={project.richCaseStudy} onNavigate={navigate} />
+      </TakeoverShell>
+    )
+  }
+
   return (
     <TakeoverShell
       tileRect={tileRect}

@@ -183,6 +183,97 @@ export interface CSCapabilitiesComparison {
 }
 export type CSCapabilities = CSCapabilitiesGrid | CSCapabilitiesComparison
 
+/** Research: how we asked / what people said / where the tracks met. */
+export interface CSResearchSnip {
+  body: string
+  cite: string
+}
+export interface CSResearchTrack {
+  title: string
+  count: string
+  /** Themes; `shared: true` marks the ones both tracks surfaced. */
+  themes: Array<{ label: string; shared?: boolean }>
+}
+export interface CSResearch {
+  eyebrow: string
+  headline: string
+  lead?: string
+  groups: Array<{ label: string; snips: CSResearchSnip[] }>
+  converge?: { tracks: CSResearchTrack[]; conclusion: string }
+}
+
+/** A hypothesis plotted on an "aiding → replacing" four-rung scale. */
+export interface CSHypothesis {
+  title: string
+  /** Word inside the title rendered in the accent, e.g. 'companion'. */
+  emphasis?: string
+  body: string
+  rungs: string[]
+  scaleStart: string
+  scaleEnd: string
+}
+export interface CSHypotheses {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: CSHypothesis[]
+}
+
+/** A named design principle, colour-coded and categorised. */
+export interface CSPrinciple {
+  key: string
+  name: string
+  /** 'Core' | 'Emotional' | 'Functional' — kept open for other studies. */
+  cat: string
+  colour: string
+  desc: string
+  /** Readings at each level of consciousness (conscious → unconscious). */
+  levels?: [string, string, string]
+}
+export interface CSPrinciples {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: CSPrinciple[]
+}
+/** The interactive wheel: principles × levels. Reuses `principles` data. */
+export interface CSWheel {
+  eyebrow: string
+  headline: string
+  lead: string[]
+  levelNames: [string, string, string]
+  hint?: string
+  footnote?: string
+}
+
+/** A scrollable matrix (e.g. a journey read row-by-row). */
+export interface CSMatrix {
+  eyebrow: string
+  headline: string
+  lead?: string
+  columns: string[]
+  /** `hot: true` highlights the rows where the framework does its work. */
+  rows: Array<{ label: string; cells: string[]; hot?: boolean }>
+  footnote?: string
+}
+
+/** "We chose X instead of Y, and it cost Z." */
+export interface CSDecisions {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: Array<{ title: string; chose: string; instead: string; cost: string }>
+}
+
+/** A plain outcome band: a claim, some numbers, and an honest footnote. */
+export interface CSOutcome {
+  eyebrow: string
+  headline: string
+  claim: string
+  nums: CSStat[]
+  footnote?: string
+}
+
 export interface CSTechHandoff {
   eyebrow: string
   headline: string
@@ -216,6 +307,13 @@ export interface RichCaseStudy {
   designSystem?: CSCardSection
   aiLayer?: CSCardSection
   process?: CSProcess
+  research?: CSResearch
+  hypotheses?: CSHypotheses
+  principles?: CSPrinciples
+  wheel?: CSWheel
+  matrix?: CSMatrix
+  decisions?: CSDecisions
+  outcome?: CSOutcome
   interactions?: CSInteractions
   gamification?: CSGamification
   capabilities?: CSCapabilities
