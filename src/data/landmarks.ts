@@ -85,9 +85,10 @@ export const LANDMARKS: Landmark[] = [
     blurb: 'On repeat lately.',
     accent: '#b16fc9',
     items: [
-      { primary: 'Deep focus', secondary: 'instrumental / ambient' },
-      { primary: 'Sunday morning jazz' },
-      { primary: 'Running playlist', secondary: 'BPM-matched' },
+      { primary: 'Con La Brisa', secondary: 'Latin / chill' },
+      { primary: 'I Wanna Be Yours', secondary: 'Arctic Monkeys' },
+      { primary: 'Indie R&B' },
+      { primary: 'Coke Studio', secondary: 'live sessions' },
     ],
   },
 ]
