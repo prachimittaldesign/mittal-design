@@ -9,17 +9,16 @@ import type { RichCaseStudy } from '../caseStudyTypes'
 // a framework and a final presentation — there is no validated before/after
 // metric, and none is claimed here.
 //
-// ── TODO (only Prachi can supply — do not invent) ──────────────────────────
-//  1. ROLE: the specific slice she owned inside the four-person team — which
-//     methods she ran, which part of the synthesis/framework was hers, and
-//     whether she drew the framework or argued for it. See `role.responsibilities`.
-//  2. OUTCOME: did Samsung adopt or extend the framework? If so it belongs in
-//     the outcome band and would materially strengthen it.
-//  3. WHEEL READINGS: the 24 conscious/preconscious/unconscious cell texts below
-//     are an interpretation — the source deck gives the 8 principles and the 3
-//     levels, not the individual cells. Confirm or replace.
-//  4. DECISIONS: the "cost" on the eight-principles decision needs her real
-//     answer (what the team gave up, or who pushed back).
+// ── Author notes ───────────────────────────────────────────────────────────
+//  1. ROLE — resolved: Prachi led the project, built the framework, ran the
+//     foyer field research, and held the Samsung stakeholder relationship.
+//  2. OUTCOME — resolved as unknown: whether Samsung adopted or extended the
+//     framework isn't known, so no adoption claim is made.
+//  3. WHEEL READINGS — the 24 conscious/preconscious/unconscious cell texts are
+//     an interpretation (the deck gives the 8 principles and the 3 levels, not
+//     the cells). Reviewed and left to stand for now; revisit if it matters.
+//  4. DECISIONS — resolved: the real cost was the fixed four-month deadline,
+//     which kept the research scoped.
 // ───────────────────────────────────────────────────────────────────────────
 
 export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
@@ -53,7 +52,7 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
     items: [
       { image: 'SAMEQ_ballot_01', caption: 'The ballot-box activity, end to end — building the boxes, siting them at the registration desk and the library, then sorting the answers into themes on the wall.' },
       { image: 'SAMEQ_worksheet_01', caption: 'The worksheet: who you identify as, word association for and against the phone, then image association — run alongside the new-city scenario.' },
-      { image: 'SAMEQ_board_01', caption: '"What is your phone to you?" — asked on an open board in a corridor, answered in public, in front of everyone else.' },
+      { image: 'SAMEQ_genz_01', caption: 'What the research kept returning: asked what the phone *is* to them, people reached for people-words before feature-words — therapist, alter ego, portal to family and friends.' },
     ],
   },
 
@@ -363,10 +362,7 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
         title: 'Eight principles, not four and not twenty.',
         chose: 'Eight, grouped into core, emotional and functional.',
         instead: 'A tighter set that would be easier to remember and teach.',
-        // TODO(4): needs Prachi — what did the team give up, or who pushed back?
-        // Deliberately left as the honest statement of the trade-off rather than
-        // an invented anecdote.
-        cost: 'A set this size is harder to hold in your head than a four-principle model, so it has to earn its keep every time it is taught.',
+        cost: 'The programme ran to a fixed four-month deadline, so the set was named from the research we had time to run rather than pruned and re-tested across more. Eight is also harder to hold in your head than a four-principle model, so it has to earn its keep every time it is taught.',
       },
     ],
   },
@@ -381,29 +377,26 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
       { num: '24', label: 'Positions a journey stage can occupy' },
       { num: '4', label: 'Months, from desk research to final presentation' },
     ],
-    // TODO(2): if Samsung adopted or extended the framework, say so here.
+    // Whether Samsung carried the framework further isn't known to us, so no
+    // adoption claim is made — the footnote states the limit plainly instead.
     footnote:
-      'These describe the shape of the work, not its impact. The programme concluded in a framework and a final presentation to Samsung — there is no validated before-and-after metric here, and none is claimed.',
+      'These describe the shape of the work, not its impact. The programme concluded in a framework and a final presentation to Samsung — there is no validated before-and-after metric here, and none is claimed. A fixed four-month deadline also kept the research scoped to what the team could run in that window.',
   },
 
   role: {
-    role: 'Researcher and designer',
-    ownershipType: 'collab',
+    role: 'Project lead · researcher and designer',
+    ownershipType: 'lead',
     ownership:
-      'Part of a four-person research team on the Samsung PRISM programme, from desk research through to the final framework and presentation.',
+      'Led the project across a four-person team — ran the field research in the foyer, built the framework, and held the working relationship with the Samsung stakeholders through to the final presentation.',
     timeline: 'September – December',
     team: 'Four students, Samsung PRISM with MIT Institute of Design, Pune',
-    tools: ['Primary research', 'Synthesis', 'Framework design'],
-    // TODO(1): MOST IMPORTANT — replace these with Prachi's specific slice.
-    // Which methods did she run? Which part of the synthesis was hers? Did she
-    // draw the framework, or argue for it? On a four-person research project
-    // this is the most important section on the page. Nothing invented here.
+    tools: ['Primary research', 'Synthesis', 'Framework design', 'Stakeholder management'],
     responsibilities: [
-      'Desk research into emotional design and Gen Z behaviour',
-      'Primary research on campus — ballot boxes, boards, worksheets, survey',
-      'Synthesis of the two research tracks into named principles',
-      'The framework: principles crossed with levels of consciousness',
-      'The homescreen-customisation journey evaluation',
+      'Led the project end to end — direction, sequencing, and the final presentation',
+      'Built the framework: the eight principles crossed with levels of consciousness',
+      'Ran the field research in the foyer — ballot boxes, open boards, worksheets',
+      'Held the stakeholder relationship with Samsung through review cycles',
+      'Synthesis of the desk and primary tracks into the named principles',
     ],
   },
 
@@ -418,6 +411,14 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
       alt: 'Students writing answers to "What is your phone to you?" and "I wish my phone could…" on large open boards in a college corridor',
       caption: 'The open board activity, answered in public.',
       tags: ['primary research', 'board activity', 'campus', 'Gen Z'],
+    },
+    {
+      // Original illustration (not deck material) — the one drawn asset on the
+      // page, standing in for the finding rather than evidencing it.
+      id: 'SAMEQ_genz_01', status: 'received', ext: 'svg', feature: 'the phone as a companion',
+      alt: 'Illustration of a young person sitting cross-legged, absorbed in their phone and lit by its screen, ringed by the eight principle colours, with heart, message and music signals floating beside them',
+      caption: 'The phone as a companion, not a device.',
+      tags: ['illustration', 'Gen Z', 'attachment', 'companion'],
     },
     {
       id: 'SAMEQ_ballot_01', status: 'received', highlight: true, feature: 'ballot-box activity process',

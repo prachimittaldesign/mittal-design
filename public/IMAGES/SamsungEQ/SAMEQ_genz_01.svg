@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img" aria-label="Illustration: a young person absorbed in their phone, lit by its screen, ringed by the eight principle colours with heart, message and music signals floating around them">
+  <defs>
+    <linearGradient id="eqSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef2ff"/>
+      <stop offset="1" stop-color="#fdf0fa"/>
+    </linearGradient>
+    <radialGradient id="eqGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff6cf" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#fff6cf" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="eqScreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dcefff"/>
+      <stop offset="1" stop-color="#b9dcff"/>
+    </linearGradient>
+    <clipPath id="eqDisc"><circle cx="430" cy="375" r="250"/></clipPath>
+  </defs>
+
+  <rect width="1200" height="750" fill="#fbf7ee"/>
+
+  <!-- the disc: a portal into the moment -->
+  <circle cx="430" cy="375" r="250" fill="url(#eqSky)"/>
+
+  <g clip-path="url(#eqDisc)">
+    <!-- lap + crossed legs -->
+    <ellipse cx="430" cy="566" rx="156" ry="70" fill="#47506e"/>
+    <rect x="300" y="524" width="262" height="46" rx="23" fill="#57628c" transform="rotate(-7 430 547)"/>
+
+    <!-- torso -->
+    <rect x="352" y="368" width="156" height="176" rx="54" fill="#8b5cf6"/>
+    <ellipse cx="430" cy="374" rx="63" ry="19" fill="#7a45ef"/>
+
+    <!-- arms -->
+    <rect x="349" y="396" width="41" height="96" rx="20" fill="#8b5cf6" transform="rotate(13 369 444)"/>
+    <rect x="470" y="396" width="41" height="96" rx="20" fill="#8b5cf6" transform="rotate(-13 490 444)"/>
+
+    <!-- neck + head -->
+    <rect x="413" y="342" width="34" height="34" rx="14" fill="#e3b795"/>
+    <circle cx="430" cy="292" r="59" fill="#332c27"/>
+    <circle cx="430" cy="303" r="48" fill="#f2cdad"/>
+    <path d="M382 294 a48 48 0 0 1 96 0 z" fill="#332c27"/>
+    <rect x="373" y="286" width="17" height="98" rx="8.5" fill="#332c27"/>
+    <rect x="470" y="286" width="17" height="98" rx="8.5" fill="#332c27"/>
+    <!-- eyes, cast downward at the screen -->
+    <path d="M405 315 q7 6 14 0" stroke="#332c27" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M441 315 q7 6 14 0" stroke="#332c27" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+    <!-- hands gripping the phone from either side -->
+    <circle cx="390" cy="486" r="19" fill="#f2cdad"/>
+    <circle cx="470" cy="486" r="19" fill="#f2cdad"/>
+    <rect x="394" y="422" width="72" height="108" rx="13" fill="#1b1b1b"/>
+    <rect x="401" y="430" width="58" height="92" rx="8" fill="url(#eqScreen)"/>
+    <path d="M394 500 q8 10 18 12" stroke="#e3b795" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path d="M466 500 q-8 10 -18 12" stroke="#e3b795" stroke-width="7" stroke-linecap="round" fill="none"/>
+
+    <!-- the screen's light, thrown upward onto the face -->
+    <ellipse cx="430" cy="446" rx="112" ry="86" fill="url(#eqGlow)" opacity="0.75"/>
+    <ellipse cx="430" cy="344" rx="74" ry="50" fill="url(#eqGlow)" opacity="0.5"/>
+  </g>
+
+  <circle cx="430" cy="375" r="250" fill="none" stroke="#eae3d3" stroke-width="2"/>
+
+  <!-- the eight principle colours, seated on the ring -->
+  <g stroke="#fbf7ee" stroke-width="5">
+    <circle cx="430" cy="125" r="13" fill="#e86fd8"/>
+    <circle cx="607" cy="198" r="13" fill="#8b5cf6"/>
+    <circle cx="680" cy="375" r="13" fill="#3b82f6"/>
+    <circle cx="607" cy="552" r="13" fill="#22b8cf"/>
+    <circle cx="430" cy="625" r="13" fill="#34d399"/>
+    <circle cx="253" cy="552" r="13" fill="#f5d94e"/>
+    <circle cx="180" cy="375" r="13" fill="#fdba74"/>
+    <circle cx="253" cy="198" r="13" fill="#f4564c"/>
+  </g>
+
+  <!-- what the phone actually carries: people, not features -->
+  <g stroke="#d8cfba" stroke-width="2" stroke-dasharray="7 8" fill="none" stroke-linecap="round">
+    <path d="M668 300 C 740 262 776 260 812 268"/>
+    <path d="M684 404 C 790 408 860 410 916 412"/>
+    <path d="M660 470 C 730 512 776 528 812 540"/>
+  </g>
+
+  <g>
+    <rect x="812" y="222" width="104" height="104" rx="32" fill="#fffdf8" stroke="#eae3d3" stroke-width="2"/>
+    <path d="M864 302 c-30-20-38-33-38-46 a17 17 0 0 1 33-7 a17 17 0 0 1 33 7 c0 13-8 26-38 46 z" fill="#e86fd8"/>
+  </g>
+  <g>
+    <rect x="916" y="360" width="104" height="104" rx="32" fill="#fffdf8" stroke="#eae3d3" stroke-width="2"/>
+    <path d="M944 392 h48 a10 10 0 0 1 10 10 v26 a10 10 0 0 1 -10 10 h-24 l-18 16 v-16 h-6 a10 10 0 0 1 -10 -10 v-26 a10 10 0 0 1 10 -10 z" fill="#3b82f6"/>
+  </g>
+  <g>
+    <rect x="812" y="494" width="104" height="104" rx="32" fill="#fffdf8" stroke="#eae3d3" stroke-width="2"/>
+    <path d="M851 566 v-42 l30 -8 v42" stroke="#34d399" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="845" cy="568" r="10" fill="#34d399"/>
+    <circle cx="875" cy="560" r="10" fill="#34d399"/>
+  </g>
+</svg>
