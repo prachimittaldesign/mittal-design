@@ -45,7 +45,16 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
     tagline:
       'Four months asking what actually makes someone bond with a phone — and turning the answer into a framework a design team can use.',
     cta: { label: '', url: '' },
-    image: '',
+    image: 'SAMEQ_board_01',
+  },
+
+  closerLook: {
+    themes: [],
+    items: [
+      { image: 'SAMEQ_ballot_01', caption: 'The ballot-box activity, end to end — building the boxes, siting them at the registration desk and the library, then sorting the answers into themes on the wall.' },
+      { image: 'SAMEQ_worksheet_01', caption: 'The worksheet: who you identify as, word association for and against the phone, then image association — run alongside the new-city scenario.' },
+      { image: 'SAMEQ_board_01', caption: '"What is your phone to you?" — asked on an open board in a corridor, answered in public, in front of everyone else.' },
+    ],
   },
 
   highlights: [
@@ -273,6 +282,9 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
     ],
     levelNames: ['Conscious', 'Preconscious', 'Unconscious'],
     hint: 'Select a principle to read how it behaves at each level.',
+    image: 'SAMEQ_wheelplot_01',
+    imageCaption:
+      'The framework doing the work it was built for: the homescreen-customisation journey as it exists (black) plotted against the same journey with the proposed enhancements (red). The gap between the two lines is the argument.',
     footnote: 'The level readings describe how each principle typically surfaces.',
   },
 
@@ -281,6 +293,9 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
     headline: 'One journey, read through the framework.',
     lead:
       'Homescreen customisation — a small, ordinary thing people do constantly. Each stage was marked with the senses in play, the principle firing, and how consciously it was felt. The dip in the middle is where the design work is.',
+    image: 'SAMEQ_journey_01',
+    imageCaption:
+      'The journeys as mapped: each stage carried its own screen, thinking, emotion, sensorial touchpoints, pain points and opportunities before any of it was read through the framework.',
     columns: ['Stage', 'Discover', 'Explore', 'Decide', 'Explore', 'Decide', 'Final output'],
     rows: [
       {
@@ -394,5 +409,39 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
 
   related: ['impressio', 'izak', 'revee'],
 
-  images: [],
+  // Artefacts lifted from the programme deck (Samsung × MIT ID). The Samsung
+  // wordmark and slide numbers are masked out so they read as artefacts rather
+  // than slides.
+  images: [
+    {
+      id: 'SAMEQ_board_01', status: 'received', highlight: true, feature: 'open board activity',
+      alt: 'Students writing answers to "What is your phone to you?" and "I wish my phone could…" on large open boards in a college corridor',
+      caption: 'The open board activity, answered in public.',
+      tags: ['primary research', 'board activity', 'campus', 'Gen Z'],
+    },
+    {
+      id: 'SAMEQ_ballot_01', status: 'received', highlight: true, feature: 'ballot-box activity process',
+      alt: 'Five-step process: building the ballot boxes, siting them at the registration desk and the library, then sorting sticky notes into themes and assigning headings',
+      caption: 'The ballot-box activity, end to end.',
+      tags: ['primary research', 'ballot box', 'synthesis', 'affinity mapping'],
+    },
+    {
+      id: 'SAMEQ_worksheet_01', status: 'received', feature: 'research worksheet',
+      alt: 'The "Smartphones & You" worksheet — identity checkboxes, a word-association table, and an image-association activity',
+      caption: 'The worksheet instrument.',
+      tags: ['primary research', 'worksheet', 'word association', 'image association'],
+    },
+    {
+      id: 'SAMEQ_journey_01', status: 'received', feature: 'customer journey maps',
+      alt: 'Two annotated customer journey maps across phone screens, each row marking action, thinking, emotion, sensorial touchpoints, pain points and opportunities',
+      caption: 'The journeys as mapped.',
+      tags: ['journey map', 'emotion graph', 'touchpoints', 'opportunities'],
+    },
+    {
+      id: 'SAMEQ_wheelplot_01', status: 'received', highlight: true, feature: 'framework in use — existing vs enhanced journey',
+      alt: 'The framework wheel with two journeys plotted on it: the existing journey in black and the enhanced journey in red, across the eight principles and three levels of consciousness',
+      caption: 'Existing journey against enhanced journey, on the same wheel.',
+      tags: ['framework', 'evaluation', 'before and after', 'consciousness'],
+    },
+  ],
 }

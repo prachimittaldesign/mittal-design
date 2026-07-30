@@ -244,6 +244,9 @@ export interface CSWheel {
   levelNames: [string, string, string]
   hint?: string
   footnote?: string
+  /** Optional artefact shown under the wheel — e.g. the framework in use. */
+  image?: string
+  imageCaption?: string
 }
 
 /** A scrollable matrix (e.g. a journey read row-by-row). */
@@ -255,6 +258,9 @@ export interface CSMatrix {
   /** `hot: true` highlights the rows where the framework does its work. */
   rows: Array<{ label: string; cells: string[]; hot?: boolean }>
   footnote?: string
+  /** Optional artefact shown above the table — e.g. the source journey map. */
+  image?: string
+  imageCaption?: string
 }
 
 /** "We chose X instead of Y, and it cost Z." */

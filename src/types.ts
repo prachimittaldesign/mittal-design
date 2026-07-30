@@ -137,6 +137,8 @@ export interface Project {
   roofStyle?: RoofStyle
   /** Path to a logo image; when set it replaces the wordmark on the building. */
   logo?: string
+  /** Explicit 1200×630 social card. Falls back to the first project image. */
+  ogImage?: string
   /** Map-layer metrics. effort 1 (light) .. 5 (heavy); ownership of the work. */
   effort?: number
   ownership?: Ownership

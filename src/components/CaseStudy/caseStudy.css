@@ -576,3 +576,7 @@
 .cs .section--dark .nums .num span { color: #a1a1a6; }
 .cs .section--dark .claim { color: #f5f5f7; }
 .cs .section--dark .onote { color: #8b9ab0; }
+/* captioned artefact figure inside a section */
+.cs .csfig { margin: clamp(28px, 4vw, 44px) 0 0; }
+.cs .csfig .shot { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
+.cs .csfig figcaption { margin-top: 12px; font-size: 13px; line-height: 1.55; color: var(--ink-2); max-width: 76ch; }

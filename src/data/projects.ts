@@ -144,6 +144,7 @@ export const PROJECTS: Project[] = [
     glyph: 'heart',
     desc: 'A Samsung PRISM research programme with MIT ID Pune — four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
     tags: ['Research', 'Emotional Design', 'Mobile', 'Framework'],
+    ogImage: '/IMAGES/samsungeq-og.png',
     // Public rich case study — no password (see src/data/projects/samsungeq.ts).
     richCaseStudy: SAMSUNG_EQ_CASE_STUDY,
   },

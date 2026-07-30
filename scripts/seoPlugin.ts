@@ -44,7 +44,11 @@ const projectUrl = (p: Project) => `${ORIGIN}/projects/${p.id}`
 const projectTitle = (p: Project) => `${p.label} — ${titleCase(p.sub)} | ${AUTHOR}`
 const projectDesc = (p: Project) => (p.teaser?.summary ?? p.caseStudy?.summary ?? p.desc).slice(0, 300)
 const projectImage = (p: Project) => {
-  const src = p.imageGroups?.[0]?.images[0]?.src
+  // An explicit social card wins; then the project's own first screenshot; then
+  // a public rich study's hero artefact; then the site-wide fallback.
+  const rich = p.richCaseStudy
+  const heroSrc = rich?.hero.image ? `${rich.imageBase}/${rich.hero.image}.png` : undefined
+  const src = p.ogImage ?? p.imageGroups?.[0]?.images[0]?.src ?? heroSrc
   return src ? `${ORIGIN}${encodeURI(src)}` : `${ORIGIN}/IMAGES/CMS-2025-DITA.png`
 }
 

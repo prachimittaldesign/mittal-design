@@ -1071,6 +1071,12 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                 <p className="lead" key={i} style={i > 0 ? { marginTop: 16 } : undefined}>{rich(l)}</p>
               ))}
               <FrameworkWheel principles={data.principles.items} levelNames={data.wheel.levelNames} hint={data.wheel.hint} />
+              {data.wheel.image && (
+                <figure className="csfig">
+                  <Shot cs={data} id={data.wheel.image} />
+                  {data.wheel.imageCaption && <figcaption>{data.wheel.imageCaption}</figcaption>}
+                </figure>
+              )}
               {data.wheel.footnote && <p className="cmp__note">{data.wheel.footnote}</p>}
             </div>
           </section>
@@ -1083,6 +1089,12 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
               <p className="eyebrow">{data.matrix.eyebrow}</p>
               <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.matrix.headline}</h2>
               {data.matrix.lead && <p className="lead">{rich(data.matrix.lead)}</p>}
+              {data.matrix.image && (
+                <figure className="csfig">
+                  <Shot cs={data} id={data.matrix.image} />
+                  {data.matrix.imageCaption && <figcaption>{data.matrix.imageCaption}</figcaption>}
+                </figure>
+              )}
               <div className="jscroll" role="region" aria-label={data.matrix.headline} tabIndex={0}>
                 <table className="jtable">
                   <thead>
