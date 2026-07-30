@@ -14,10 +14,10 @@ export const LANDMARKS: Landmark[] = [
     blurb: 'Films Prachi keeps pressing on people.',
     accent: '#c96f5a',
     items: [
-      { primary: 'In the Mood for Love', secondary: 'Wong Kar-wai' },
-      { primary: 'Paprika', secondary: 'Satoshi Kon' },
-      { primary: 'Columbus', secondary: 'Kogonada — architecture as feeling' },
-      { primary: 'Perfect Days', secondary: 'Wim Wenders' },
+      { primary: 'Interstellar', secondary: 'Christopher Nolan' },
+      { primary: 'Gravity', secondary: 'Alfonso Cuarón' },
+      { primary: 'How to Train Your Dragon', secondary: 'Dean DeBlois' },
+      { primary: 'Titanic', secondary: 'James Cameron' },
     ],
   },
   {
