@@ -29,7 +29,7 @@ export const PROJECTS: Project[] = [
     label: 'iZak',
     sub: 'SMART HOME · SOFTWARE UPDATES',
     glyph: 'scanner',
-    desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including the LiDAR and photogrammetry spatial-scanning capability rolled out inside it.',
+    desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including its LiDAR and photogrammetry feature: a sensor-to-3D-model scanning workflow that captures a real space and turns it into a usable spatial model — the same spatial-capture direction now productized in interactive property mapping.',
     tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
   },
   {
