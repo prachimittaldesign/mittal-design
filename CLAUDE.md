@@ -100,6 +100,20 @@ state**, we use **mutable module stores + requestAnimationFrame loops**:
   clickable pin (SVG glyph + name), quadrant-coloured, with a stem pointing at the
   building. Featured trio get gold stars; Ved carries a **NEW** badge and the largest pin.
 
+### Case-study framing rule (owner's directive — apply when writing any case study)
+Interviewers judge UX work as **user-centered design**, and they weigh the thinking done
+*before* the pixels. Every case study must be **customer-centric** and make four things
+explicit, in the user's own terms — not the product's:
+1. **Who the end-user is** — name the actual customer/persona for this project.
+2. **Their unmet need** — the real problem *they* had, framed around them, not the brief.
+3. **How assumptions were validated or invalidated** — the research/testing that confirmed
+   or *changed* the team's beliefs about that user (invalidations are gold — show them).
+4. **How the design addresses the need** — tie each solution back to a stated user need.
+
+Never fabricate personas, research, or validation to satisfy this. Where the real material
+is thin, state the limit honestly (e.g. Samsung EQ's fixed-deadline scope) rather than
+inventing a study. Communication itself is assessed too: **clear, concise, accurate, timely.**
+
 ---
 
 ## 4. Status — what's DONE

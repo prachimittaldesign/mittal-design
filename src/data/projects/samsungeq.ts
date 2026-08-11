@@ -160,7 +160,7 @@ export const SAMSUNG_EQ_CASE_STUDY: RichCaseStudy = {
         },
       ],
       conclusion:
-        '**A conscious effort to stay connected — to the outside world and to their own emotions — is what drives the attachment.** Not the hardware, and not any single feature. That sentence is what the rest of the work is built on.',
+        'Two independent tracks — one from the literature, one from real Gen Z on campus — landed on the same two themes. That convergence is what validated the thesis: **a conscious effort to stay connected, to the outside world and to their own emotions, is what drives the attachment.** Not the hardware, and not any single feature. That sentence is what the rest of the work is built on.',
     },
   },
 

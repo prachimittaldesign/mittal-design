@@ -27,10 +27,10 @@ export const PROJECTS: Project[] = [
     scale: 1.5,
     height: 34, // capped below the featured trio so the gold-star towers own the skyline
     label: 'iZak',
-    sub: '3D SCANNING · LiDAR',
+    sub: 'SMART HOME · SOFTWARE UPDATES',
     glyph: 'scanner',
-    desc: 'UX research and design for a LiDAR + photogrammetry 3D space scanning workflow. Deep research into spatial computing, sensor use cases, and professional scanning tools.',
-    tags: ['Enterprise', 'Spatial', 'UX Research', 'Mobile'],
+    desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including the LiDAR and photogrammetry spatial-scanning capability rolled out inside it.',
+    tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
   },
   {
     id: 'paas',

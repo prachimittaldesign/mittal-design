@@ -42,7 +42,7 @@ export const SNAPLOGIC_CASE_STUDY: RichCaseStudy = {
     {
       kicker: 'The insight',
       title: 'Users think in tasks, not product names.',
-      body: "Someone who wants to 'monitor a pipeline' or 'set up a user' shouldn't have to first decode which of five products holds the answer.",
+      body: "This wasn't a hunch: the tech writers' community-feedback repository showed the pattern plainly — people couldn't find content and fell back on search. Someone who wants to 'monitor a pipeline' or 'set up a user' shouldn't first have to decode which of five products holds the answer.",
     },
     {
       kicker: 'The intervention',

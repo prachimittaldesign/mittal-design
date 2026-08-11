@@ -58,6 +58,11 @@ export const REVEE_CASE_STUDY: RichCaseStudy = {
       body: 'Full-screen content stays full-screen. Ads sit beside the stream, contextually relevant, never over it.',
     },
     {
+      kicker: 'The commercial frame',
+      title: "Revee was the suite's revenue engine.",
+      body: "In the ecosystem's business model Revee is M3 — the monetization layer the other apps plug into. The companion-ad format wasn't a flourish on a streaming app; it was the mechanism a 12-app suite was expected to earn through.",
+    },
+    {
       kicker: 'Lean-back, remote-first',
       title: 'Built for 8-10 feet and a d-pad.',
       body: 'Every screen designed for legibility at distance and navigation with up/down/left/right/select — nothing assumes a pointer.',
@@ -123,6 +128,10 @@ export const REVEE_CASE_STUDY: RichCaseStudy = {
         {
           heading: 'Opt-in, not imposed',
           body: "Viewers can engage with the companion ad — vote, tap through, learn more — without leaving the stream. It's an enhancement they choose, not an interruption they endure.",
+        },
+        {
+          heading: 'One switchable stream among several',
+          body: 'The ecosystem was modelled as distinct service verticals — emergency alerting, civic reporting, live maps, fundraising, digital signage, political advertising — spanning consumer and government audiences, each able to mix fixed, metered, subscription and advertising revenue. Advertising was the stream Revee owned, so the format had to hold up commercially as well as experientially: attractive enough for broadcasters to sell, and calm enough that viewers did not resent it.',
         },
         {
           heading: 'The broadcaster side',
