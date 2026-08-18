@@ -44,6 +44,10 @@ interface SceneProps {
       watchdog waits on. Placed inside the same Suspense boundary as CityWorld
       so it can't fire before the world is actually there to look at. */
   onFirstFrame?: () => void
+  /** Fires if the WebGL context is lost after boot (GPU memory pressure — e.g.
+      a phone with many tabs open). The shell uses it to drop to the fast page
+      instead of leaving a black canvas on screen. */
+  onContextLost?: () => void
 }
 
 // Fires onFirstFrame on the very first useFrame tick, then goes quiet.
@@ -97,7 +101,7 @@ function AmbientParticles() {
   )
 }
 
-export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, time, weather, embed = null, onFirstFrame }: SceneProps) {
+export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, time, weather, embed = null, onFirstFrame, onContextLost }: SceneProps) {
   const [docked, setDocked] = useState(false)
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
   useEffect(() => {
@@ -135,6 +139,18 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
             far: 2000,
           }}
           gl={{ toneMappingExposure: 0.6 }}
+          onCreated={({ gl }) => {
+            // GPU context loss (common on memory-starved phones — many tabs
+            // open) would otherwise leave a black canvas: the scene stops
+            // rendering but the shell has no idea. Catch it and hand control
+            // back so the shell can drop to the fast /projects page. We don't
+            // preventDefault — we're abandoning this canvas, not restoring it.
+            gl.domElement.addEventListener(
+              'webglcontextlost',
+              () => onContextLost?.(),
+              { once: true },
+            )
+          }}
         >
           {/* Lights, fog and time-of-day cycle. */}
           <DayNight weather={weather} view={view} />

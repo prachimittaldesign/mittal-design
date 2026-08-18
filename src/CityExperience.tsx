@@ -27,6 +27,9 @@ export interface CityExperienceProps {
   /** Fires once the canvas has rendered its first real frame — the shell's
       3-second watchdog waits on this to decide city vs. fallback page. */
   onFirstFrame?: () => void
+  /** Fires if the GPU context is lost after boot — the shell drops to the fast
+      page rather than showing a black canvas. */
+  onContextLost?: () => void
 }
 
 // The full interactive 3D city + its HUD. Lazy-loaded (React.lazy) so the heavy
@@ -40,6 +43,7 @@ export default function CityExperience({
   focusRequest,
   embed = null,
   onFirstFrame,
+  onContextLost,
 }: CityExperienceProps) {
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [layers, setLayers] = useState<LayerState>({
@@ -81,6 +85,7 @@ export default function CityExperience({
         weather={weather}
         embed={embed}
         onFirstFrame={onFirstFrame}
+        onContextLost={onContextLost}
       />
 
       {!embed && (
