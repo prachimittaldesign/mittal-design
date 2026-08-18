@@ -192,15 +192,25 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
           <MapMarkerProbe view={view} />
 
           {/* Bloom — only the brightest pixels (lit windows, accents, monument
-              tip) bloom, so it stays subtle by day and glows after dark. */}
-          <EffectComposer>
-            <Bloom
-              mipmapBlur
-              luminanceThreshold={0.97}
-              luminanceSmoothing={0.9}
-              intensity={0.18}
-            />
-          </EffectComposer>
+              tip) bloom, so it stays subtle by day and glows after dark.
+              DESKTOP ONLY. EffectComposer renders the scene through an offscreen
+              half-float render target; a number of mobile GPUs/drivers can't
+              render to that format and silently output a *fully black* frame
+              while the WebGL context still reports healthy — so there's no crash
+              to fall back from, just a black canvas under a working HUD. Bloom is
+              subtle enough (intensity 0.18, brightest pixels only) that skipping
+              it on phones is invisible, and it removes that failure mode plus a
+              real per-frame cost on mobile. */}
+          {!isMobile && (
+            <EffectComposer>
+              <Bloom
+                mipmapBlur
+                luminanceThreshold={0.97}
+                luminanceSmoothing={0.9}
+                intensity={0.18}
+              />
+            </EffectComposer>
+          )}
         </Canvas>
       </div>
       <Loader />
