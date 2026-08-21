@@ -160,9 +160,18 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               and balloons into a cube map so the glass facades mirror them.
               far must exceed the Sky dome's distance (45000) or the sky gets
               clipped out of the cube and the glass reflects only darkness.
-              Half resolution on mobile (256 vs 512) to cut the per-frame cost. */}
+              Half resolution on mobile (256 vs 512) to cut the per-frame cost.
+
+              frames: DESKTOP re-renders the cube every frame so reflections
+              track the drifting clouds. MOBILE captures it ONCE. A live cube map
+              is six render-target passes per frame; on tiled mobile GPUs that
+              churn is what makes frames intermittently composite black (the
+              flicker seen on a real device), and it's the single most expensive
+              thing in the scene. Captured once, the glass still mirrors a real
+              sky — it just doesn't track drift, which is imperceptible on a
+              phone-sized facade. */}
           <Environment
-            frames={Infinity}
+            frames={isMobile ? 1 : Infinity}
             resolution={isMobile ? 256 : 512}
             background={false}
             near={1}
