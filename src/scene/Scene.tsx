@@ -124,8 +124,16 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
       >
         <Canvas
           className="scene-canvas"
-          shadows
-          dpr={isMobile ? [1, 1.5] : [1, 2]}
+          // Shadows are a full extra depth pass over the whole city every frame.
+          // On phones that pass, stacked on everything else, is what tips the
+          // GPU into stalling — frames freeze and the compositor intermittently
+          // shows a cleared (black) buffer, which reads as flicker. The city has
+          // plenty of form without cast shadows at phone size.
+          shadows={!isMobile}
+          // Render at 1 device pixel on mobile. At dpr 1.5 a modern phone is
+          // filling ~2.3x more pixels every frame for detail that is invisible
+          // at this screen size — the cheapest large win available.
+          dpr={isMobile ? 1 : [1, 2]}
           // near=2 (was 0.5): the ground/road layers are stacked only
           // 0.01-0.02 apart in y. With a 24-bit depth buffer those gaps fall
           // below the buffer's resolution once the camera is ~150+ units
