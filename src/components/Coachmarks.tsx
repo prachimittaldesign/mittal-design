@@ -121,6 +121,13 @@ export function Coachmarks({ suppressed }: { suppressed: boolean }) {
     }
   }, [])
 
+  // Broadcast whether the tour currently owns the screen, so other floating UI
+  // (the "Running slowly?" toast) can stay out of its way instead of stacking
+  // on top of it.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('pm:tour', { detail: { active: visible } }))
+  }, [visible])
+
   const dismiss = () => {
     localStorage.setItem(SEEN_KEY, '1')
     setVisible(false)

@@ -18,8 +18,19 @@ export type CityRoute = 'city' | 'projects'
 
 const WATCHDOG_MS = 3000
 
+// Phones land on the fast Projects page and NEVER auto-mount the 3D city — the
+// heavy WebGL scene (and its flicker on some mobile GPU/driver combos) is opt-in
+// on mobile, reached only when the visitor taps "Enter the 3D city". Desktop is
+// unchanged: it still boots straight into the city.
+function isPhone(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches
+}
+
 function initialRoute(): CityRoute {
-  return typeof window !== 'undefined' && window.location.pathname === '/projects' ? 'projects' : 'city'
+  if (typeof window === 'undefined') return 'city'
+  if (window.location.pathname === '/projects') return 'projects'
+  if (isPhone()) return 'projects'
+  return 'city'
 }
 
 export function useCityBoot(hasWebGL: boolean) {
@@ -28,6 +39,10 @@ export function useCityBoot(hasWebGL: boolean) {
   // Whether the city stays mounted (loading/rendering) while route === 'projects'.
   const [keepWarm, setKeepWarm] = useState(false)
   const timerRef = useRef<number | null>(null)
+  // Set once the visitor *asks* for the city ("Enter the 3D city"). From then on
+  // the watchdog is off: they chose this, so a slow load must show the boot
+  // loader and finish — never bounce them back to the page they just left.
+  const userAskedForCity = useRef(false)
 
   const clearWatchdog = useCallback(() => {
     if (timerRef.current !== null) {
@@ -40,7 +55,7 @@ export function useCityBoot(hasWebGL: boolean) {
   // proven itself ready yet. Slow network/render → auto-fallback at 3s,
   // silently keeping the city warm in the background (no yank on completion).
   useEffect(() => {
-    if (!hasWebGL || route !== 'city' || cityReady) return
+    if (!hasWebGL || route !== 'city' || cityReady || userAskedForCity.current) return
     timerRef.current = window.setTimeout(() => {
       setKeepWarm(true)
       setRoute('projects')
@@ -67,6 +82,7 @@ export function useCityBoot(hasWebGL: boolean) {
   // User-initiated: "Enter the 3D city" — real, back-button-able navigation.
   const enterCity = useCallback(() => {
     clearWatchdog()
+    userAskedForCity.current = true
     setKeepWarm(true)
     setRoute('city')
     history.pushState(history.state, '', '/')

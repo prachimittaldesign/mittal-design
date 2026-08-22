@@ -72,6 +72,14 @@ export default function App() {
   const [hasWebGL] = useState(webglSupported)
   const [retryKey, setRetryKey] = useState(0)
   const [lagDismissed, setLagDismissed] = useState(false)
+  // The coachmark tour owns the screen while it runs; the lag toast waits so
+  // the two never stack on top of each other.
+  const [tourActive, setTourActive] = useState(false)
+  useEffect(() => {
+    const onTour = (e: Event) => setTourActive(!!(e as CustomEvent).detail?.active)
+    window.addEventListener('pm:tour', onTour)
+    return () => window.removeEventListener('pm:tour', onTour)
+  }, [])
 
   const { route, cityReady, mountCity, handleFirstFrame, enterCity, showProjects } = useCityBoot(hasWebGL)
 
@@ -105,7 +113,11 @@ export default function App() {
     (id: string) => {
       const project = PROJECTS.find((p) => p.id === id)
       if (!project) return
-      enterCity()
+      // Phones: open the case study (pure DOM) straight over the fast page —
+      // never mount the 3D city just to read a project. Desktop keeps the
+      // immersive behaviour: bring the city forward, then layer the study.
+      const phone = window.matchMedia('(max-width: 820px)').matches
+      if (!phone) enterCity()
       openProject(project, centerRect(), true)
     },
     [enterCity, openProject],
@@ -216,7 +228,7 @@ export default function App() {
               top-left pill there sat *behind* it and was invisible. Bottom
               centre is clear on mobile and clears the desktop hint. Hidden
               while the lag toast is up — that toast offers the same action. */}
-          {!showFallback && cityReady && overlay === null && !(lagging && !lagDismissed) && (
+          {!showFallback && cityReady && overlay === null && !(lagging && !lagDismissed && !tourActive) && (
             <button
               type="button"
               onClick={() => showProjects({ keepWarm: true })}
@@ -236,7 +248,7 @@ export default function App() {
 
           {/* Lag rescue: a device struggling to render can drop to the fast
               page — this fully unmounts the city to actually free the GPU. */}
-          {lagging && !lagDismissed && !showFallback && overlay === null && (
+          {lagging && !lagDismissed && !tourActive && !showFallback && overlay === null && (
             <div className="pointer-events-auto absolute bottom-[calc(1rem+env(safe-area-inset-bottom)+56px)] left-1/2 z-[40] w-[min(340px,calc(100vw-24px))] -translate-x-1/2 sm:bottom-[70px]">
               <div className="hud-strong flex items-center gap-3 rounded-[16px] border p-[14px] shadow-[0_14px_44px_rgba(0,0,0,0.18)] backdrop-blur-md">
                 <div className="min-w-0 flex-1">
