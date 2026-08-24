@@ -13,6 +13,8 @@ import { DaySky } from './DaySky'
 import { EnvBalloons } from './CityLife'
 import { Hero } from '../components/Hero'
 import { WeatherClock } from '../components/WeatherClock'
+import { useEntryDocked } from '../lib/useEntryDocked'
+import { useFlickerGuard } from '../lib/useFlickerGuard'
 import type { HyderabadClock } from '../lib/sky'
 import type { Weather } from '../lib/weather'
 import type { EmbedConfig } from '../lib/viewStore'
@@ -48,6 +50,11 @@ interface SceneProps {
       a phone with many tabs open). The shell uses it to drop to the fast page
       instead of leaving a black canvas on screen. */
   onContextLost?: () => void
+  /** Fires if the canvas is producing repeated black-frame flicker on mobile
+      (a compositor/driver fault some phone GPUs hit even with a healthy WebGL
+      context — see useFlickerGuard). The shell uses it the same way as
+      onContextLost: drop to the flicker-free fast page. */
+  onRenderUnstable?: () => void
 }
 
 // Fires onFirstFrame on the very first useFrame tick, then goes quiet.
@@ -101,13 +108,11 @@ function AmbientParticles() {
   )
 }
 
-export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, time, weather, embed = null, onFirstFrame, onContextLost }: SceneProps) {
-  const [docked, setDocked] = useState(false)
+export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, onSelectLandmark, time, weather, embed = null, onFirstFrame, onContextLost, onRenderUnstable }: SceneProps) {
+  const docked = useEntryDocked()
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null)
-  useEffect(() => {
-    const t = setTimeout(() => setDocked(true), 2400)
-    return () => clearTimeout(t)
-  }, [])
+  const { watch: watchForFlicker, stop: stopFlickerGuard } = useFlickerGuard(() => onRenderUnstable?.())
+  useEffect(() => stopFlickerGuard, [stopFlickerGuard])
 
   // Detect small/touch screens once so the heavier passes (high DPR, the
   // every-frame reflection cube map) scale down on phones for smoother fps.
@@ -162,6 +167,11 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
               () => onContextLost?.(),
               { once: true },
             )
+            // Second, independent safety net for the black-frame flicker some
+            // mobile GPU/driver combos hit even with a perfectly healthy
+            // context (see useFlickerGuard). Mobile only — desktop showed no
+            // sign of this and the sampling cost isn't worth paying there.
+            if (isMobile) watchForFlicker(gl.domElement)
           }}
         >
           {/* Lights, fog and time-of-day cycle. */}

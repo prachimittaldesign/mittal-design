@@ -216,6 +216,7 @@ export default function App() {
                 onSelectLandmark={(landmark, rect) => setOverlay({ type: 'landmark', landmark, rect })}
                 onFirstFrame={handleFirstFrame}
                 onContextLost={() => showProjects({ keepWarm: false, push: route === 'city' })}
+                onRenderUnstable={() => showProjects({ keepWarm: false, push: route === 'city' })}
               />
             </Suspense>
           </SceneErrorBoundary>
