@@ -146,7 +146,11 @@ export function Scene({ appearance, layers, view, focus, cameraCmd, onSelect, on
             near: 2,
             far: 2000,
           }}
-          gl={{ toneMappingExposure: 0.6 }}
+          // antialias off on mobile: MSAA forces a multisampled framebuffer that
+          // must be resolved every frame — costly on phone GPUs and buggy on
+          // some drivers. At dpr 1 on a high-density screen the aliasing it
+          // would have hidden is not visible anyway. Desktop keeps AA (default).
+          gl={{ toneMappingExposure: 0.6, antialias: !isMobile }}
           onCreated={({ gl }) => {
             // GPU context loss (common on memory-starved phones — many tabs
             // open) would otherwise leave a black canvas: the scene stops
