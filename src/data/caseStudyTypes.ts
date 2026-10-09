@@ -188,6 +188,7 @@ export type CSScreenKind =
   | 'workspace'
   | 'template'
   | 'canvas'
+  | 'topic'
   | 'conditional'
   | 'media'
   | 'review'
@@ -255,6 +256,55 @@ export interface CSWalkthrough {
   screens?: { title: string; lead?: string; items: CSScreen[] }
   stages: CSWalkStage[]
   lanes?: CSLanes
+  footnote?: string
+}
+
+/**
+ * One brick of the explainer's master document. Text may carry {name}, {team},
+ * {amount} and {tier} tokens, filled per reader when the letter is assembled.
+ */
+export interface CSExplainerBlock {
+  id: string
+  /** Plain-language name of the brick, e.g. 'Greeting'. */
+  label: string
+  /** 'none' = same for everyone; 'group' / 'tier' = versions keyed by id. */
+  varies: 'none' | 'group' | 'tier'
+  text?: string
+  versions?: Record<string, string>
+}
+/**
+ * An interactive, plain-language explainer of structured content for a reader
+ * with no technical background: one master document of reusable bricks, a
+ * population of readers, and the personal output each reader receives. Steps
+ * light up one idea at a time; picking a reader assembles their copy live.
+ */
+export interface CSExplainer {
+  eyebrow: string
+  headline: string
+  lead: string
+  /** The one-line analogy that carries the concept. */
+  analogy?: string
+  steps: Array<{ focus: 'blocks' | 'blanks' | 'rules' | 'publish'; title: string; body: string }>
+  /** Prompt shown before any step is chosen. */
+  idle?: string
+  /** Reader groups; each person is [name, tierId]. */
+  groups: Array<{ id: string; label: string; people: Array<[string, string]> }>
+  tiers: Array<{ id: string; label: string; amount: string }>
+  blocks: CSExplainerBlock[]
+  labels: {
+    source: string
+    readers: string
+    /** May contain {name}. */
+    result: string
+    none: string
+    group: string
+    tier: string
+    writtenOnce: string
+    delivered: string
+  }
+  /** "Change it once": swaps one shared brick's text everywhere. */
+  edit?: { blockId: string; button: string; undo: string; text: string; note: string }
+  glossary?: Array<{ term: string; plain: string }>
   footnote?: string
 }
 
@@ -412,6 +462,7 @@ export interface RichCaseStudy {
   decisions?: CSDecisions
   outcome?: CSOutcome
   interactions?: CSInteractions
+  explainer?: CSExplainer
   walkthrough?: CSWalkthrough
   gamification?: CSGamification
   capabilities?: CSCapabilities

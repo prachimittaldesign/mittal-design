@@ -188,6 +188,122 @@ export const VED_CASE_STUDY: RichCaseStudy = {
     signatureFlow: ['Mark variable non-mandatory', 'Content-selection panel appears', 'Select on the canvas', 'Preview live', 'Confirm'],
   },
 
+  explainer: {
+    eyebrow: 'DITA, simply',
+    headline: 'One Diwali letter. Fifty people. Written once.',
+    lead:
+      'An example for anyone who has never heard of DITA. HR wants to send a **Diwali bonus letter** to two departments, Design and Finance, with 25 people in each. Every letter is personal: it names the person, thanks their team for its own year, and pays a bonus that depends on the output they delivered.',
+    analogy:
+      '**Think of LEGO.** Instead of typing 50 letters by hand, you build one small set of bricks and a set of rules. Ved snaps the right bricks together for each person, so everyone gets their own letter.',
+    idle: 'Tap a step to walk through it, or tap any person to see the letter they receive.',
+    steps: [
+      {
+        focus: 'blocks',
+        title: 'Break it into bricks',
+        body: 'The letter is not one long document. It is five small bricks, which DITA calls **topics**. Each brick is written once, and the master letter (a **map**) lists them in order.',
+      },
+      {
+        focus: 'blanks',
+        title: 'Leave blanks to fill',
+        body: 'Anything personal, like a name or an amount, is a **blank** that DITA calls a **variable**. The author never types 50 names; each one is filled in automatically.',
+      },
+      {
+        focus: 'rules',
+        title: 'Say who gets which brick',
+        body: 'Some bricks come in versions. A **condition** says that Design people get the Design brick, and that the bonus brick follows each person’s output. Colours show which rule each person falls under.',
+      },
+      {
+        focus: 'publish',
+        title: 'Press publish once',
+        body: 'Ved snaps the right bricks together for every reader at once: **50 personal letters from one source**, without copying and pasting.',
+      },
+    ],
+    groups: [
+      {
+        id: 'design',
+        label: 'Design',
+        people: [
+          ['Aarav', 'met'], ['Ishita', 'ex'], ['Kabir', 'met'], ['Meera', 'grow'], ['Rohan', 'met'],
+          ['Ananya', 'ex'], ['Vihaan', 'met'], ['Diya', 'met'], ['Arjun', 'grow'], ['Saanvi', 'ex'],
+          ['Reyansh', 'met'], ['Tara', 'met'], ['Aditya', 'ex'], ['Kiara', 'grow'], ['Dev', 'met'],
+          ['Nisha', 'met'], ['Kunal', 'ex'], ['Pooja', 'met'], ['Yash', 'grow'], ['Riya', 'met'],
+          ['Neel', 'ex'], ['Sana', 'met'], ['Varun', 'grow'], ['Zoya', 'met'], ['Aryan', 'grow'],
+        ],
+      },
+      {
+        id: 'finance',
+        label: 'Finance',
+        people: [
+          ['Priya', 'ex'], ['Rahul', 'met'], ['Sneha', 'met'], ['Vikram', 'grow'], ['Aisha', 'met'],
+          ['Karan', 'met'], ['Divya', 'ex'], ['Nikhil', 'met'], ['Ritu', 'grow'], ['Siddharth', 'met'],
+          ['Neha', 'ex'], ['Manav', 'met'], ['Kavya', 'met'], ['Harsh', 'grow'], ['Isha', 'met'],
+          ['Amit', 'ex'], ['Shreya', 'met'], ['Pranav', 'grow'], ['Tanvi', 'met'], ['Rishi', 'met'],
+          ['Anjali', 'ex'], ['Gaurav', 'met'], ['Mira', 'grow'], ['Om', 'met'], ['Leela', 'grow'],
+        ],
+      },
+    ],
+    tiers: [
+      { id: 'ex', label: 'Went beyond targets', amount: '₹40,000' },
+      { id: 'met', label: 'Hit every target', amount: '₹25,000' },
+      { id: 'grow', label: 'Growing into the role', amount: '₹15,000' },
+    ],
+    blocks: [
+      { id: 'greet', label: 'Greeting', varies: 'none', text: 'Happy Diwali, {name}!' },
+      {
+        id: 'note',
+        label: 'Note from leadership',
+        varies: 'none',
+        text: 'This year was built by people like you. Thank you for the light you brought to it.',
+      },
+      {
+        id: 'team',
+        label: 'Your team’s year',
+        varies: 'group',
+        versions: {
+          design: 'The {team} team rebuilt the design system and shipped it across four products.',
+          finance: 'The {team} team closed the books five days faster, every single quarter.',
+        },
+      },
+      {
+        id: 'bonus',
+        label: 'Your bonus',
+        varies: 'tier',
+        versions: {
+          ex: 'You went beyond your targets, so your Diwali bonus is {amount}.',
+          met: 'You hit every target you set, so your Diwali bonus is {amount}.',
+          grow: 'You grew fast this year, and your Diwali bonus is {amount}.',
+        },
+      },
+      { id: 'pay', label: 'When it arrives', varies: 'none', text: 'It arrives with your October salary.' },
+    ],
+    labels: {
+      source: '1 · The master letter, written once',
+      readers: '2 · The rules pick each person’s bricks',
+      result: '3 · What {name} receives',
+      none: 'Same for everyone',
+      group: 'Changes by team',
+      tier: 'Changes by output',
+      writtenOnce: 'pieces of text written once',
+      delivered: 'personal letters delivered',
+    },
+    edit: {
+      blockId: 'pay',
+      button: 'Try it: move the payment date',
+      undo: 'Undo the change',
+      text: 'It arrives early, on 30 October, before the festival.',
+      note: '**One edit, fifty letters updated.** With 50 separate files, that is 50 edits, and the one you miss.',
+    },
+    glossary: [
+      { term: 'Topic', plain: 'One brick. A small piece of content that makes sense on its own.' },
+      { term: 'Map', plain: 'The instruction sheet: which bricks go in, and in what order.' },
+      { term: 'Variable', plain: 'A blank to fill in, like the name on a birthday card.' },
+      { term: 'Condition', plain: 'A rule that decides which version of a brick each reader gets.' },
+      { term: 'Publish', plain: 'Snapping the bricks together, for every reader at once.' },
+    ],
+    footnote:
+      'An illustrative example: names, teams, achievements, and amounts are invented to show how the system works, not taken from a real organisation.',
+  },
+
   walkthrough: {
     eyebrow: 'Worked example · end to end',
     headline: 'Onboarding an HR author, from invite to published.',
@@ -237,11 +353,12 @@ export const VED_CASE_STUDY: RichCaseStudy = {
         { kind: 'workspace', no: '02', title: 'A guided empty state', body: 'The project opens on an empty state that names the first move instead of a blank canvas.', affordance: 'Create the first DITA file' },
         { kind: 'template', no: '03', title: 'Start from the house template', body: 'The content manager’s saved policy template sets structure, topic types, and layout.', affordance: 'Use template' },
         { kind: 'canvas', no: '04', title: 'Author on the canvas', body: 'Outline on the left, the page in the middle, blocks on the right. Author view only — no XML.', affordance: 'Drag in a content block' },
-        { kind: 'conditional', no: '05', title: 'Variants without rules', body: 'Mark a variable non-mandatory, select the regional content on the canvas, preview live.', affordance: 'Confirm the condition' },
-        { kind: 'media', no: '06', title: 'Pick, don’t upload', body: 'Images come from the Media Library by reference, so one change reaches every policy.', affordance: 'Insert asset' },
-        { kind: 'review', no: '07', title: 'Review in place', body: 'Legal comments on the exact clause; the author resolves threads without leaving the page.', affordance: 'Resolve and request sign-off' },
-        { kind: 'export', no: '08', title: 'Export and share', body: 'One menu for template, HTML, branded PDF, granular sharing, or the marketplace.', affordance: 'Share with access control' },
-        { kind: 'published', no: '09', title: 'Employees read it', body: 'Delivered on a pre-signed, time-limited link, watermarked to the reader who opened it.', affordance: 'Done — and next year starts from the source' },
+        { kind: 'topic', no: '05', title: 'Add or edit a topic', body: 'Inside the content block, add a new topic, such as Eligibility, or edit an existing one’s text. The content is in place before any variation is set.', affordance: 'Save the topic' },
+        { kind: 'conditional', no: '06', title: 'Variants without rules', body: 'With the topic written, mark a variable non-mandatory, select the regional content on the canvas, and preview it live.', affordance: 'Confirm the condition' },
+        { kind: 'media', no: '07', title: 'Pick, don’t upload', body: 'Images come from the Media Library by reference, so one change reaches every policy.', affordance: 'Insert asset' },
+        { kind: 'review', no: '08', title: 'Review in place', body: 'Legal comments on the exact clause; the author resolves threads without leaving the page.', affordance: 'Resolve and request sign-off' },
+        { kind: 'export', no: '09', title: 'Export and share', body: 'One menu for template, HTML, branded PDF, granular sharing, or the marketplace.', affordance: 'Share with access control' },
+        { kind: 'published', no: '10', title: 'Employees read it', body: 'Delivered on a pre-signed, time-limited link, watermarked to the reader who opened it.', affordance: 'Done — and next year starts from the source' },
       ],
     },
     lanes: {

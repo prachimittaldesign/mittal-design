@@ -855,3 +855,269 @@
 }
 .cs .mchain__step h4 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 5px; color: var(--ink); }
 .cs .mchain__step p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+
+/* ---- explainer: structured content, in plain words ------------------------
+   Three columns joined by flow arrows: the master document (written once),
+   every reader (coloured by the rule that applies to them), and one reader's
+   assembled copy. data-focus on .dx dims everything except the idea the
+   current step is about; "Show everything" clears it. */
+.cs .dx__analogy {
+  margin: clamp(24px, 3vw, 34px) auto 0; max-width: 62ch; text-align: center;
+  font-size: 17px; line-height: 1.55; color: var(--ink);
+}
+.cs .dx { margin-top: clamp(28px, 3.6vw, 40px); }
+.cs .dx [data-tier='0'] { --tier: #5b4bde; }
+/* The majority tier is neutral graphite so the two outlier tiers stand out;
+   purple beside blue was too close to tell apart at dot size. */
+.cs .dx [data-tier='1'] { --tier: #48484d; }
+.cs .dx [data-tier='2'] { --tier: #9a6b00; }
+
+.cs .dx__steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.cs .dx__step {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px;
+  padding: 8px 16px 8px 9px; border-radius: 999px; border: 1px solid var(--line);
+  background: #fff; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.cs .dx__step:hover { border-color: var(--accent); }
+.cs .dx__step:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__step[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cs .dx__sno {
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--bg-gray); color: var(--accent); font-size: 12px; font-weight: 700;
+}
+.cs .dx__step[aria-pressed='true'] .dx__sno { background: #fff; }
+.cs .dx__step--all { padding-left: 16px; font-weight: 500; color: var(--ink-2); }
+.cs .dx__caption {
+  margin: 16px auto 0; max-width: 66ch; min-height: 3.2em; text-align: center;
+  font-size: 15.5px; line-height: 1.55; color: var(--ink);
+}
+
+.cs .dx__board {
+  margin-top: 22px; display: grid; align-items: start;
+  grid-template-columns: minmax(0, 1.25fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr);
+}
+.cs .dx__col {
+  background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px;
+  transition: opacity 0.35s, box-shadow 0.35s;
+}
+.cs .dx__h {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ink-2); margin: 0 0 14px; line-height: 1.4;
+}
+.cs .dx__flow { align-self: center; height: 12px; position: relative; }
+.cs .dx__flow::before {
+  content: ''; position: absolute; left: 4px; right: 7px; top: 5.25px; height: 1.5px;
+  background: var(--accent); opacity: 0.5;
+}
+.cs .dx__flow::after {
+  content: ''; position: absolute; right: 5px; top: 2px; width: 7px; height: 7px;
+  border-top: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent);
+  transform: rotate(45deg); opacity: 0.5;
+}
+
+/* bricks */
+.cs .dx__bricks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cs .dx__brick {
+  border: 1px solid var(--line); border-left: 3px solid var(--ink-2); border-radius: 10px;
+  padding: 10px 12px; background: var(--bg); transition: box-shadow 0.3s, border-color 0.3s;
+}
+.cs .dx__brick[data-varies='group'] { border-left-color: #1d8a6a; }
+.cs .dx__brick[data-varies='tier'] { border-left-color: var(--accent); }
+.cs .dx__brick-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 6px; }
+.cs .dx__brick-head b { font-size: 14px; font-weight: 600; color: var(--ink); }
+.cs .dx__bno {
+  width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center;
+  background: var(--ink); color: #fff; font-size: 11px; font-weight: 700;
+}
+.cs .dx__badge {
+  margin-left: auto; font-size: 11px; font-weight: 600; color: var(--ink-2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+}
+.cs .dx__brick[data-varies='group'] .dx__badge { color: #1d8a6a; border-color: currentColor; }
+.cs .dx__brick[data-varies='tier'] .dx__badge { color: var(--accent); border-color: currentColor; }
+.cs .dx__txt { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .dx__versions { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.cs .dx__ver {
+  display: grid; gap: 2px; padding: 6px 8px; border-radius: 7px; border: 1px dashed var(--line);
+  transition: background 0.25s, border-color 0.25s;
+}
+.cs .dx__ver-l { font-size: 11px; font-weight: 650; color: var(--tier, #1d8a6a); }
+.cs .dx__ver.is-on { border: 1px solid var(--tier, #1d8a6a); background: #fff; }
+.cs .dx__ver.is-on .dx__txt { color: var(--ink); }
+.cs .dx__blank {
+  display: inline-block; padding: 0 6px; margin: 0 1px; border-radius: 5px;
+  border: 1.5px dashed var(--accent); color: var(--accent); font-weight: 650; font-size: 0.92em; line-height: 1.35;
+}
+
+/* readers */
+.cs .dx__grids { display: grid; gap: 14px; }
+.cs .dx__team-l { font-size: 13px; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+.cs .dx__team-l span { font-weight: 500; color: var(--ink-2); }
+.cs .dx__grid { display: grid; grid-template-columns: repeat(5, 32px); gap: 6px; }
+.cs .dx__dot {
+  width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  background: var(--tier); color: #fff; font: inherit; font-size: 12px; font-weight: 700;
+  box-shadow: 0 0 0 0 transparent; transition: transform 0.15s, box-shadow 0.2s;
+}
+.cs .dx__dot:hover { transform: scale(1.1); }
+.cs .dx__dot:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__dot.is-on { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--ink); transform: scale(1.08); }
+.cs .dx__grids.is-pulse .dx__dot { animation: dx-pop 0.5s ease-out both; }
+@keyframes dx-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.22); box-shadow: 0 0 0 4px rgba(91, 75, 222, 0.22); }
+  100% { transform: scale(1); }
+}
+.cs .dx__legend { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 5px; }
+.cs .dx__legend li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+.cs .dx__legend i { width: 11px; height: 11px; border-radius: 50%; background: var(--tier); flex: none; }
+.cs .dx__tap { font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+.cs .dx__tap b { color: var(--ink); font-weight: 650; }
+.cs .dx__jump {
+  display: none; margin-top: 10px; min-height: 40px; padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--accent); background: #fff; color: var(--accent);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.cs .dx__jump:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* the assembled letter */
+.cs .dx__letter {
+  border-radius: 12px; padding: 16px; background: var(--bg);
+  border: 1px solid var(--line); border-top: 4px solid var(--tier, var(--accent));
+}
+.cs .dx__line { font-size: 14.5px; line-height: 1.55; color: var(--ink); margin: 0 0 9px; animation: dx-in 0.35s ease-out both; }
+.cs .dx__line:last-child { margin-bottom: 0; }
+.cs .dx__line[data-varies='none'] { animation: none; }
+.cs .dx__line:first-child { font-weight: 650; font-size: 16px; }
+.cs .dx__fill { background: rgba(91, 75, 222, 0.12); color: var(--ink); font-weight: 650; border-radius: 4px; padding: 0 3px; }
+.cs .dx__line.is-edited, .cs .dx__txt.is-edited { animation: dx-flash 1.1s ease-out both; }
+@keyframes dx-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes dx-flash {
+  0%, 30% { background: rgba(29, 138, 106, 0.18); }
+  100% { background: transparent; }
+}
+.cs .dx__meta { font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+
+/* count band + "change it once" */
+.cs .dx__count {
+  margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px;
+  background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 20px;
+}
+.cs .dx__num { display: flex; align-items: baseline; gap: 10px; }
+.cs .dx__num b { font-size: 34px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; color: var(--accent); }
+.cs .dx__num span { font-size: 13.5px; line-height: 1.35; color: var(--ink-2); max-width: 20ch; }
+.cs .dx__count-arrow { font-size: 22px; color: var(--accent); opacity: 0.6; }
+.cs .dx__edit { margin-left: auto; display: grid; gap: 6px; justify-items: end; max-width: 46ch; }
+.cs .dx__edit-btn {
+  min-height: 40px; padding: 8px 16px; border-radius: 999px; border: 1px solid #1d8a6a;
+  background: #fff; color: #1d8a6a; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.cs .dx__edit-btn[aria-pressed='true'] { background: #1d8a6a; color: #fff; }
+.cs .dx__edit-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__edit-note { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); margin: 0; text-align: right; }
+
+/* glossary: DITA words, in plain ones */
+.cs .dx__gloss {
+  margin: clamp(26px, 3.4vw, 38px) 0 0; display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.cs .dx__gloss > div { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.cs .dx__gloss dt { font-size: 14px; font-weight: 650; color: var(--accent); margin-bottom: 4px; }
+.cs .dx__gloss dd { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+
+/* step focus: dim what the current step is not about */
+.cs .dx[data-focus='blocks'] .dx__readers,
+.cs .dx[data-focus='blocks'] .dx__out,
+.cs .dx[data-focus='blanks'] .dx__readers,
+.cs .dx[data-focus='rules'] .dx__out,
+.cs .dx[data-focus='publish'] .dx__src { opacity: 0.38; }
+.cs .dx[data-focus='blocks'] .dx__brick { box-shadow: 0 0 0 2px rgba(91, 75, 222, 0.35); }
+.cs .dx[data-focus='blanks'] .dx__blank,
+.cs .dx[data-focus='blanks'] .dx__fill { box-shadow: 0 0 0 3px rgba(91, 75, 222, 0.25); }
+.cs .dx[data-focus='rules'] .dx__brick[data-varies='none'] { opacity: 0.4; }
+.cs .dx[data-focus='rules'] .dx__readers,
+.cs .dx[data-focus='publish'] .dx__out { box-shadow: 0 0 0 2px var(--accent); }
+
+@media (max-width: 900px) {
+  .cs .dx__board { grid-template-columns: minmax(0, 1fr); }
+  .cs .dx__flow { height: 26px; width: 12px; justify-self: center; }
+  .cs .dx__flow::before { left: 5.25px; right: auto; top: 3px; bottom: 7px; width: 1.5px; height: auto; }
+  .cs .dx__flow::after { right: auto; left: 2.5px; top: auto; bottom: 5px; transform: rotate(135deg); }
+  .cs .dx__edit { margin-left: 0; justify-items: start; }
+  .cs .dx__edit-note { text-align: left; }
+  .cs .dx__grids { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .cs .dx__jump { display: inline-flex; align-items: center; }
+}
+@media (max-width: 560px) {
+  .cs .dx__count { flex-direction: column; align-items: flex-start; }
+  .cs .dx__count-arrow { transform: rotate(90deg); margin-left: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs .dx__grids.is-pulse .dx__dot,
+  .cs .dx__line,
+  .cs .dx__line.is-edited,
+  .cs .dx__txt.is-edited { animation: none; }
+}
+
+/* ---- scroll timeline: side rail for the worked-example stretch ------------
+   Shown only while the explainer and walkthrough are on screen; the top nav
+   covers the rest of the page. Collapsed, it is a column of short lines on a
+   faint pill. Hover or keyboard focus opens it into a labelled list. Desktop
+   and landscape tablets only: on a phone it would sit on top of the text. */
+.cs .srail {
+  position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
+  z-index: 800; display: none;
+  opacity: 1; visibility: visible;
+  transition: opacity 0.25s, transform 0.25s, visibility 0s;
+}
+/* Out of range: fade and slide away, then drop from the tab order. */
+.cs .srail.is-off {
+  opacity: 0; visibility: hidden; transform: translate(10px, -50%);
+  transition: opacity 0.25s, transform 0.25s, visibility 0s linear 0.25s;
+}
+@media (min-width: 1024px) {
+  .cs .srail { display: block; }
+}
+.cs .srail__list {
+  list-style: none; margin: 0; padding: 8px 7px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+  max-height: 82vh; overflow-y: auto; scrollbar-width: none;
+  border-radius: 14px;
+  background: rgba(253, 251, 246, 0.72);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.cs .srail__list::-webkit-scrollbar { display: none; }
+.cs .srail:hover .srail__list,
+.cs .srail:focus-within .srail__list {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.13), 0 0 0 1px var(--line);
+}
+.cs .srail__item {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  min-height: 14px; padding: 4px 3px; border: 0; background: none;
+  font: inherit; cursor: pointer; border-radius: 6px;
+}
+.cs .srail__item:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+.cs .srail__line {
+  width: 14px; height: 2px; border-radius: 2px; flex: none;
+  background: var(--ink); opacity: 0.3;
+  transition: width 0.2s, opacity 0.2s, background 0.2s;
+}
+.cs .srail__item--sub .srail__line { width: 8px; opacity: 0.22; }
+.cs .srail__item:hover .srail__line { opacity: 0.65; }
+.cs .srail__item.is-on .srail__line { width: 22px; background: var(--accent); opacity: 1; }
+.cs .srail__label {
+  font-size: 13px; line-height: 1.3; color: var(--ink-2); white-space: nowrap;
+  max-width: 0; overflow: hidden; opacity: 0;
+  transition: max-width 0.22s ease, opacity 0.15s;
+}
+.cs .srail:hover .srail__label,
+.cs .srail:focus-within .srail__label { max-width: 260px; opacity: 1; }
+.cs .srail__item--sub .srail__label { font-size: 12px; }
+.cs .srail__item:hover .srail__label { color: var(--ink); }
+.cs .srail__item.is-on .srail__label { color: var(--accent); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) {
+  .cs .srail, .cs .srail.is-off, .cs .srail__line, .cs .srail__label, .cs .srail__list { transition: none; }
+}

@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import {
   csImage,
+  type CSExplainer,
   type CSModal,
   type CSPrinciple,
   type CSWalkthrough,
@@ -528,6 +529,23 @@ function ScreenWire({ kind }: { kind: string }) {
           ))}
         </Wire>
       )
+    case 'topic':
+      return (
+        <Wire>
+          <rect x="8" y="18" width="104" height="87" rx="3" className="jf__page" />
+          <Lines x={15} y={24} w={90} n={2} />
+          <rect x="15" y="38" width="90" height="36" rx="3" className="jf__pop" />
+          <rect x="19" y="42" width="38" height="6" rx="1.5" className="jf__fill" />
+          <Lines x={19} y={53} w={74} n={3} gap={6} />
+          <rect x="72" y="63" width="1.6" height="8" className="jf__cta" />
+          <rect x="15" y="80" width="90" height="18" rx="3" className="jf__ghost" />
+          <path d="M56 89 h8 M60 85 v8" className="jf__plus" />
+          <rect x="118" y="18" width="35" height="87" rx="3" className="jf__panel" />
+          {[25, 39, 53, 67].map((y) => (
+            <rect key={y} x="122" y={y} width="27" height="10" rx="2" className="jf__fill" />
+          ))}
+        </Wire>
+      )
     case 'conditional':
       return (
         <Wire>
@@ -680,6 +698,225 @@ function Swimlane({ lanes, actors }: { lanes: NonNullable<CSWalkthrough['lanes']
   )
 }
 
+// ---- explainer: structured content for a non-technical reader ---------------
+// One master document made of bricks, a population of readers, and the
+// personal copy each one receives. The four steps light up one idea at a time
+// (bricks, blanks, rules, publish); picking any reader assembles their copy
+// live, and the "change it once" button proves reuse by updating every copy.
+
+/** Render {token} placeholders: as visible blanks in the source, filled in the output. */
+function fillTokens(text: string, values: Record<string, string> | null): ReactNode[] {
+  return text.split(/(\{\w+\})/g).map((part, i) => {
+    const m = /^\{(\w+)\}$/.exec(part)
+    if (!m) return <Fragment key={i}>{part}</Fragment>
+    return values ? (
+      <mark key={i} className="dx__fill">{values[m[1]] ?? part}</mark>
+    ) : (
+      <span key={i} className="dx__blank">{m[1]}</span>
+    )
+  })
+}
+
+function DitaExplainer({ x }: { x: CSExplainer }) {
+  const [step, setStep] = useState<number | null>(null)
+  const [pick, setPick] = useState({ g: 0, i: 0 })
+  const [edited, setEdited] = useState(false)
+  // Bumped to replay the "every reader updates" ripple across the dot grids.
+  const [pulse, setPulse] = useState(0)
+  const outRef = useRef<HTMLDivElement>(null)
+
+  const focus = step === null ? 'all' : x.steps[step].focus
+  const group = x.groups[pick.g]
+  const [name, tierId] = group.people[pick.i]
+  const tierIdx = Math.max(0, x.tiers.findIndex((t) => t.id === tierId))
+  const tier = x.tiers[tierIdx]
+  const values = { name, team: group.label, amount: tier.amount, tier: tier.label }
+  const isEditBlock = (id: string) => edited && x.edit?.blockId === id
+
+  const textFor = (b: CSExplainer['blocks'][number]) => {
+    if (b.varies === 'none') return isEditBlock(b.id) ? x.edit!.text : b.text ?? ''
+    return b.versions?.[b.varies === 'group' ? group.id : tier.id] ?? ''
+  }
+  const versionName = (b: CSExplainer['blocks'][number], key: string) =>
+    b.varies === 'group' ? x.groups.find((g) => g.id === key)?.label : x.tiers.find((t) => t.id === key)?.label
+  const badge = { none: x.labels.none, group: x.labels.group, tier: x.labels.tier }
+
+  const pieces = x.blocks.reduce((n, b) => n + (b.varies === 'none' ? 1 : Object.keys(b.versions ?? {}).length), 0)
+  const readers = x.groups.reduce((n, g) => n + g.people.length, 0)
+
+  const goStep = (i: number) => {
+    setStep(i)
+    if (x.steps[i].focus === 'publish') setPulse((p) => p + 1)
+  }
+  const toggleEdit = () => {
+    setEdited((e) => !e)
+    setPulse((p) => p + 1)
+  }
+
+  return (
+    <div className="dx" data-focus={focus}>
+      <div className="dx__steps" role="group" aria-label="Walk through it step by step">
+        {x.steps.map((s, i) => (
+          <button
+            key={s.title}
+            type="button"
+            className="dx__step"
+            aria-pressed={step === i}
+            onClick={() => goStep(i)}
+          >
+            <span className="dx__sno">{i + 1}</span>
+            {s.title}
+          </button>
+        ))}
+        <button type="button" className="dx__step dx__step--all" aria-pressed={step === null} onClick={() => setStep(null)}>
+          Show everything
+        </button>
+      </div>
+      <p className="dx__caption" aria-live="polite">
+        {rich(step === null ? x.idle ?? '' : x.steps[step].body)}
+      </p>
+
+      <div className="dx__board">
+        {/* 1 · the master document, written once */}
+        <div className="dx__col dx__src">
+          <h4 className="dx__h">{x.labels.source}</h4>
+          <ol className="dx__bricks">
+            {x.blocks.map((b, bi) => (
+              <li className="dx__brick" data-varies={b.varies} key={b.id}>
+                <div className="dx__brick-head">
+                  <span className="dx__bno">{bi + 1}</span>
+                  <b>{b.label}</b>
+                  <span className="dx__badge">{badge[b.varies]}</span>
+                </div>
+                {b.varies === 'none' ? (
+                  <p key={String(isEditBlock(b.id))} className={isEditBlock(b.id) ? 'dx__txt is-edited' : 'dx__txt'}>
+                    {fillTokens(textFor(b), null)}
+                  </p>
+                ) : (
+                  <ul className="dx__versions">
+                    {Object.entries(b.versions ?? {}).map(([k, v]) => {
+                      const on = k === (b.varies === 'group' ? group.id : tier.id)
+                      const ti = b.varies === 'tier' ? x.tiers.findIndex((t) => t.id === k) : undefined
+                      return (
+                        <li key={k} className={on ? 'dx__ver is-on' : 'dx__ver'} data-tier={ti}>
+                          <span className="dx__ver-l">{versionName(b, k)}</span>
+                          <span className="dx__txt">{fillTokens(v, null)}</span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <span className="dx__flow" aria-hidden="true" />
+
+        {/* 2 · every reader, coloured by the rule that applies to them */}
+        <div className="dx__col dx__readers">
+          <h4 className="dx__h">{x.labels.readers}</h4>
+          <div key={pulse} className={pulse > 0 ? 'dx__grids is-pulse' : 'dx__grids'}>
+            {x.groups.map((g, gi) => (
+              <div className="dx__team" key={g.id}>
+                <p className="dx__team-l">
+                  {g.label} <span>· {g.people.length} people</span>
+                </p>
+                <div className="dx__grid">
+                  {g.people.map(([n, t], i) => {
+                    const ti = Math.max(0, x.tiers.findIndex((tt) => tt.id === t))
+                    const on = pick.g === gi && pick.i === i
+                    return (
+                      <button
+                        key={n}
+                        type="button"
+                        className={on ? 'dx__dot is-on' : 'dx__dot'}
+                        data-tier={ti}
+                        aria-pressed={on}
+                        aria-label={`${n}, ${g.label}, ${x.tiers[ti].label}`}
+                        title={n}
+                        style={{ animationDelay: `${(gi * g.people.length + i) * 14}ms` }}
+                        onClick={() => setPick({ g: gi, i })}
+                      >
+                        {n[0]}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+          <ul className="dx__legend">
+            {x.tiers.map((t, i) => (
+              <li key={t.id} data-tier={i}>
+                <i />
+                {t.label} · {t.amount}
+              </li>
+            ))}
+          </ul>
+          <p className="dx__tap">
+            Tap anyone to see their letter. Showing <b>{name}</b>.
+          </p>
+          {/* Stacked layout only: the letter sits below the grid, so offer the jump. */}
+          <button
+            type="button"
+            className="dx__jump"
+            onClick={() =>
+              outRef.current?.scrollIntoView({
+                block: 'center',
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+              })
+            }
+          >
+            See {name}’s letter ↓
+          </button>
+        </div>
+
+        <span className="dx__flow" aria-hidden="true" />
+
+        {/* 3 · the personal copy, assembled from the right bricks */}
+        <div className="dx__col dx__out" ref={outRef}>
+          <h4 className="dx__h">{x.labels.result.replace('{name}', name)}</h4>
+          <div className="dx__letter" aria-live="polite" data-tier={tierIdx}>
+            {x.blocks.map((b) => (
+              <p
+                key={b.id + String(isEditBlock(b.id)) + (b.varies === 'none' ? '' : name)}
+                className={isEditBlock(b.id) ? 'dx__line is-edited' : 'dx__line'}
+                data-varies={b.varies}
+              >
+                {fillTokens(textFor(b), values)}
+              </p>
+            ))}
+          </div>
+          <p className="dx__meta">
+            {group.label} · {tier.label}
+          </p>
+        </div>
+      </div>
+
+      <div className="dx__count">
+        <div className="dx__num">
+          <b>{pieces}</b>
+          <span>{x.labels.writtenOnce}</span>
+        </div>
+        <span className="dx__count-arrow" aria-hidden="true">→</span>
+        <div className="dx__num">
+          <b>{readers}</b>
+          <span>{x.labels.delivered}</span>
+        </div>
+        {x.edit && (
+          <div className="dx__edit">
+            <button type="button" className="dx__edit-btn" aria-pressed={edited} onClick={toggleEdit}>
+              {edited ? x.edit.undo : x.edit.button}
+            </button>
+            <p className="dx__edit-note" aria-live="polite">{edited ? rich(x.edit.note) : ' '}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ---- framework wheel: principles × levels of consciousness ------------------
 // Ported from the source page's inline SVG script. Each principle owns a
 // segment of the ring; inside it, three graded cells stand for the three
@@ -807,6 +1044,91 @@ function FrameworkWheel({
 }
 
 const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
+
+// ---- scroll timeline: a side rail for the long worked-example stretch -------
+// The top nav already jumps between sections, so this is not a second nav for
+// the whole page. It covers only the elements marked data-cs-anchor: the
+// explainer and walkthrough, a long run the top nav holds as one or two
+// entries. The rail fades in while that stretch is on screen and out once you
+// leave it. One short line per anchor (shorter for sub-points); the current
+// one is the long accent line; hover or keyboard focus opens the labels.
+// Active tracking uses the capture-phase scroll listener + geometry pattern
+// used by the reveal logic: IntersectionObserver proved unreliable inside the
+// fullscreen takeover on real devices.
+interface RailEntry {
+  id: string
+  label: string
+  sub: boolean
+}
+
+function ScrollRail({ rootRef, deps }: { rootRef: RefObject<HTMLDivElement>; deps: unknown }) {
+  const [entries, setEntries] = useState<RailEntry[]>([])
+  const [active, setActive] = useState('')
+  const [inRange, setInRange] = useState(false)
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const els = Array.from(root.querySelectorAll<HTMLElement>('[data-cs-anchor][id]'))
+    setEntries(
+      els.map((el) => ({ id: el.id, label: el.dataset.csAnchor ?? el.id, sub: el.tagName !== 'SECTION' })),
+    )
+    if (els.length === 0) return
+    // The stretch runs from the first anchor to the bottom of the last
+    // top-level anchored section.
+    const sections = els.filter((el) => el.tagName === 'SECTION')
+    const last = sections[sections.length - 1] ?? els[els.length - 1]
+
+    let raf = 0
+    const check = () => {
+      raf = 0
+      const vh = window.innerHeight
+      const line = vh * 0.35
+      setInRange(els[0].getBoundingClientRect().top < vh * 0.55 && last.getBoundingClientRect().bottom > vh * 0.45)
+      let cur = els[0].id
+      for (const el of els) if (el.getBoundingClientRect().top <= line) cur = el.id
+      setActive(cur)
+    }
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(check)
+    }
+    window.addEventListener('scroll', schedule, true)
+    window.addEventListener('resize', schedule)
+    check()
+    return () => {
+      window.removeEventListener('scroll', schedule, true)
+      window.removeEventListener('resize', schedule)
+      cancelAnimationFrame(raf)
+    }
+  }, [rootRef, deps])
+
+  if (entries.length < 3) return null
+  const go = (id: string) =>
+    rootRef.current?.querySelector(`#${CSS.escape(id)}`)?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    })
+
+  return (
+    <nav className={inRange ? 'srail' : 'srail is-off'} aria-label="Jump within the worked example">
+      <ol className="srail__list">
+        {entries.map((e) => (
+          <li key={e.id}>
+            <button
+              type="button"
+              className={`srail__item${e.sub ? ' srail__item--sub' : ''}${active === e.id ? ' is-on' : ''}`}
+              aria-current={active === e.id ? 'location' : undefined}
+              onClick={() => go(e.id)}
+            >
+              <span className="srail__label">{e.label}</span>
+              <span className="srail__line" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
 
 export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -943,10 +1265,11 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   const { meta, hero } = data
   const navItems = [
     { id: 'cs-highlights', label: 'Overview' },
+    ...(data.explainer ? [{ id: 'cs-explainer', label: data.explainer.eyebrow }] : []),
+    ...(data.walkthrough ? [{ id: 'cs-walkthrough', label: 'Walkthrough' }] : []),
     ...(data.impact ? [{ id: 'cs-impact', label: 'Impact' }] : []),
     ...(data.designSystem ? [{ id: 'cs-system', label: 'System' }] : []),
     ...(data.process ? [{ id: 'cs-process', label: 'Process' }] : []),
-    ...(data.walkthrough ? [{ id: 'cs-walkthrough', label: 'Walkthrough' }] : []),
     ...(data.role ? [{ id: 'cs-role', label: 'Role' }] : []),
   ]
   const related = (data.related ?? [])
@@ -956,6 +1279,8 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   return (
     <div className="cs" ref={rootRef}>
       <span id="cs-top" />
+
+      <ScrollRail rootRef={rootRef} deps={data} />
 
       {/* ---- local nav ---- */}
       <nav className="localnav" aria-label="Case study">
@@ -1132,6 +1457,152 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                     <FigureBlock key={f.title} item={f} />
                   ))}
                 </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 4a · explainer: structured content in plain words ---- */}
+        {data.explainer && data.explainer.groups.length > 0 && data.explainer.groups[0].people.length > 0 && (
+          <section className="section section--gray" id="cs-explainer" data-cs-section data-cs-anchor={data.explainer.eyebrow} style={{ scrollMarginTop: 64 }}>
+            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+              <p className="eyebrow center">{data.explainer.eyebrow}</p>
+              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
+                {data.explainer.headline}
+              </h2>
+              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
+                {rich(data.explainer.lead)}
+              </p>
+              {data.explainer.analogy && <p className="dx__analogy">{rich(data.explainer.analogy)}</p>}
+              <DitaExplainer x={data.explainer} />
+              {data.explainer.glossary && data.explainer.glossary.length > 0 && (
+                <dl className="dx__gloss">
+                  {data.explainer.glossary.map((g) => (
+                    <div key={g.term}>
+                      <dt>{g.term}</dt>
+                      <dd>{rich(g.plain)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              {data.explainer.footnote && <p className="wt__note wt__note--foot">{rich(data.explainer.footnote)}</p>}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 4b · walkthrough: one real task, onboarding → sharing ---- */}
+        {data.walkthrough && data.walkthrough.stages.length > 0 && (
+          <section className="section" id="cs-walkthrough" data-cs-section data-cs-anchor="The worked example" style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
+              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
+                {data.walkthrough.headline}
+              </h2>
+              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
+                {rich(data.walkthrough.lead)}
+              </p>
+
+              {data.walkthrough.scenario && (
+                <p className="wt__scenario">{rich(data.walkthrough.scenario)}</p>
+              )}
+
+              {data.walkthrough.method && (
+                <div className="wt__block" id="cs-wt-jobs" data-cs-anchor="Jobs & process" style={{ scrollMarginTop: 72 }}>
+                  <h3 className="wt__collapse-h">{data.walkthrough.method.title}</h3>
+                  {data.walkthrough.method.lead && (
+                    <p className="wt__block-lead">{rich(data.walkthrough.method.lead)}</p>
+                  )}
+                  <div className="jtbd">
+                    {data.walkthrough.method.jobs.map((j) => {
+                      const lane = (data.walkthrough!.actors ?? []).indexOf(j.actor)
+                      return (
+                        <article className="jtbd__card" key={j.actor} data-lane={lane >= 0 ? lane : undefined}>
+                          <p className="jtbd__actor">{j.actor}</p>
+                          <p className="jtbd__story">
+                            <span className="jtbd__k">When</span> {j.when}
+                            <br />
+                            <span className="jtbd__k">I want to</span> {j.want}
+                            <br />
+                            <span className="jtbd__k">so I can</span> {j.so}
+                          </p>
+                        </article>
+                      )
+                    })}
+                  </div>
+                  <ol className="mchain" aria-label="Process used">
+                    {data.walkthrough.method.steps.map((m, i) => (
+                      <li className="mchain__step" key={m.title}>
+                        <span className="mchain__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                        <h4>{m.title}</h4>
+                        <p>{rich(m.body)}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {data.walkthrough.screens && data.walkthrough.screens.items.length > 0 && (
+                <div className="wt__block" id="cs-wt-screens" data-cs-anchor="Journey in screens" style={{ scrollMarginTop: 72 }}>
+                  <h3 className="wt__collapse-h">{data.walkthrough.screens.title}</h3>
+                  {data.walkthrough.screens.lead && (
+                    <p className="wt__block-lead">{rich(data.walkthrough.screens.lead)}</p>
+                  )}
+                  <ScreenFlow items={data.walkthrough.screens.items} />
+                  <p className="jf__hint" aria-hidden="true">Scroll sideways to follow the path →</p>
+                </div>
+              )}
+
+              {data.walkthrough.lanes && (
+                <div className="wt__block" id="cs-wt-lanes" data-cs-anchor="Who does what" style={{ scrollMarginTop: 72 }}>
+                  {data.walkthrough.lanes.title && (
+                    <h3 className="wt__collapse-h">{data.walkthrough.lanes.title}</h3>
+                  )}
+                  <Swimlane lanes={data.walkthrough.lanes} actors={data.walkthrough.actors ?? []} />
+                  {data.walkthrough.lanes.caption && (
+                    <p className="wt__note">{rich(data.walkthrough.lanes.caption)}</p>
+                  )}
+                </div>
+              )}
+
+              {data.walkthrough.collapse && (
+                <div className="wt__collapse" id="cs-wt-fifty" data-cs-anchor={data.walkthrough.collapse.title} style={{ scrollMarginTop: 72 }}>
+                  <h3 className="wt__collapse-h">{data.walkthrough.collapse.title}</h3>
+                  <CollapseDiagram c={data.walkthrough.collapse} />
+                  {data.walkthrough.collapse.caption && (
+                    <p className="wt__note">{rich(data.walkthrough.collapse.caption)}</p>
+                  )}
+                </div>
+              )}
+
+              <h3 className="wt__collapse-h wt__rail-h" id="cs-wt-stages" data-cs-anchor="Stage by stage" style={{ scrollMarginTop: 72 }}>
+                Stage by stage
+              </h3>
+              <ol className="wt__rail">
+                {data.walkthrough.stages.map((s) => {
+                  const lane = Math.max(0, (data.walkthrough!.actors ?? []).indexOf(s.actor))
+                  return (
+                    <li className="wt__stage" key={s.no} data-lane={lane}>
+                      <span className="wt__no" aria-hidden="true">{s.no}</span>
+                      <div className="wt__body">
+                        <div className="wt__head">
+                          <h3>{s.title}</h3>
+                          <span className="wt__actor">{s.actor}</span>
+                        </div>
+                        <p>{rich(s.body)}</p>
+                        {s.atScale && (
+                          <p className="wt__scale">
+                            <span className="wt__scale-l">At 50</span>
+                            {rich(s.atScale)}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+
+              {data.walkthrough.footnote && (
+                <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
               )}
             </div>
           </section>
@@ -1517,122 +1988,6 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                     </span>
                   ))}
                 </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 10a · walkthrough: one real task, onboarding → sharing ---- */}
-        {data.walkthrough && data.walkthrough.stages.length > 0 && (
-          <section className="section" id="cs-walkthrough" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
-                {data.walkthrough.headline}
-              </h2>
-              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
-                {rich(data.walkthrough.lead)}
-              </p>
-
-              {data.walkthrough.scenario && (
-                <p className="wt__scenario">{rich(data.walkthrough.scenario)}</p>
-              )}
-
-              {data.walkthrough.method && (
-                <div className="wt__block">
-                  <h3 className="wt__collapse-h">{data.walkthrough.method.title}</h3>
-                  {data.walkthrough.method.lead && (
-                    <p className="wt__block-lead">{rich(data.walkthrough.method.lead)}</p>
-                  )}
-                  <div className="jtbd">
-                    {data.walkthrough.method.jobs.map((j) => {
-                      const lane = (data.walkthrough!.actors ?? []).indexOf(j.actor)
-                      return (
-                        <article className="jtbd__card" key={j.actor} data-lane={lane >= 0 ? lane : undefined}>
-                          <p className="jtbd__actor">{j.actor}</p>
-                          <p className="jtbd__story">
-                            <span className="jtbd__k">When</span> {j.when}
-                            <br />
-                            <span className="jtbd__k">I want to</span> {j.want}
-                            <br />
-                            <span className="jtbd__k">so I can</span> {j.so}
-                          </p>
-                        </article>
-                      )
-                    })}
-                  </div>
-                  <ol className="mchain" aria-label="Process used">
-                    {data.walkthrough.method.steps.map((m, i) => (
-                      <li className="mchain__step" key={m.title}>
-                        <span className="mchain__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                        <h4>{m.title}</h4>
-                        <p>{rich(m.body)}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              {data.walkthrough.screens && data.walkthrough.screens.items.length > 0 && (
-                <div className="wt__block">
-                  <h3 className="wt__collapse-h">{data.walkthrough.screens.title}</h3>
-                  {data.walkthrough.screens.lead && (
-                    <p className="wt__block-lead">{rich(data.walkthrough.screens.lead)}</p>
-                  )}
-                  <ScreenFlow items={data.walkthrough.screens.items} />
-                  <p className="jf__hint" aria-hidden="true">Scroll sideways to follow the path →</p>
-                </div>
-              )}
-
-              {data.walkthrough.lanes && (
-                <div className="wt__block">
-                  {data.walkthrough.lanes.title && (
-                    <h3 className="wt__collapse-h">{data.walkthrough.lanes.title}</h3>
-                  )}
-                  <Swimlane lanes={data.walkthrough.lanes} actors={data.walkthrough.actors ?? []} />
-                  {data.walkthrough.lanes.caption && (
-                    <p className="wt__note">{rich(data.walkthrough.lanes.caption)}</p>
-                  )}
-                </div>
-              )}
-
-              {data.walkthrough.collapse && (
-                <div className="wt__collapse">
-                  <h3 className="wt__collapse-h">{data.walkthrough.collapse.title}</h3>
-                  <CollapseDiagram c={data.walkthrough.collapse} />
-                  {data.walkthrough.collapse.caption && (
-                    <p className="wt__note">{rich(data.walkthrough.collapse.caption)}</p>
-                  )}
-                </div>
-              )}
-
-              <h3 className="wt__collapse-h wt__rail-h">Stage by stage</h3>
-              <ol className="wt__rail">
-                {data.walkthrough.stages.map((s) => {
-                  const lane = Math.max(0, (data.walkthrough!.actors ?? []).indexOf(s.actor))
-                  return (
-                    <li className="wt__stage" key={s.no} data-lane={lane}>
-                      <span className="wt__no" aria-hidden="true">{s.no}</span>
-                      <div className="wt__body">
-                        <div className="wt__head">
-                          <h3>{s.title}</h3>
-                          <span className="wt__actor">{s.actor}</span>
-                        </div>
-                        <p>{rich(s.body)}</p>
-                        {s.atScale && (
-                          <p className="wt__scale">
-                            <span className="wt__scale-l">At 50</span>
-                            {rich(s.atScale)}
-                          </p>
-                        )}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ol>
-
-              {data.walkthrough.footnote && (
-                <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
               )}
             </div>
           </section>
