@@ -580,3 +580,278 @@
 .cs .csfig { margin: clamp(28px, 4vw, 44px) 0 0; }
 .cs .csfig .shot { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
 .cs .csfig figcaption { margin-top: 12px; font-size: 13px; line-height: 1.55; color: var(--ink-2); max-width: 76ch; }
+
+/* ---- walkthrough: one real task, onboarding → sharing ---------------------
+   The reuse-collapse diagram plus an actor-laned stage rail. Lane colours are
+   assigned by actor index (set as data-lane) so the handoffs between roles
+   read as a pattern down the left edge, not as decoration. */
+.cs .wt__scenario {
+  margin: clamp(26px, 3.4vw, 38px) auto 0;
+  max-width: 62ch;
+  padding: 20px 24px;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-gray);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.cs .wt__collapse { margin-top: clamp(34px, 4.6vw, 54px); }
+.cs .wt__collapse-h {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+/* Capped so the unit squares land near 22px rather than ~30px on a wide
+   column — still a full-looking band, but at the weight of the body type. */
+.cs .wt__fig { margin: 0; max-width: 780px; }
+.cs .wt__band { padding: 0 0 20px; }
+.cs .wt__band--on { border-top: 1px solid var(--line); padding-top: 22px; }
+.cs .wt__svg { width: 100%; height: auto; display: block; }
+.cs .wt__sq--flat { fill: var(--ink); opacity: 0.17; }
+.cs .wt__sq--src { fill: var(--accent); }
+/* Band labels and tails are DOM, not SVG <text>: the diagram scales to ~0.58
+   at phone width, which would render embedded text at ~6px. */
+.cs .wt__band-l {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+}
+.cs .wt__band-l--on { color: var(--accent); }
+.cs .wt__tail { font-size: 13px; line-height: 1.5; color: var(--ink-2); margin: 12px 0 0; }
+.cs .wt__tail--on { color: var(--ink); font-weight: 600; }
+.cs .wt__fig-cap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.cs .wt__legend { display: flex; align-items: baseline; gap: 9px; max-width: 42ch; }
+.cs .wt__key { width: 11px; height: 11px; border-radius: 2px; flex: none; transform: translateY(1px); }
+.cs .wt__key--flat { background: var(--ink); opacity: 0.17; }
+.cs .wt__key--src { background: var(--accent); }
+
+.cs .wt__note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 74ch;
+  margin-top: 20px;
+}
+.cs .wt__note--foot { margin-top: clamp(30px, 3.6vw, 42px); }
+
+.cs .wt__rail {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.cs .wt__stage {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  padding: 24px 0 24px 18px;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--lane, var(--line));
+}
+.cs .wt__stage:last-child { border-bottom: 1px solid var(--line); }
+/* Four lanes — enough for the roles any one task involves. Shared by the
+   stage rail and the swimlane rows so a role keeps one colour throughout. */
+.cs [data-lane='0'] { --lane: #5b4bde; }
+.cs [data-lane='1'] { --lane: #0071e3; }
+.cs [data-lane='2'] { --lane: #b8860b; }
+.cs [data-lane='3'] { --lane: #1d8a6a; }
+.cs .wt__no {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--lane, var(--ink-2));
+  padding-top: 3px;
+}
+.cs .wt__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+}
+.cs .wt__head h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+.cs .wt__actor {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lane, var(--ink-2));
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.cs .wt__body > p { font-size: 16px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 68ch; }
+.cs .wt__scale {
+  margin-top: 12px !important;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 15px !important;
+  color: var(--ink) !important;
+}
+.cs .wt__scale-l {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-right: 9px;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .cs .wt__stage { grid-template-columns: 1fr; gap: 8px; padding-left: 14px; }
+  .cs .wt__no { padding-top: 0; }
+  .cs .wt__scenario { padding: 16px 18px; font-size: 16px; }
+}
+
+/* ---- walkthrough: blocks, screen flow, swimlane -------------------------- */
+.cs .wt__block { margin-top: clamp(40px, 5.2vw, 64px); }
+.cs .wt__block-lead { font-size: 15px; line-height: 1.55; color: var(--ink-2); max-width: 66ch; margin: -6px 0 18px; }
+.cs .wt__rail-h { margin: clamp(40px, 5.2vw, 64px) 0 0; }
+
+/* Screen flow: a horizontal run of wireframes. Scrolls sideways (same
+   keyboard-focusable region pattern as the comparison table) so the path
+   always reads left to right, on a phone as much as on a laptop. */
+.cs .jf {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 4px 2px 14px;
+}
+.cs .jf:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 8px; }
+.cs .jf__track { list-style: none; margin: 0; padding: 0; display: flex; width: max-content; }
+.cs .jf__step { display: flex; align-items: flex-start; scroll-snap-align: start; }
+.cs .jf__card { width: 196px; flex: none; }
+.cs .jf__viz { background: var(--bg-gray); border-radius: 12px; padding: 10px; }
+.cs .jf__svg { width: 100%; height: auto; display: block; }
+.cs .jf__arrow { width: 30px; height: 12px; flex: none; margin-top: 66px; position: relative; }
+.cs .jf__arrow::before {
+  content: ''; position: absolute; left: 6px; right: 8px; top: 5.25px; height: 1.5px;
+  background: var(--accent); opacity: 0.55;
+}
+.cs .jf__arrow::after {
+  content: ''; position: absolute; right: 7px; top: 2px; width: 7px; height: 7px;
+  border-top: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent);
+  transform: rotate(45deg); opacity: 0.55;
+}
+.cs .jf__no { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; color: var(--accent); margin: 14px 0 4px; }
+.cs .jf__title { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; margin: 0 0 6px; color: var(--ink); }
+.cs .jf__body { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .jf__aff { font-size: 12.5px; line-height: 1.45; font-weight: 600; color: var(--ink); margin: 8px 0 0; }
+.cs .jf__hint { font-size: 12px; color: var(--ink-2); margin: 4px 0 0; }
+
+/* Wireframe language. Neutral greys for structure; the accent marks only the
+   element the user acts on, so following the accent follows the path. */
+.cs .jf__frame { fill: #fff; stroke: var(--line); stroke-width: 1.2; }
+.cs .jf__hair { fill: none; stroke: var(--line); stroke-width: 1; }
+.cs .jf__dot { fill: var(--line); }
+.cs .jf__panel { fill: var(--bg-gray); }
+.cs .jf__page { fill: #fff; stroke: var(--line); stroke-width: 1; }
+.cs .jf__sel { stroke: var(--accent); stroke-width: 2; }
+.cs .jf__line { fill: var(--ink); opacity: 0.55; }
+.cs .jf__line--soft { opacity: 0.2; }
+.cs .jf__fill { fill: var(--ink); opacity: 0.08; }
+.cs .jf__fillA { fill: var(--accent); opacity: 0.85; }
+.cs .jf__cta { fill: var(--accent); }
+.cs .jf__ghost { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 3 2.5; }
+.cs .jf__plus { stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; }
+.cs .jf__tip { fill: var(--accent); opacity: 0.1; }
+.cs .jf__hl { fill: var(--accent); opacity: 0.14; }
+.cs .jf__pop { fill: #fff; stroke: var(--accent); stroke-width: 1.4; }
+.cs .jf__toggle { fill: var(--accent); }
+.cs .jf__knob { fill: #fff; }
+.cs .jf__bubble { fill: var(--bg-gray); }
+.cs .jf__bubbleA { fill: var(--accent); opacity: 0.16; }
+.cs .jf__rowA { fill: var(--accent); opacity: 0.14; }
+.cs .jf__mark { fill: var(--accent); opacity: 0.35; }
+.cs .jf__ok { fill: #1d8a6a; }
+.cs .jf__okTick { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Swimlane: phases across, roles down. An empty (dashed) cell means that role
+   is not involved, so handoffs and the stretches the system covers alone read
+   at a glance. */
+.cs .sl { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+.cs .sl:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 8px; }
+.cs .sl__table { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 860px; table-layout: fixed; }
+.cs .sl__corner { width: 124px; }
+.cs .sl__phase {
+  font-size: 12.5px; font-weight: 600; text-align: left; color: var(--ink);
+  padding: 0 6px 6px; vertical-align: bottom; line-height: 1.3;
+}
+.cs .sl__pno { display: block; font-size: 11px; font-weight: 650; letter-spacing: 0.05em; color: var(--ink-2); margin-bottom: 2px; }
+.cs .sl__actor {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--lane, var(--ink-2)); text-align: left; vertical-align: middle;
+  padding: 10px 8px 10px 10px; border-left: 3px solid var(--lane, var(--line));
+}
+.cs .sl__cell {
+  border: 1px dashed var(--line); border-radius: 8px; padding: 9px;
+  font-size: 12.5px; line-height: 1.4; color: var(--ink); vertical-align: top;
+}
+.cs .sl__cell--on {
+  border: 1px solid transparent;
+  background: var(--bg-gray);
+  background: color-mix(in srgb, var(--lane, var(--accent)) 11%, #fff);
+}
+
+@media (max-width: 640px) {
+  .cs .jf__card { width: 184px; }
+}
+
+/* ---- walkthrough: jobs-to-be-done + the process chain -------------------- */
+.cs .jtbd { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.cs .jtbd__card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--lane, var(--ink-2));
+  border-radius: 14px;
+  padding: 16px 18px 18px;
+}
+.cs .jtbd__actor {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--lane, var(--ink-2)); margin: 0 0 10px;
+}
+.cs .jtbd__story { font-size: 15px; line-height: 1.6; color: var(--ink); margin: 0; }
+.cs .jtbd__k { font-weight: 650; color: var(--ink-2); }
+
+/* The process as a connected chain: a rule runs through numbered nodes, so
+   it reads as one sequence even when the grid wraps on a narrow screen. */
+.cs .mchain {
+  list-style: none; margin: 26px 0 0; padding: 0;
+  display: grid; gap: 22px 14px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.cs .mchain__step { position: relative; padding-top: 30px; }
+.cs .mchain__step::before {
+  content: ''; position: absolute; left: 0; right: -14px; top: 11px; height: 1.5px;
+  background: var(--accent); opacity: 0.3;
+}
+.cs .mchain__step:last-child::before { right: 0; }
+.cs .mchain__no {
+  position: absolute; left: 0; top: 0; width: 23px; height: 23px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: #fff; font-size: 11px; font-weight: 650;
+}
+.cs .mchain__step h4 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 5px; color: var(--ink); }
+.cs .mchain__step p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }

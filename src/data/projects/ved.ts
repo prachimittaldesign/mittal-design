@@ -188,6 +188,161 @@ export const VED_CASE_STUDY: RichCaseStudy = {
     signatureFlow: ['Mark variable non-mandatory', 'Content-selection panel appears', 'Select on the canvas', 'Preview live', 'Confirm'],
   },
 
+  walkthrough: {
+    eyebrow: 'Worked example · end to end',
+    headline: 'Onboarding an HR author, from invite to published.',
+    lead:
+      'An example of how the onboarding workflow can run for a new department author — here, someone in HR. It follows one person from the invite they receive to the moment employees are reading their work, and it turns on one idea: **50 policies are not 50 documents.**',
+    scenario:
+      '**The example.** A new HR author joins the workspace. Their first job: publish 50 company policies, illustrated from the Media Library, to the point where employees can read them. Chosen because it touches every part of the system at once — onboarding, structure, variants, assets, review, and secure sharing.',
+    actors: ['HR author', 'Content manager', 'Reviewer', 'System'],
+    method: {
+      title: 'Start from the job, not the screen',
+      lead:
+        "The journey is built on the same method as the rest of Ved: **jobs-to-be-done** interviews across the three roles, written here as job stories. Each screen that follows exists to serve one of these jobs.",
+      jobs: [
+        {
+          actor: 'HR author',
+          when: 'a policy has to be written or changed,',
+          want: 'do it myself, in an editor that feels familiar,',
+          so: 'publish without raising a ticket to a specialist.',
+        },
+        {
+          actor: 'Content manager',
+          when: 'many authors publish into one library,',
+          want: 'see quality, reuse, and validation in one place,',
+          so: 'stop problems before they reach employees.',
+        },
+        {
+          actor: 'Tech writer',
+          when: 'non-specialists start authoring structured content,',
+          want: 'the DITA structure and reuse to stay intact,',
+          so: 'I am not repairing broken XML afterwards.',
+        },
+      ],
+      steps: [
+        { title: 'JTBD interviews', body: 'Three roles — tech writer, department author, content manager. Produced the job stories above.' },
+        { title: 'Competitive teardown', body: 'AEM Guides, Heretto, Paligo, IXIASOFT. Showed where the journey usually breaks: the handoff to a specialist.' },
+        { title: 'Define', body: 'Two opposed authors, one canvas, resolved through **progressive disclosure**.' },
+        { title: 'Explore', body: 'Three canvas architectures, each tested against four core authoring tasks.' },
+        { title: 'Journey in screens', body: 'The path below, one screen per step, with no exit to email or a developer.' },
+        { title: 'Handoff', body: 'Annotated DITA semantics, a token map, and an IA rationale, inside the engineering scrum.' },
+      ],
+    },
+    screens: {
+      title: 'The journey, screen by screen',
+      lead: 'Low-fidelity, to show the flow rather than the finish. The **accent** marks what the author acts on in each screen — follow it across and you have the path.',
+      items: [
+        { kind: 'invite', no: '01', title: 'The invite', body: 'The HR author receives an invite already scoped to the policy project and their role.', affordance: 'Accept and land inside the project' },
+        { kind: 'workspace', no: '02', title: 'A guided empty state', body: 'The project opens on an empty state that names the first move instead of a blank canvas.', affordance: 'Create the first DITA file' },
+        { kind: 'template', no: '03', title: 'Start from the house template', body: 'The content manager’s saved policy template sets structure, topic types, and layout.', affordance: 'Use template' },
+        { kind: 'canvas', no: '04', title: 'Author on the canvas', body: 'Outline on the left, the page in the middle, blocks on the right. Author view only — no XML.', affordance: 'Drag in a content block' },
+        { kind: 'conditional', no: '05', title: 'Variants without rules', body: 'Mark a variable non-mandatory, select the regional content on the canvas, preview live.', affordance: 'Confirm the condition' },
+        { kind: 'media', no: '06', title: 'Pick, don’t upload', body: 'Images come from the Media Library by reference, so one change reaches every policy.', affordance: 'Insert asset' },
+        { kind: 'review', no: '07', title: 'Review in place', body: 'Legal comments on the exact clause; the author resolves threads without leaving the page.', affordance: 'Resolve and request sign-off' },
+        { kind: 'export', no: '08', title: 'Export and share', body: 'One menu for template, HTML, branded PDF, granular sharing, or the marketplace.', affordance: 'Share with access control' },
+        { kind: 'published', no: '09', title: 'Employees read it', body: 'Delivered on a pre-signed, time-limited link, watermarked to the reader who opened it.', affordance: 'Done — and next year starts from the source' },
+      ],
+    },
+    lanes: {
+      title: 'Who does what, phase by phase',
+      phases: ['Invite', 'Set up', 'Author', 'Illustrate', 'Review', 'Publish', 'Maintain'],
+      rows: [
+        { actor: 'HR author', cells: [null, 'Accepts the invite, lands in the project', 'Builds from the template, sets conditions', 'Pulls assets from the library', 'Resolves comments', 'Exports and shares', null] },
+        { actor: 'Content manager', cells: ['Creates the project, sets access', 'Saves the house template', null, 'Curates the collection', 'Gates on the quality dashboard', null, 'Watches the Operations view'] },
+        { actor: 'Reviewer', cells: [null, null, null, null, 'Comments in place, @mentions', null, null] },
+        { actor: 'System', cells: ['Sends the scoped invite', null, 'Validates DITA on every edit', 'Versions every asset', null, 'Watermarks and signs the link', 'Archives on the retention window'] },
+      ],
+      caption:
+        'Dashed cells are deliberate: each role steps in only where it adds judgment, and the system carries validation, versioning, and protection continuously. There is no step where the author has to leave the product — no email round-trip, no ticket to a developer.',
+    },
+    collapse: {
+      title: 'Where the fifty actually goes',
+      total: 50,
+      sources: 18,
+      flatLabel: 'Flat editor — one document per policy',
+      flatNote: '50 documents authored, 50 to review, 50 to revise every cycle.',
+      structuredLabel: 'Ved — reusable topics + three-level conditionals',
+      structuredNote: '18 source maps authored; conditionals resolve the rest at publish time.',
+      caption:
+        'Illustrative, not measured — the ratio depends on how many policies share a clause set. What was designed is the mechanism: topic reuse plus Map/Topic/Variable conditions, so authoring cost tracks *distinct content* rather than document count.',
+    },
+    stages: [
+      {
+        no: '01',
+        title: 'Open the workspace',
+        actor: 'Content manager',
+        body:
+          "A project is created for the policy set. The Projects view tracks draft and deployed counts, and a new project's empty state prompts the first DITA file — so the opening move is obvious instead of a blank canvas. The share modal sets collaborator emails, an access link, and access type, so HR authors, legal reviewers, and the content manager each enter with the permissions their role needs.",
+        atScale: 'Access is configured once for the whole set, not renegotiated per policy.',
+      },
+      {
+        no: '02',
+        title: 'Structure the first policy',
+        actor: 'HR author',
+        body:
+          'A policy is not one blob. It decomposes into DITA topic types — **Concept** for what the policy is and why it exists, **Task** for what the employee has to do, **Reference** for eligibility tables, entitlements, and escalation contacts. Topic, content, and layout blocks (Full-Width, 2×1, 3×1, 2×2) drag straight onto the canvas, and a DITA Map assembles them into the handbook.',
+        atScale: 'Saved as a template, so policies 2–50 inherit the structure instead of re-deciding it 49 times.',
+      },
+      {
+        no: '03',
+        title: 'Let conditionals absorb the variants',
+        actor: 'HR author',
+        body:
+          'Most policies differ only by region, legal entity, grade, or employment type. Conditions handle that at three levels: **Map** swaps whole structures, **Topic** toggles topics inside a map, **Variable** nests rules inside a topic. The author writes no rules — mark the variable non-mandatory, select the content on the canvas, preview the resolved output live, confirm.',
+        atScale:
+          'A leave policy that varies across four regions stays one source, not four near-identical documents drifting out of sync.',
+      },
+      {
+        no: '04',
+        title: 'Pull the assets, don’t paste them',
+        actor: 'HR author',
+        body:
+          'Assets are referenced, not embedded. An image block pulls from the Media Library rather than re-uploading, across seven asset formats — including fonts as versioned assets, so the handbook’s typography is governed like content. Each asset carries technical, performance, and CMS metadata plus version history, and video can be edited in context for something like an induction explainer.',
+        atScale:
+          'Replace the org chart once and every policy referencing it updates — no 50-document find-and-replace.',
+      },
+      {
+        no: '05',
+        title: 'Hold one voice across the set',
+        actor: 'Content manager',
+        body:
+          'At this volume the hard problem is not typing, it is consistency of tone and reading level. Ask Aeon is a governed, sessionized layer — ask in plain language, steer the answer with tappable variable chips, follow entity links back into the content, act on suggested next steps. Prompt-as-a-Service then turns the instruction itself into a versioned, quality-scored asset.',
+        atScale:
+          'Legal approves one governed prompt instead of auditing 50 unpredictable rewrites.',
+      },
+      {
+        no: '06',
+        title: 'Review inside the document',
+        actor: 'Reviewer',
+        body:
+          'Threaded comments, @mentions, and real-time presence keep review in the document instead of scattered across email. The content manager can flip to the Relationship view — a radial graph of the map — to check reuse and cross-references, or drop to raw XML; the HR author stays in Author view and never touches markup. DITA validation stays intact under the WYSIWYG, so a non-technical author cannot silently break structure.',
+        atScale:
+          'The analytics dashboard gates the batch: reuse rate, quality score, validation errors, and AI-detected gaps.',
+      },
+      {
+        no: '07',
+        title: 'Publish and share',
+        actor: 'HR author',
+        body:
+          'One menu: save as template, export to HTML, export to PDF, share with granular access, or publish to the marketplace. PDF themes are configured in YAML or JSON against a live preview, so the handbook comes out branded rather than generic, and external sharing goes out on pre-signed, time-limited URLs.',
+        atScale:
+          'Dynamic watermarking injects user ID and timestamp, so a leaked policy is traceable to the download that produced it.',
+      },
+      {
+        no: '08',
+        title: 'Govern the lifecycle',
+        actor: 'System',
+        body:
+          'Licences are created, renewed, and revoked across CC, proprietary, and time-limited terms. Retention policies archive and expire content automatically. Ownership transfer carries GDPR-compliant audit logging for when a policy owner changes role. After publication the Operations view reports activity and success-rate trends.',
+        atScale:
+          'Retention windows map onto the annual review cycle — so next year’s revision edits the source topic and re-resolves every variant.',
+      },
+    ],
+    footnote:
+      'Ved V2 shipped 2026 and is in engineering build, so this is the **designed** flow rather than measured production throughput. No HR team has yet pushed 50 policies through it end to end; reuse rate and time-to-publish are the first two metrics I would instrument at launch.',
+  },
+
   capabilities: {
     type: 'comparison',
     headline: 'Where Ved actually differs.',

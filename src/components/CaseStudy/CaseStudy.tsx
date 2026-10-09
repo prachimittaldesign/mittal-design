@@ -1,6 +1,12 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { csImage, type CSModal, type CSPrinciple, type RichCaseStudy } from '../../data/caseStudyTypes'
+import {
+  csImage,
+  type CSModal,
+  type CSPrinciple,
+  type CSWalkthrough,
+  type RichCaseStudy,
+} from '../../data/caseStudyTypes'
 import { PROJECTS } from '../../data/projects'
 import './caseStudy.css'
 
@@ -361,6 +367,319 @@ function FigureBlock({ item }: { item: { kind: string; title: string; body: stri
   )
 }
 
+// ---- walkthrough: the reuse-collapse diagram --------------------------------
+// The argument the whole section exists to make: in a flat editor, N policies
+// cost N units of authoring; under structured reuse plus conditionals they cost
+// far fewer, and the remainder is resolved output. Drawn as two bands of unit
+// squares so the asymmetry is visible before a word is read — the top band is
+// a wall, the bottom band is short.
+const WT_SIZE = 18
+const WT_PITCH = 24
+const WT_PER_ROW = 25
+
+// Both bands share one viewBox width, so a square is the same size in each and
+// the 50-vs-18 comparison survives. Every label lives in the DOM rather than in
+// the SVG: at phone width the diagram scales to ~0.58, which would shrink
+// embedded <text> to ~6px. The squares scale fine — they read as a texture.
+function SquareBand({ n, kind }: { n: number; kind: 'flat' | 'src' }) {
+  const w = WT_PER_ROW * WT_PITCH - (WT_PITCH - WT_SIZE)
+  const h = Math.ceil(n / WT_PER_ROW) * WT_PITCH - (WT_PITCH - WT_SIZE)
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="wt__svg" aria-hidden="true" focusable="false">
+      {Array.from({ length: n }, (_, i) => (
+        <rect
+          key={i}
+          x={(i % WT_PER_ROW) * WT_PITCH}
+          y={Math.floor(i / WT_PER_ROW) * WT_PITCH}
+          width={WT_SIZE}
+          height={WT_SIZE}
+          rx={3}
+          className={kind === 'flat' ? 'wt__sq wt__sq--flat' : 'wt__sq wt__sq--src'}
+        />
+      ))}
+    </svg>
+  )
+}
+
+function CollapseDiagram({ c }: { c: NonNullable<CSWalkthrough['collapse']> }) {
+  return (
+    <figure className="wt__fig">
+      <div className="wt__band">
+        <p className="wt__band-l">{c.flatLabel}</p>
+        <SquareBand n={c.total} kind="flat" />
+        <p className="wt__tail">
+          {c.total} units of authoring, {c.total} to revise
+        </p>
+      </div>
+      <div className="wt__band wt__band--on">
+        <p className="wt__band-l wt__band-l--on">{c.structuredLabel}</p>
+        <SquareBand n={c.sources} kind="src" />
+        <p className="wt__tail wt__tail--on">
+          {c.sources} units of authoring → resolves to {c.total} published variants
+        </p>
+      </div>
+      <figcaption className="wt__fig-cap">
+        <span className="wt__legend">
+          <i className="wt__key wt__key--flat" />
+          {c.flatNote}
+        </span>
+        <span className="wt__legend">
+          <i className="wt__key wt__key--src" />
+          {c.structuredNote}
+        </span>
+      </figcaption>
+    </figure>
+  )
+}
+
+// ---- walkthrough: the journey depicted as screens ---------------------------
+// Low-fidelity wireframes, one per step, drawn in a single shared language
+// (frame, chrome dots, panels, text lines) so the run reads as one product.
+// The accent marks the element the user acts on in that screen — follow the
+// accent across the strip and you have the path.
+const SW = 160
+const SH = 112
+
+function Wire({ children }: { children: ReactNode }) {
+  return (
+    <svg viewBox={`0 0 ${SW} ${SH}`} className="jf__svg" aria-hidden="true" focusable="false">
+      <rect x="0.75" y="0.75" width={SW - 1.5} height={SH - 1.5} rx="7" className="jf__frame" />
+      <path d={`M0.75 11.5 H${SW - 0.75}`} className="jf__hair" />
+      <circle cx="7" cy="6" r="1.6" className="jf__dot" />
+      <circle cx="12.5" cy="6" r="1.6" className="jf__dot" />
+      <circle cx="18" cy="6" r="1.6" className="jf__dot" />
+      {children}
+    </svg>
+  )
+}
+
+/** A stack of text lines; the first is a heading-weight line. */
+function Lines({ x, y, w, n, gap = 7 }: { x: number; y: number; w: number; n: number; gap?: number }) {
+  return (
+    <>
+      {Array.from({ length: n }, (_, i) => (
+        <rect
+          key={i}
+          x={x}
+          y={y + i * gap}
+          width={i === 0 ? w * 0.62 : i === n - 1 ? w * 0.7 : w}
+          height={i === 0 ? 3.6 : 2.6}
+          rx={1.3}
+          className={i === 0 ? 'jf__line' : 'jf__line jf__line--soft'}
+        />
+      ))}
+    </>
+  )
+}
+
+function ScreenWire({ kind }: { kind: string }) {
+  switch (kind) {
+    case 'invite':
+      return (
+        <Wire>
+          <rect x="36" y="24" width="88" height="66" rx="5" className="jf__panel" />
+          <path d="M36 30 L80 56 L124 30" className="jf__hair" />
+          <Lines x={50} y={60} w={60} n={2} />
+          <rect x="58" y="74" width="44" height="10" rx="3" className="jf__cta" />
+        </Wire>
+      )
+    case 'workspace':
+      return (
+        <Wire>
+          <rect x="10" y="19" width="40" height="4" rx="2" className="jf__line" />
+          <rect x="10" y="30" width="32" height="40" rx="4" className="jf__panel" />
+          <rect x="47" y="30" width="32" height="40" rx="4" className="jf__panel" />
+          <rect x="84" y="30" width="32" height="40" rx="4" className="jf__panel" />
+          <rect x="121" y="30" width="29" height="40" rx="4" className="jf__ghost" />
+          <path d="M135.5 44 v12 M129.5 50 h12" className="jf__plus" />
+          <rect x="10" y="80" width="140" height="22" rx="4" className="jf__tip" />
+          <Lines x={18} y={86} w={90} n={2} />
+        </Wire>
+      )
+    case 'template':
+      return (
+        <Wire>
+          <rect x="10" y="19" width="48" height="4" rx="2" className="jf__line" />
+          {[16, 63, 110].map((x, i) => (
+            <g key={x}>
+              <rect x={x} y="30" width="34" height="48" rx="3" className={i === 1 ? 'jf__page jf__sel' : 'jf__page'} />
+              <Lines x={x + 5} y={36} w={24} n={4} gap={6} />
+              <rect x={x + 5} y="64" width="24" height="9" rx="1.5" className={i === 1 ? 'jf__fillA' : 'jf__fill'} />
+            </g>
+          ))}
+          <rect x="58" y="88" width="44" height="10" rx="3" className="jf__cta" />
+        </Wire>
+      )
+    case 'canvas':
+      return (
+        <Wire>
+          <rect x="7" y="18" width="30" height="87" rx="3" className="jf__panel" />
+          {[25, 33, 41, 49, 57].map((y, i) => (
+            <rect key={y} x={i % 2 ? 15 : 11} y={y} width={i % 2 ? 18 : 22} height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+          ))}
+          <rect x="41" y="18" width="76" height="87" rx="3" className="jf__page" />
+          <Lines x={48} y={25} w={62} n={3} />
+          <rect x="48" y="50" width="29" height="22" rx="2" className="jf__fill" />
+          <rect x="81" y="50" width="29" height="22" rx="2" className="jf__fill" />
+          <Lines x={48} y={80} w={62} n={3} />
+          <rect x="121" y="18" width="32" height="87" rx="3" className="jf__panel" />
+          {[25, 39, 53].map((y, i) => (
+            <rect key={y} x="125" y={y} width="24" height="10" rx="2" className={i === 0 ? 'jf__fillA' : 'jf__fill'} />
+          ))}
+        </Wire>
+      )
+    case 'conditional':
+      return (
+        <Wire>
+          <rect x="8" y="18" width="78" height="87" rx="3" className="jf__page" />
+          <Lines x={15} y={25} w={64} n={3} />
+          <rect x="15" y="48" width="64" height="16" rx="2" className="jf__hl" />
+          <Lines x={15} y={72} w={64} n={4} />
+          <rect x="92" y="28" width="61" height="58" rx="4" className="jf__pop" />
+          <rect x="98" y="35" width="32" height="3.6" rx="1.8" className="jf__line" />
+          <rect x="98" y="46" width="26" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+          <rect x="132" y="43.5" width="15" height="8" rx="4" className="jf__toggle" />
+          <circle cx="143" cy="47.5" r="3" className="jf__knob" />
+          <rect x="98" y="58" width="49" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+          <rect x="98" y="65" width="38" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+          <rect x="110" y="73" width="37" height="8" rx="2.5" className="jf__cta" />
+        </Wire>
+      )
+    case 'media':
+      return (
+        <Wire>
+          <rect x="10" y="19" width="40" height="4" rx="2" className="jf__line" />
+          <rect x="112" y="17" width="38" height="9" rx="2.5" className="jf__cta" />
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const x = 10 + (i % 3) * 47
+            const y = 33 + Math.floor(i / 3) * 37
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width="43" height="24" rx="3" className={i === 1 ? 'jf__fillA' : 'jf__fill'} />
+                <rect x={x} y={y + 27} width="28" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+              </g>
+            )
+          })}
+        </Wire>
+      )
+    case 'review':
+      return (
+        <Wire>
+          <rect x="8" y="18" width="96" height="87" rx="3" className="jf__page" />
+          <Lines x={15} y={25} w={82} n={3} />
+          <rect x="15" y="47" width="82" height="9" rx="1.5" className="jf__hl" />
+          <Lines x={15} y={62} w={82} n={3} />
+          <rect x="15" y="84" width="60" height="9" rx="1.5" className="jf__hl" />
+          {[[44, true], [80, false]].map(([y, a]) => (
+            <g key={String(y)}>
+              <path d={`M104 ${Number(y) + 6} L110 ${Number(y) + 3} L110 ${Number(y) + 9} Z`} className={a ? 'jf__bubbleA' : 'jf__bubble'} />
+              <rect x="110" y={Number(y) - 4} width="43" height="20" rx="4" className={a ? 'jf__bubbleA' : 'jf__bubble'} />
+              <rect x="115" y={Number(y)} width="26" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+              <rect x="115" y={Number(y) + 6} width="33" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+            </g>
+          ))}
+        </Wire>
+      )
+    case 'export':
+      return (
+        <Wire>
+          <rect x="8" y="18" width="74" height="87" rx="3" className="jf__page" />
+          <Lines x={15} y={25} w={60} n={4} />
+          <rect x="15" y="55" width="60" height="22" rx="2" className="jf__fill" />
+          <Lines x={15} y={84} w={60} n={3} />
+          <rect x="88" y="20" width="64" height="72" rx="4" className="jf__pop" />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g key={i}>
+              {i === 2 && <rect x="92" y={26 + i * 13} width="56" height="11" rx="2" className="jf__rowA" />}
+              <rect x="97" y={30 + i * 13} width={i === 2 ? 34 : 28 + (i % 2) * 8} height="2.8" rx="1.4" className="jf__line jf__line--soft" />
+            </g>
+          ))}
+        </Wire>
+      )
+    case 'published':
+      return (
+        <Wire>
+          <rect x="32" y="18" width="60" height="87" rx="3" className="jf__page" />
+          <Lines x={39} y={25} w={46} n={4} />
+          <rect x="39" y="54" width="46" height="18" rx="2" className="jf__fill" />
+          <Lines x={39} y={78} w={46} n={3} />
+          <rect x="74" y="88" width="16" height="4" rx="1" className="jf__mark" />
+          <rect x="100" y="38" width="44" height="58" rx="6" className="jf__panel" />
+          <rect x="105" y="45" width="34" height="38" rx="2" className="jf__page" />
+          <Lines x={109} y={50} w={26} n={4} gap={6} />
+          <circle cx="139" cy="38" r="9" className="jf__ok" />
+          <path d="M134.5 38 l3 3 l6 -6" className="jf__okTick" />
+        </Wire>
+      )
+    default:
+      return <Wire>{null}</Wire>
+  }
+}
+
+function ScreenFlow({ items }: { items: NonNullable<CSWalkthrough['screens']>['items'] }) {
+  return (
+    <div className="jf" role="region" aria-label="The journey, screen by screen" tabIndex={0}>
+      <ol className="jf__track">
+        {items.map((s, i) => (
+          <li className="jf__step" key={s.no}>
+            <div className="jf__card">
+              <div className="jf__viz">
+                <ScreenWire kind={s.kind} />
+              </div>
+              <p className="jf__no">{s.no}</p>
+              <h4 className="jf__title">{s.title}</h4>
+              <p className="jf__body">{s.body}</p>
+              {s.affordance && (
+                <p className="jf__aff">
+                  <span aria-hidden="true">→ </span>
+                  {s.affordance}
+                </p>
+              )}
+            </div>
+            {i < items.length - 1 && <span className="jf__arrow" aria-hidden="true" />}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+function Swimlane({ lanes, actors }: { lanes: NonNullable<CSWalkthrough['lanes']>; actors: string[] }) {
+  return (
+    <div className="sl" role="region" aria-label={lanes.title ?? 'Who does what, phase by phase'} tabIndex={0}>
+      <table className="sl__table">
+        <caption className="visually-hidden">{lanes.title ?? 'Who does what, phase by phase'}</caption>
+        <thead>
+          <tr>
+            <th scope="col" className="sl__corner"><span className="visually-hidden">Role</span></th>
+            {lanes.phases.map((p, i) => (
+              <th scope="col" key={p} className="sl__phase">
+                <span className="sl__pno">{String(i + 1).padStart(2, '0')}</span>
+                {p}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {lanes.rows.map((r) => {
+            const lane = Math.max(0, actors.indexOf(r.actor))
+            return (
+              <tr key={r.actor} data-lane={lane}>
+                <th scope="row" className="sl__actor">{r.actor}</th>
+                {r.cells.map((c, i) => (
+                  <td key={i} className={c ? 'sl__cell sl__cell--on' : 'sl__cell'}>
+                    {c ?? <span className="visually-hidden">Not involved</span>}
+                  </td>
+                ))}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ---- framework wheel: principles × levels of consciousness ------------------
 // Ported from the source page's inline SVG script. Each principle owns a
 // segment of the ring; inside it, three graded cells stand for the three
@@ -627,6 +946,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
     ...(data.impact ? [{ id: 'cs-impact', label: 'Impact' }] : []),
     ...(data.designSystem ? [{ id: 'cs-system', label: 'System' }] : []),
     ...(data.process ? [{ id: 'cs-process', label: 'Process' }] : []),
+    ...(data.walkthrough ? [{ id: 'cs-walkthrough', label: 'Walkthrough' }] : []),
     ...(data.role ? [{ id: 'cs-role', label: 'Role' }] : []),
   ]
   const related = (data.related ?? [])
@@ -1197,6 +1517,122 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                     </span>
                   ))}
                 </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ---- 10a · walkthrough: one real task, onboarding → sharing ---- */}
+        {data.walkthrough && data.walkthrough.stages.length > 0 && (
+          <section className="section" id="cs-walkthrough" data-cs-section style={{ scrollMarginTop: 64 }}>
+            <div className="wrap reveal">
+              <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
+              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
+                {data.walkthrough.headline}
+              </h2>
+              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
+                {rich(data.walkthrough.lead)}
+              </p>
+
+              {data.walkthrough.scenario && (
+                <p className="wt__scenario">{rich(data.walkthrough.scenario)}</p>
+              )}
+
+              {data.walkthrough.method && (
+                <div className="wt__block">
+                  <h3 className="wt__collapse-h">{data.walkthrough.method.title}</h3>
+                  {data.walkthrough.method.lead && (
+                    <p className="wt__block-lead">{rich(data.walkthrough.method.lead)}</p>
+                  )}
+                  <div className="jtbd">
+                    {data.walkthrough.method.jobs.map((j) => {
+                      const lane = (data.walkthrough!.actors ?? []).indexOf(j.actor)
+                      return (
+                        <article className="jtbd__card" key={j.actor} data-lane={lane >= 0 ? lane : undefined}>
+                          <p className="jtbd__actor">{j.actor}</p>
+                          <p className="jtbd__story">
+                            <span className="jtbd__k">When</span> {j.when}
+                            <br />
+                            <span className="jtbd__k">I want to</span> {j.want}
+                            <br />
+                            <span className="jtbd__k">so I can</span> {j.so}
+                          </p>
+                        </article>
+                      )
+                    })}
+                  </div>
+                  <ol className="mchain" aria-label="Process used">
+                    {data.walkthrough.method.steps.map((m, i) => (
+                      <li className="mchain__step" key={m.title}>
+                        <span className="mchain__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                        <h4>{m.title}</h4>
+                        <p>{rich(m.body)}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {data.walkthrough.screens && data.walkthrough.screens.items.length > 0 && (
+                <div className="wt__block">
+                  <h3 className="wt__collapse-h">{data.walkthrough.screens.title}</h3>
+                  {data.walkthrough.screens.lead && (
+                    <p className="wt__block-lead">{rich(data.walkthrough.screens.lead)}</p>
+                  )}
+                  <ScreenFlow items={data.walkthrough.screens.items} />
+                  <p className="jf__hint" aria-hidden="true">Scroll sideways to follow the path →</p>
+                </div>
+              )}
+
+              {data.walkthrough.lanes && (
+                <div className="wt__block">
+                  {data.walkthrough.lanes.title && (
+                    <h3 className="wt__collapse-h">{data.walkthrough.lanes.title}</h3>
+                  )}
+                  <Swimlane lanes={data.walkthrough.lanes} actors={data.walkthrough.actors ?? []} />
+                  {data.walkthrough.lanes.caption && (
+                    <p className="wt__note">{rich(data.walkthrough.lanes.caption)}</p>
+                  )}
+                </div>
+              )}
+
+              {data.walkthrough.collapse && (
+                <div className="wt__collapse">
+                  <h3 className="wt__collapse-h">{data.walkthrough.collapse.title}</h3>
+                  <CollapseDiagram c={data.walkthrough.collapse} />
+                  {data.walkthrough.collapse.caption && (
+                    <p className="wt__note">{rich(data.walkthrough.collapse.caption)}</p>
+                  )}
+                </div>
+              )}
+
+              <h3 className="wt__collapse-h wt__rail-h">Stage by stage</h3>
+              <ol className="wt__rail">
+                {data.walkthrough.stages.map((s) => {
+                  const lane = Math.max(0, (data.walkthrough!.actors ?? []).indexOf(s.actor))
+                  return (
+                    <li className="wt__stage" key={s.no} data-lane={lane}>
+                      <span className="wt__no" aria-hidden="true">{s.no}</span>
+                      <div className="wt__body">
+                        <div className="wt__head">
+                          <h3>{s.title}</h3>
+                          <span className="wt__actor">{s.actor}</span>
+                        </div>
+                        <p>{rich(s.body)}</p>
+                        {s.atScale && (
+                          <p className="wt__scale">
+                            <span className="wt__scale-l">At 50</span>
+                            {rich(s.atScale)}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+
+              {data.walkthrough.footnote && (
+                <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
               )}
             </div>
           </section>

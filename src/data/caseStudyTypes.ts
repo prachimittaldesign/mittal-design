@@ -167,6 +167,97 @@ export interface CSGamification {
   caption?: string
 }
 
+/** One stage in an end-to-end task walkthrough. */
+export interface CSWalkStage {
+  no: string
+  title: string
+  /** Who drives this stage. Must appear in CSWalkthrough.actors — the index
+   *  there picks the lane colour, so the handoffs read down the rail. */
+  actor: string
+  body: string
+  /** What this stage buys you when the job is 50 of these instead of one. */
+  atScale?: string
+}
+/**
+ * One screen in a depicted journey. `kind` selects the wireframe the renderer
+ * draws — the point is that the flow is shown as screens, not described, so a
+ * reader can see the path is continuous with no dead ends or detours.
+ */
+export type CSScreenKind =
+  | 'invite'
+  | 'workspace'
+  | 'template'
+  | 'canvas'
+  | 'conditional'
+  | 'media'
+  | 'review'
+  | 'export'
+  | 'published'
+export interface CSScreen {
+  kind: CSScreenKind
+  no: string
+  title: string
+  /** What the user does here. One sentence — the wireframe carries the rest. */
+  body: string
+  /** The single affordance that moves them to the next screen. */
+  affordance?: string
+}
+/**
+ * A swimlane read of the same journey: phases across, actors down. A null cell
+ * means that actor is not involved in that phase, so the handoffs — and the
+ * stretches the system covers on its own — are visible at a glance.
+ */
+export interface CSLanes {
+  title?: string
+  phases: string[]
+  rows: Array<{ actor: string; cells: Array<string | null> }>
+  caption?: string
+}
+/**
+ * An end-to-end walkthrough of one concrete, named task — "walk me through how
+ * a real user actually does this, at scale". Rendered as a scenario card, the
+ * reuse-collapse diagram, a depicted screen flow, an actor-laned stage rail,
+ * and a swimlane summary. Every part is optional except the stages.
+ */
+export interface CSWalkthrough {
+  eyebrow: string
+  headline: string
+  lead: string
+  /** The concrete task, shown as a framed scenario card above the rail. */
+  scenario?: string
+  /** Distinct actors in first-appearance order; the index drives lane colour. */
+  actors?: string[]
+  /** "N deliverables, but only M units of authoring" — the whole point. */
+  collapse?: {
+    title: string
+    /** Deliverables the task names (e.g. 50 policies). */
+    total: number
+    /** Units of real authoring work the structured model actually needs. */
+    sources: number
+    flatLabel: string
+    flatNote: string
+    structuredLabel: string
+    structuredNote: string
+    caption?: string
+  }
+  /**
+   * How the journey was derived: the jobs-to-be-done it serves, written as job
+   * stories, and the process steps that produced it. Shown before the screens
+   * so the reader meets the user's need before the interface.
+   */
+  method?: {
+    title: string
+    lead?: string
+    jobs: Array<{ actor: string; when: string; want: string; so: string }>
+    steps: Array<{ title: string; body: string }>
+  }
+  /** The journey depicted as a left-to-right run of screens. */
+  screens?: { title: string; lead?: string; items: CSScreen[] }
+  stages: CSWalkStage[]
+  lanes?: CSLanes
+  footnote?: string
+}
+
 export interface CSCapabilitiesGrid {
   type: 'grid'
   headline?: string
@@ -321,6 +412,7 @@ export interface RichCaseStudy {
   decisions?: CSDecisions
   outcome?: CSOutcome
   interactions?: CSInteractions
+  walkthrough?: CSWalkthrough
   gamification?: CSGamification
   capabilities?: CSCapabilities
   techHandoff?: CSTechHandoff
