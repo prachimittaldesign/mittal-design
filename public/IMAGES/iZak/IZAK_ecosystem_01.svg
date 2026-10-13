@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="1600" height="1000" fill="#fbfaf6"/>
+<defs>
+<symbol id="i-light" viewBox="0 0 40 40"><path d="M14 22a9 9 0 1 1 12 0c-1.6 1.4-2.4 3-2.4 5h-7.2c0-2-.8-3.6-2.4-5z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M16.5 31h7M17.5 35h5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-blind" viewBox="0 0 40 40"><rect x="8" y="7" width="24" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M8 13h24M8 19h24M8 25h24" stroke="currentColor" stroke-width="2.2"/></symbol>
+<symbol id="i-thermo" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 24a9 9 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="20" cy="18" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-speaker" viewBox="0 0 40 40"><rect x="10" y="6" width="20" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="24" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="20" cy="12.5" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-camera" viewBox="0 0 40 40"><rect x="6" y="12" width="22" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M28 18l7-4v12l-7-4z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-lock" viewBox="0 0 40 40"><rect x="9" y="17" width="22" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 17v-4a6 6 0 0 1 12 0v4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="25.5" r="2.2" fill="currentColor"/></symbol>
+<symbol id="i-tv" viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 33h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="currentColor"/><path d="M12.5 20.5l5 5 10-11" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+<line x1="800.0" y1="247.0" x2="800.0" y2="401.0" stroke="#6e6e73" stroke-width="3" stroke-linecap="round"/><path d="M793.9 388.4 L800.0 401.0 L806.1 388.4" fill="none" stroke="#6e6e73" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="736.0" y="307.5" width="128" height="36" rx="18" fill="#fbfaf6" stroke="#6e6e73" stroke-width="2"/>
+<text x="800.0" y="332.5" font-size="17" fill="#6e6e73" font-weight="700" text-anchor="middle" letter-spacing="0.06em">GOVERNS</text>
+<line x1="378.8" y1="449.8" x2="616.4" y2="489.4" stroke="#b8860b" stroke-width="3" stroke-linecap="round"/><path d="M603.0 493.3 L616.4 489.4 L605.0 481.3" fill="none" stroke="#b8860b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="439.0" y="450.5" width="128" height="36" rx="18" fill="#fbfaf6" stroke="#b8860b" stroke-width="2"/>
+<text x="503.0" y="475.5" font-size="17" fill="#b8860b" font-weight="700" text-anchor="middle" letter-spacing="0.06em">SUPPLIES</text>
+<line x1="983.6" y1="489.4" x2="1221.2" y2="449.8" stroke="#0071e3" stroke-width="3" stroke-linecap="round"/><path d="M1209.8 457.9 L1221.2 449.8 L1207.8 445.9" fill="none" stroke="#0071e3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1033.0" y="450.5" width="128" height="36" rx="18" fill="#fbfaf6" stroke="#0071e3" stroke-width="2"/>
+<text x="1097.0" y="475.5" font-size="17" fill="#0071e3" font-weight="700" text-anchor="middle" letter-spacing="0.06em">CONSUMES</text>
+<line x1="503.6" y1="761.8" x2="670.8" y2="625.4" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round"/><path d="M664.9 638.1 L670.8 625.4 L657.2 628.7" fill="none" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="527.0" y="670.5" width="128" height="36" rx="18" fill="#fbfaf6" stroke="#1d8a6a" stroke-width="2"/>
+<text x="591.0" y="695.5" font-size="17" fill="#1d8a6a" font-weight="700" text-anchor="middle" letter-spacing="0.06em">EXTENDS</text>
+<line x1="1096.4" y1="761.8" x2="929.2" y2="625.4" stroke="#5b4bde" stroke-width="3" stroke-linecap="round"/><path d="M942.8 628.7 L929.2 625.4 L935.1 638.1" fill="none" stroke="#5b4bde" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="945.0" y="670.5" width="128" height="36" rx="18" fill="#fbfaf6" stroke="#5b4bde" stroke-width="2"/>
+<text x="1009.0" y="695.5" font-size="17" fill="#5b4bde" font-weight="700" text-anchor="middle" letter-spacing="0.06em">OWNS</text>
+<circle cx="800" cy="520" r="120" fill="#17171c"/>
+<circle cx="800" cy="520" r="138" fill="none" stroke="#5b4bde" stroke-width="3" opacity="0.5"/>
+<text x="800" y="514" font-size="48" fill="#fff" font-weight="700" text-anchor="middle">iZak</text>
+<text x="800" y="554" font-size="18" fill="#c7c7cc" font-weight="650" text-anchor="middle" letter-spacing="0.08em">THE PLATFORM</text>
+<rect x="635.0" y="81.0" width="330" height="178" rx="20" fill="#fff" stroke="#6e6e73" stroke-width="2.5"/>
+<text x="800" y="123.0" font-size="26" fill="#6e6e73" font-weight="700" text-anchor="middle">Regulators</text>
+<text x="800" y="165.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Government</text>
+<text x="800" y="201.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">ATSC</text>
+<text x="800" y="237.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">NAB</text>
+<rect x="95.0" y="341.0" width="330" height="178" rx="20" fill="#fff" stroke="#b8860b" stroke-width="2.5"/>
+<text x="260" y="383.0" font-size="26" fill="#b8860b" font-weight="700" text-anchor="middle">Peer producers</text>
+<text x="260" y="425.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Device manufacturers</text>
+<text x="260" y="461.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Service providers</text>
+<text x="260" y="497.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Businesses</text>
+<rect x="1175.0" y="341.0" width="330" height="178" rx="20" fill="#fff" stroke="#0071e3" stroke-width="2.5"/>
+<text x="1340" y="383.0" font-size="26" fill="#0071e3" font-weight="700" text-anchor="middle">Peer consumers</text>
+<text x="1340" y="425.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Citizens</text>
+<text x="1340" y="461.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Businesses</text>
+<text x="1340" y="497.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Service providers</text>
+<rect x="255.0" y="741.0" width="330" height="178" rx="20" fill="#fff" stroke="#1d8a6a" stroke-width="2.5"/>
+<text x="420" y="783.0" font-size="26" fill="#1d8a6a" font-weight="700" text-anchor="middle">Partners</text>
+<text x="420" y="825.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Broadcasters</text>
+<text x="420" y="861.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Franchise owners</text>
+<text x="420" y="897.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Retail</text>
+<rect x="1015.0" y="759.0" width="330" height="142" rx="20" fill="#fff" stroke="#5b4bde" stroke-width="2.5"/>
+<text x="1180" y="801.0" font-size="26" fill="#5b4bde" font-weight="700" text-anchor="middle">Platform owner</text>
+<text x="1180" y="843.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Holds the vision</text>
+<text x="1180" y="879.0" font-size="21" fill="#1d1d1f" font-weight="500" text-anchor="middle">Keeps it evolving</text>
+<text x="800" y="60" font-size="40" fill="#1d1d1f" font-weight="700" text-anchor="middle">The ecosystem canvas</text>
+</svg>
