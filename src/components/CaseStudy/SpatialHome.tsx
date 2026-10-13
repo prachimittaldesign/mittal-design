@@ -419,7 +419,7 @@ export function SpatialSection({
               disabled={floor !== 'all'}
               onClick={() => setExplode((x) => !x)}
             >
-              {explode ? 'Stack floors' : 'Explode floors'}
+              Explode floors
             </button>
           </div>
           <div className="sp__row">

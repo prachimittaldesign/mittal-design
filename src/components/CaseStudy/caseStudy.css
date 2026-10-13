@@ -1308,3 +1308,5 @@
 .cs .jf__cam { fill: #2a2a32; }
 .cs .jf__corner { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
 .cs .jf__qrmini { fill: none; stroke: #e5e5ea; stroke-width: 1.4; stroke-dasharray: 2.5 1.5; }
+/* The site's CSS reset strips list markers; the long-form lists read better with them. */
+.cs .pers__list, .cs .ftier__col ul, .cs .rnd__list { list-style: disc; }

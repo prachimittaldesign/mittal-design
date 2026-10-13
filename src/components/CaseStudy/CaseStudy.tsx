@@ -2014,7 +2014,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
     walkthrough: () => (
       <>
       {/* ---- 4b · walkthrough: one real task, onboarding → sharing ---- */}
-      {data.walkthrough && data.walkthrough.stages.length > 0 && (
+      {data.walkthrough && (
         <section className="section" id="cs-walkthrough" data-cs-section data-cs-anchor="The worked example" style={{ scrollMarginTop: 64 }}>
           <div className="wrap reveal">
             <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
