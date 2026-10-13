@@ -30,7 +30,7 @@ export const PROJECTS: Project[] = [
     label: 'iZak',
     sub: 'SMART HOME · SOFTWARE UPDATES',
     glyph: 'scanner',
-    desc: 'A TV-first smart home on NextGenTV: the screen the household shares runs the home, the phone sets it up, and software updates reach every device at once over broadcast. Product designer on the core team — research, IA, TV and mobile UI, the storyboard connecting iZak into Mo, and a LiDAR scanning feature.',
+    desc: 'A TV-first smart home on NextGenTV: the screen the household shares runs the home, the phone sets it up, and software updates reach every device at once over broadcast. Product designer on the core team: research, IA, TV and mobile UI, the storyboard connecting iZak into Mo, and a LiDAR scanning feature.',
     tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
     ogImage: '/IMAGES/izak-og.png',
     // Public rich case study — no password (see src/data/projects/izak.ts).
