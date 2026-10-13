@@ -477,6 +477,46 @@ function Lines({ x, y, w, n, gap = 7 }: { x: number; y: number; w: number; n: nu
   )
 }
 
+function TvWire({ children }: { children: ReactNode }) {
+  return (
+    <svg viewBox={`0 0 ${SW} ${SH}`} className="jf__svg" aria-hidden="true" focusable="false">
+      <rect x="2" y="8" width="156" height="92" rx="7" className="jf__tv" />
+      <path d="M66 104 H94" className="jf__stand" />
+      {children}
+    </svg>
+  )
+}
+
+function PhoneWire({ children }: { children: ReactNode }) {
+  return (
+    <svg viewBox={`0 0 ${SW} ${SH}`} className="jf__svg" aria-hidden="true" focusable="false">
+      <rect x="55" y="4" width="50" height="104" rx="9" className="jf__ph" />
+      <rect x="58.5" y="8" width="43" height="96" rx="6" className="jf__phscreen" />
+      {children}
+    </svg>
+  )
+}
+
+/** A stylised QR code: three finder squares and a scatter of modules. */
+function Qr({ x, y, s }: { x: number; y: number; s: number }) {
+  const u = s / 10
+  const mods = [[4, 1], [6, 2], [5, 4], [1, 5], [3, 5], [7, 5], [4, 6], [8, 7], [5, 8], [7, 8], [6, 6], [2, 4]]
+  return (
+    <g>
+      <rect x={x} y={y} width={s} height={s} rx={u * 0.6} className="jf__qrbg" />
+      {[[0.6, 0.6], [6.4, 0.6], [0.6, 6.4]].map(([fx, fy]) => (
+        <g key={`${fx}${fy}`}>
+          <rect x={x + fx * u} y={y + fy * u} width={3 * u} height={3 * u} rx={0.4 * u} className="jf__qrfg" />
+          <rect x={x + (fx + 0.8) * u} y={y + (fy + 0.8) * u} width={1.4 * u} height={1.4 * u} className="jf__qrbg" />
+        </g>
+      ))}
+      {mods.map(([mx, my]) => (
+        <rect key={`${mx}${my}`} x={x + mx * u} y={y + my * u} width={u} height={u} className="jf__qrfg" />
+      ))}
+    </g>
+  )
+}
+
 function ScreenWire({ kind }: { kind: string }) {
   switch (kind) {
     case 'invite':
@@ -632,6 +672,139 @@ function ScreenWire({ kind }: { kind: string }) {
           <circle cx="139" cy="38" r="9" className="jf__ok" />
           <path d="M134.5 38 l3 3 l6 -6" className="jf__okTick" />
         </Wire>
+      )
+    // ---- TV (dark, 16:9) and phone (portrait) frames for couch/pocket flows ----
+    case 'tv-signin':
+      return (
+        <TvWire>
+          <rect x="16" y="26" width="58" height="5" rx="2.5" className="jf__tvline" />
+          <rect x="16" y="37" width="70" height="3" rx="1.5" className="jf__tvsoft" />
+          <rect x="16" y="44" width="52" height="3" rx="1.5" className="jf__tvsoft" />
+          <rect x="16" y="60" width="44" height="9" rx="3" className="jf__cta" />
+          <Qr x={98} y={22} s={40} />
+          <rect x="98" y="68" width="40" height="4" rx="2" className="jf__tvsoft" />
+        </TvWire>
+      )
+    case 'ph-signin':
+      return (
+        <PhoneWire>
+          <rect x="64" y="20" width="26" height="4" rx="2" className="jf__line" />
+          <rect x="64" y="34" width="32" height="10" rx="2.5" className="jf__inp" />
+          <rect x="64" y="48" width="32" height="10" rx="2.5" className="jf__inp" />
+          <rect x="64" y="66" width="32" height="10" rx="3" className="jf__cta" />
+          <rect x="68" y="84" width="24" height="2.6" rx="1.3" className="jf__line jf__line--soft" />
+        </PhoneWire>
+      )
+    case 'tv-detected':
+      return (
+        <TvWire>
+          <rect x="12" y="18" width="136" height="13" rx="3" className="jf__tvbanner" />
+          <circle cx="20" cy="24.5" r="2.6" className="jf__cta" />
+          <rect x="27" y="23" width="56" height="3.4" rx="1.7" className="jf__tvline" />
+          {[12, 58, 104].map((x, i) => (
+            <g key={x}>
+              <rect x={x} y="38" width="42" height="40" rx="4" className="jf__tvcard" />
+              <circle cx={x + 21} cy="53" r="7" className="jf__tvsoftc" />
+              <rect x={x + 9} y="66" width="24" height="3" rx="1.5" className="jf__tvsoft" />
+              {i === 0 && <rect x={x - 2.5} y="35.5" width="47" height="45" rx="6" className="jf__focus" />}
+            </g>
+          ))}
+        </TvWire>
+      )
+    case 'tv-pair':
+      return (
+        <TvWire>
+          <rect x="14" y="22" width="62" height="56" rx="5" className="jf__tvcard" />
+          <circle cx="45" cy="42" r="10" className="jf__tvsoftc" />
+          <rect x="28" y="58" width="34" height="4" rx="2" className="jf__tvline" />
+          <rect x="32" y="66" width="26" height="3" rx="1.5" className="jf__tvsoft" />
+          <Qr x={92} y={24} s={42} />
+          <rect x="92" y="72" width="42" height="4" rx="2" className="jf__tvsoft" />
+        </TvWire>
+      )
+    case 'ph-pair':
+      return (
+        <PhoneWire>
+          <rect x="62" y="16" width="36" height="40" rx="3" className="jf__cam" />
+          {[[66, 20, 1, 1], [94, 20, -1, 1], [66, 52, 1, -1], [94, 52, -1, -1]].map(([x, y, dx, dy]) => (
+            <path key={`${x}${y}`} d={`M${x} ${y + 6 * dy} V${y} H${x + 6 * dx}`} className="jf__corner" />
+          ))}
+          <rect x="72" y="28" width="16" height="16" rx="1" className="jf__qrmini" />
+          <rect x="64" y="64" width="32" height="9" rx="2.5" className="jf__inp" />
+          <rect x="64" y="78" width="32" height="9" rx="3" className="jf__cta" />
+        </PhoneWire>
+      )
+    case 'tv-space':
+      return (
+        <TvWire>
+          <circle cx="24" cy="28" r="7" className="jf__tvsoftc" />
+          <rect x="36" y="24" width="52" height="4" rx="2" className="jf__tvline" />
+          <rect x="36" y="31" width="34" height="3" rx="1.5" className="jf__tvsoft" />
+          <rect x="16" y="44" width="40" height="3.6" rx="1.8" className="jf__tvline" />
+          {[16, 50, 84, 118].map((x, i) => (
+            <rect key={x} x={x} y="53" width="30" height="11" rx="5.5" className={i === 1 ? 'jf__cta' : 'jf__tvchip'} />
+          ))}
+          <rect x="47.5" y="50.5" width="35" height="16" rx="8" className="jf__focus" />
+          <rect x="104" y="74" width="44" height="10" rx="3" className="jf__tvchip" />
+        </TvWire>
+      )
+    case 'tv-templates':
+      return (
+        <TvWire>
+          <rect x="14" y="20" width="50" height="4.4" rx="2.2" className="jf__tvline" />
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const x = 14 + (i % 3) * 45
+            const y = 31 + Math.floor(i / 3) * 27
+            const blank = i === 5
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width="40" height="22" rx="3.5" className={blank ? 'jf__tvghost' : 'jf__tvcard'} />
+                {!blank && <rect x={x + 6} y={y + 7} width={20 + (i % 2) * 6} height="3" rx="1.5" className="jf__tvline" />}
+                {!blank && <rect x={x + 6} y={y + 13} width="16" height="2.6" rx="1.3" className="jf__tvsoft" />}
+                {i === 0 && <rect x={x - 2.5} y={y - 2.5} width="45" height="27" rx="5.5" className="jf__focus" />}
+              </g>
+            )
+          })}
+        </TvWire>
+      )
+    case 'tv-sentence':
+      return (
+        <TvWire>
+          <rect x="14" y="20" width="56" height="4.4" rx="2.2" className="jf__tvline" />
+          {[0, 1, 2, 3].map((i) => (
+            <g key={i}>
+              <rect x="14" y={34 + i * 13} width="18" height="3" rx="1.5" className="jf__tvsoft" />
+              <rect x="38" y={31 + i * 13} width={[52, 70, 44, 60][i]} height="9" rx="4.5" className={i === 0 ? 'jf__cta' : 'jf__tvchip'} />
+            </g>
+          ))}
+          <rect x="35.5" y="28.5" width="57" height="14" rx="7" className="jf__focus" />
+          <path d="M126 70 l10 6 l-10 6 z" className="jf__cta" />
+        </TvWire>
+      )
+    case 'tv-home':
+      return (
+        <TvWire>
+          <rect x="6" y="14" width="14" height="80" rx="3" className="jf__tvrail" />
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+            const x = 26 + (i % 4) * 31
+            const y = 18 + Math.floor(i / 4) * 38
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width="27" height="33" rx="3" className="jf__tvcard" />
+                {i === 3 && (
+                  <>
+                    <rect x={x + 4} y={y + 10} width="19" height="2.6" rx="1.3" className="jf__cta" />
+                    <rect x={x + 4} y={y + 17} width="12" height="2.6" rx="1.3" className="jf__cta" />
+                    <rect x={x + 4} y={y + 24} width="19" height="2.6" rx="1.3" className="jf__ok2" />
+                    <rect x={x - 2.5} y={y - 2.5} width="32" height="38" rx="5" className="jf__focus" />
+                  </>
+                )}
+                {i === 1 && <path d={`M${x + 10} ${y + 11} l9 5.5 l-9 5.5 z`} className="jf__cta" />}
+                {i !== 1 && i !== 3 && <rect x={x + 4} y={y + 23} width="16" height="2.6" rx="1.3" className="jf__tvsoft" />}
+              </g>
+            )
+          })}
+        </TvWire>
       )
     default:
       return <Wire>{null}</Wire>

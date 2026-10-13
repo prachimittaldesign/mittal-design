@@ -22,7 +22,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'izak',
     effort: 5,
-    ownership: 'lead',
+    ownership: 'collab',
     gx: 6,
     gy: 4,
     scale: 1.5,
@@ -30,7 +30,7 @@ export const PROJECTS: Project[] = [
     label: 'iZak',
     sub: 'SMART HOME · SOFTWARE UPDATES',
     glyph: 'scanner',
-    desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including its LiDAR and photogrammetry feature: a sensor-to-3D-model scanning workflow that captures a real space and turns it into a usable spatial model — the same spatial-capture direction now productized in interactive property mapping.',
+    desc: 'A TV-first smart home on NextGenTV: the screen the household shares runs the home, the phone sets it up, and software updates reach every device at once over broadcast. Product designer on the core team — research, IA, TV and mobile UI, the storyboard connecting iZak into Mo, and a LiDAR scanning feature.',
     tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
     ogImage: '/IMAGES/izak-og.png',
     // Public rich case study — no password (see src/data/projects/izak.ts).

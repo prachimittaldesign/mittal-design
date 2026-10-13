@@ -194,6 +194,16 @@ export type CSScreenKind =
   | 'review'
   | 'export'
   | 'published'
+  // TV + phone screens (iZak): the couch and the pocket
+  | 'tv-signin'
+  | 'ph-signin'
+  | 'tv-detected'
+  | 'tv-pair'
+  | 'ph-pair'
+  | 'tv-space'
+  | 'tv-templates'
+  | 'tv-sentence'
+  | 'tv-home'
 export interface CSScreen {
   kind: CSScreenKind
   no: string
