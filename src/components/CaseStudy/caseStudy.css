@@ -1121,3 +1121,168 @@
 @media (prefers-reduced-motion: reduce) {
   .cs .srail, .cs .srail.is-off, .cs .srail__line, .cs .srail__label, .cs .srail__list { transition: none; }
 }
+
+/* ===========================================================================
+   Long-form UX sections (opt-in per study via `order`).
+   =========================================================================== */
+.cs .section--tight { padding-top: clamp(36px, 5vw, 56px); padding-bottom: clamp(36px, 5vw, 56px); }
+
+/* snapshot: key facts */
+.cs .snap { margin: 14px 0 0; display: grid; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.cs .snap__item { background: #fff; padding: 16px 18px; }
+.cs .snap dt { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 6px; }
+.cs .snap dd { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--ink); }
+
+/* personas */
+.cs .pers { display: grid; gap: 16px; margin-top: clamp(26px, 3.4vw, 40px); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.cs .pers__card { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--pc); border-radius: 20px; padding: 22px 22px 24px; }
+.cs .pers__head { display: flex; align-items: center; gap: 14px; }
+.cs .pers__av { width: 52px; height: 52px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--pc); color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 0.02em; }
+.cs .pers__head h3 { font-size: 20px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+.cs .pers__title { font-size: 13.5px; color: var(--ink-2); margin: 2px 0 0; }
+.cs .pers__arch { display: inline-block; margin: 14px 0 0; font-size: 12px; font-weight: 650; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--pc); border: 1px solid currentColor; border-radius: 999px; padding: 3px 10px; }
+.cs .pers__about { font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 12px 0 0; }
+.cs .pers__quote { margin: 12px 0 0; padding-left: 12px; border-left: 3px solid var(--pc); font-size: 15px; font-style: italic; color: var(--ink-2); }
+.cs .pers__l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 18px 0 6px; }
+.cs .pers__l--on { color: var(--pc); }
+.cs .pers__list { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.cs .pers__list--on { color: var(--ink); }
+.cs .pers__list--on li::marker { color: var(--pc); }
+
+/* feature analysis: tiers */
+.cs .ftier__bench { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
+.cs .ftier__bench-l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin-right: 4px; }
+.cs .ftier__chip { font-size: 13px; font-weight: 600; color: var(--ink); background: var(--bg-gray); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+.cs .ftier__chip--on { background: #fff; color: var(--accent); border-color: var(--accent); }
+.cs .ftier { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.cs .ftier__col { background: var(--bg-gray); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.cs .ftier__col.is-on { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.cs .ftier__no { font-size: 12px; font-weight: 700; color: var(--accent); }
+.cs .ftier__col h3 { font-size: 18px; font-weight: 650; margin: 4px 0 6px; letter-spacing: -0.015em; }
+.cs .ftier__note { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .ftier__col ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14.5px; color: var(--ink); }
+.cs .ftier__base { margin-top: 16px; padding: 18px 20px; border-radius: 18px; background: var(--ink); color: #fff; }
+.cs .ftier__base h3 { font-size: 13px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: #c7c7cc; margin: 0 0 10px; }
+.cs .ftier__base-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs .ftier__base .ftier__chip--on { background: transparent; color: #fff; border-color: #8f9fff; }
+.cs .ftier__base p { font-size: 14px; line-height: 1.5; color: #c7c7cc; margin: 12px 0 0; }
+
+/* information architecture: one tree per surface */
+.cs .iat { display: grid; gap: 16px; margin-top: clamp(26px, 3.4vw, 40px); grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.cs .iat__tree { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px 22px; }
+.cs .iat__root { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+.cs .iat__root h3 { font-size: 20px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+.cs .iat__root p { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 2px 0 0; }
+.cs .iat__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cs .iat__list--sub { margin: 6px 0 2px 8px; padding-left: 14px; border-left: 1.5px solid var(--line); gap: 4px; }
+.cs .iat__node { position: relative; }
+.cs .iat__list--sub > .iat__node::before { content: ''; position: absolute; left: -14px; top: 0.75em; width: 10px; height: 1.5px; background: var(--line); }
+.cs .iat__label { font-size: 14px; color: var(--ink); }
+.cs .iat__label--top { font-size: 15.5px; font-weight: 650; }
+.cs .iat__note { display: block; font-size: 12.5px; color: var(--ink-2); line-height: 1.4; margin-top: 1px; }
+
+/* design rounds */
+.cs .rnd { list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+.cs .rnd__card { background: var(--bg-gray); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
+.cs .rnd__card.is-final { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.cs .rnd__card .fig { margin: -4px -4px 14px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+.cs .rnd__name { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); margin: 0; }
+.cs .rnd__card h3 { font-size: 19px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.3; margin: 6px 0 0; }
+.cs .rnd__l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 16px 0 6px; }
+.cs .rnd__l--on { color: var(--accent); }
+.cs .rnd__list { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+.cs .rnd__list b { font-weight: 600; color: var(--accent); }
+.cs .rnd__arrow { color: var(--ink-2); }
+.cs .rnd__kept { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* storyboard */
+.cs .sb { list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); counter-reset: sb; }
+.cs .sb__frame { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 12px 12px 16px; }
+.cs .sb__img { border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.cs .sb__no { font-size: 12px; font-weight: 700; color: var(--accent); margin: 0 4px; }
+.cs .sb__frame h3 { font-size: 16.5px; font-weight: 650; margin: 4px 4px 4px; letter-spacing: -0.01em; }
+.cs .sb__frame p:last-child { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0 4px; }
+
+/* ---- spatial: the interactive 3D home ---------------------------------- */
+.cs .sp__grid { display: grid; gap: 18px; margin-top: clamp(20px, 3vw, 32px); grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; }
+.cs .sp__stage { position: relative; width: 100%; background: radial-gradient(120% 90% at 50% 40%, #fff 0%, var(--bg-gray) 100%);
+  border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+.cs .sp__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: pan-y; user-select: none; }
+.cs .sp__svg:active { cursor: grabbing; }
+.cs .sp__svg:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; border-radius: 22px; }
+.cs .sp__slab { fill: #ece8de; stroke: #d6d0c3; stroke-width: 1; }
+.cs .sp__slab-edge { fill: #d8d2c4; stroke: #cbc4b4; stroke-width: 0.8; }
+.cs .sp__wall { fill: #f7f5ef; stroke: #d6d0c3; stroke-width: 1; }
+.cs .sp__room { fill: #fff; stroke: #cfc8b8; stroke-width: 1.3; cursor: pointer; transition: fill 0.2s; }
+.cs .sp__room:hover { fill: #f4f2ff; }
+.cs .sp__room.is-sel { fill: #ece9fb; stroke: var(--accent); stroke-width: 2.2; }
+.cs .sp__room.is-ev { animation: sp-ev 1.6s ease-in-out infinite; }
+@keyframes sp-ev { 0%, 100% { fill: #fff8e6; } 50% { fill: #ffe9b3; } }
+.cs .sp__room.is-sel.is-ev { animation: none; }
+.cs .sp__pt { fill: var(--accent); opacity: 0.55; }
+.cs .sp__stem { stroke: #9a9aa2; stroke-width: 1.3; }
+.cs .sp__pin { fill: #1d1d1f; stroke: #fff; stroke-width: 2; }
+.cs .sp__dev.is-off .sp__pin { fill: #8e8e93; }
+.cs .sp__dev.is-sel .sp__pin { fill: var(--accent); }
+.cs .sp__glyph { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs .sp__dev { cursor: pointer; }
+.cs .sp__labels { position: absolute; inset: 0; pointer-events: none; }
+.cs .sp__lab { position: absolute; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; color: var(--ink-2);
+  white-space: nowrap; background: rgba(255, 255, 255, 0.82); padding: 1px 6px; border-radius: 6px; }
+.cs .sp__lab.is-sel { color: var(--accent); font-weight: 700; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
+.cs[data-mode] .sp__lab { opacity: 1; }
+.cs .sp__callout { position: absolute; transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: 7px;
+  background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px;
+  white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); animation: sp-in 0.35s ease-out both; }
+.cs .sp__callout i { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); animation: sp-dot 1.6s infinite; }
+@keyframes sp-in { from { opacity: 0; transform: translate(-50%, -80%); } to { opacity: 1; transform: translate(-50%, -100%); } }
+@keyframes sp-dot { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); } 100% { box-shadow: 0 0 0 9px rgba(52, 211, 153, 0); } }
+.cs .sp__hint { position: absolute; left: 14px; bottom: 10px; margin: 0; font-size: 12px; color: var(--ink-2); pointer-events: none; }
+
+.cs .sp__panel { display: grid; gap: 14px; }
+.cs .sp__modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--bg-gray); border: 1px solid var(--line); border-radius: 14px; padding: 5px; }
+.cs .sp__btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; border: 0; border-radius: 10px;
+  background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.cs .sp__btn[aria-pressed='true'] { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+.cs .sp__btn-no { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--line); color: var(--ink); }
+.cs .sp__btn[aria-pressed='true'] .sp__btn-no { background: var(--accent); color: #fff; }
+.cs .sp__caption { font-size: 15px; line-height: 1.55; color: var(--ink); margin: 0; min-height: 4.6em; }
+.cs .sp__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cs .sp__seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs .sp__chip { min-height: 36px; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.cs .sp__chip[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.cs .sp__chip:disabled { opacity: 0.45; cursor: not-allowed; }
+.cs .sp__icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 19px; line-height: 1; color: var(--ink); cursor: pointer; }
+.cs .sp__btn:focus-visible, .cs .sp__chip:focus-visible, .cs .sp__icon:focus-visible, .cs .sp__room-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .sp__room-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+.cs .sp__room-floor { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 0; }
+.cs .sp__room-card h3 { font-size: 18px; font-weight: 650; margin: 2px 0 8px; }
+.cs .sp__meta { font-size: 14px; color: var(--ink-2); margin: 0; }
+.cs .sp__devs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cs .sp__devs li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 9px; font-size: 14px; }
+.cs .sp__devs svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cs .sp__dev-l { color: var(--ink); font-weight: 600; }
+.cs .sp__dev-s { color: var(--ink-2); font-size: 13px; text-align: right; }
+.cs .sp__devs li.is-off svg { stroke: #8e8e93; }
+.cs .sp__devs li.is-off .sp__dev-l { color: var(--ink-2); font-weight: 500; }
+.cs .sp__rooms { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs .sp__room-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 11px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg-gray); font: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.cs .sp__room-btn span { font-size: 11px; font-weight: 700; color: var(--accent); }
+.cs .sp__room-btn[aria-pressed='true'] { background: #ece9fb; border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  .cs .sp__grid { grid-template-columns: minmax(0, 1fr); }
+  .cs .sp__caption { min-height: 0; }
+}
+@media (max-width: 560px) {
+  /* Too many labels for a phone: keep only the selected room's. */
+  .cs .sp__lab:not(.is-sel) { display: none; }
+  .cs .sp__callout { font-size: 11.5px; padding: 5px 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs .sp__room.is-ev, .cs .sp__callout, .cs .sp__callout i { animation: none; }
+}

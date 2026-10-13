@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import {
   csImage,
   type CSExplainer,
+  type CSIaNode,
   type CSMatrix,
   type CSModal,
   type CSNamedCards,
@@ -11,6 +12,7 @@ import {
   type RichCaseStudy,
 } from '../../data/caseStudyTypes'
 import { PROJECTS } from '../../data/projects'
+import { SpatialSection } from './SpatialHome'
 import './caseStudy.css'
 
 /**
@@ -1047,6 +1049,21 @@ function FrameworkWheel({
 
 const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
 
+// ---- information architecture tree -----------------------------------------
+function IaList({ nodes, depth = 0 }: { nodes: CSIaNode[]; depth?: number }) {
+  return (
+    <ul className={depth === 0 ? 'iat__list' : 'iat__list iat__list--sub'}>
+      {nodes.map((n) => (
+        <li className="iat__node" key={n.label}>
+          <span className={depth === 0 ? 'iat__label iat__label--top' : 'iat__label'}>{n.label}</span>
+          {n.note && <span className="iat__note">{n.note}</span>}
+          {n.children && n.children.length > 0 && <IaList nodes={n.children} depth={depth + 1} />}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 // ---- scroll timeline: a side rail for the long worked-example stretch -------
 // The top nav already jumps between sections, so this is not a second nav for
 // the whole page. It covers only the elements marked data-cs-anchor: the
@@ -1415,6 +1432,223 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   }
 
   const sections: Record<string, () => ReactNode> = {
+    // ---- long-form UX sections (opt-in via `order`; not in DEFAULT_ORDER) ----
+    snapshot: () =>
+      data.snapshot && (
+        <section className="section section--tight" id="cs-snapshot" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.snapshot.eyebrow ?? 'Project snapshot'}</p>
+            <dl className="snap">
+              {data.snapshot.items.map((it) => (
+                <div className="snap__item" key={it.k}>
+                  <dt>{it.k}</dt>
+                  <dd>{rich(it.v)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ),
+    personas: () =>
+      data.personas && (
+        <section className="section section--gray" id="cs-personas" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.personas.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.personas.headline}</h2>
+            {data.personas.lead && <p className="lead">{rich(data.personas.lead)}</p>}
+            <div className="pers">
+              {data.personas.items.map((p) => (
+                <article className="pers__card" key={p.name} style={{ ['--pc' as string]: p.colour ?? 'var(--accent)' }}>
+                  <div className="pers__head">
+                    <span className="pers__av" aria-hidden="true">
+                      {p.name.split(' ').map((w) => w[0]).join('').slice(0, 2)}
+                    </span>
+                    <div>
+                      <h3>{p.name}</h3>
+                      <p className="pers__title">{p.title}</p>
+                    </div>
+                  </div>
+                  <p className="pers__arch">{p.archetype}</p>
+                  <p className="pers__about">{rich(p.about)}</p>
+                  {p.quote && <blockquote className="pers__quote">{p.quote}</blockquote>}
+                  <p className="pers__l">Needs</p>
+                  <ul className="pers__list">
+                    {p.needs.map((n) => (
+                      <li key={n}>{rich(n)}</li>
+                    ))}
+                  </ul>
+                  <p className="pers__l pers__l--on">What this persona forced into the design</p>
+                  <ul className="pers__list pers__list--on">
+                    {p.forced.map((n) => (
+                      <li key={n}>{rich(n)}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+            {data.personas.footnote && <p className="cmp__note">{rich(data.personas.footnote)}</p>}
+          </div>
+        </section>
+      ),
+    featureTiers: () =>
+      data.featureTiers && (
+        <section className="section" id="cs-features" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.featureTiers.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.featureTiers.headline}</h2>
+            {data.featureTiers.lead && <p className="lead">{rich(data.featureTiers.lead)}</p>}
+            {data.featureTiers.benchmarked && (
+              <div className="ftier__bench">
+                <span className="ftier__bench-l">Benchmarked</span>
+                {data.featureTiers.benchmarked.map((b) => (
+                  <span className="ftier__chip" key={b}>{b}</span>
+                ))}
+              </div>
+            )}
+            <ol className="ftier">
+              {data.featureTiers.tiers.map((t, i) => (
+                <li className={t.highlight ? 'ftier__col is-on' : 'ftier__col'} key={t.name}>
+                  <span className="ftier__no">{String(i + 1).padStart(2, '0')}</span>
+                  <h3>{t.name}</h3>
+                  <p className="ftier__note">{rich(t.note)}</p>
+                  {t.items.length > 0 && (
+                    <ul>
+                      {t.items.map((it) => (
+                        <li key={it}>{rich(it)}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ol>
+            {data.featureTiers.baseline && (
+              <div className="ftier__base">
+                <h3>{data.featureTiers.baseline.title}</h3>
+                <div className="ftier__base-items">
+                  {data.featureTiers.baseline.items.map((b) => (
+                    <span className="ftier__chip ftier__chip--on" key={b}>{b}</span>
+                  ))}
+                </div>
+                {data.featureTiers.baseline.note && <p>{rich(data.featureTiers.baseline.note)}</p>}
+              </div>
+            )}
+            {data.featureTiers.footnote && <p className="cmp__note">{rich(data.featureTiers.footnote)}</p>}
+          </div>
+        </section>
+      ),
+    ia: () =>
+      data.ia && (
+        <section className="section section--gray" id="cs-ia" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.ia.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.ia.headline}</h2>
+            {data.ia.lead && <p className="lead">{rich(data.ia.lead)}</p>}
+            <div className="iat">
+              {data.ia.trees.map((t) => (
+                <div className="iat__tree" key={t.surface}>
+                  <div className="iat__root">
+                    <h3>{t.surface}</h3>
+                    <p>{t.role}</p>
+                  </div>
+                  <IaList nodes={t.nodes} />
+                </div>
+              ))}
+            </div>
+            {data.ia.footnote && <p className="cmp__note">{rich(data.ia.footnote)}</p>}
+          </div>
+        </section>
+      ),
+    rounds: () =>
+      data.rounds && (
+        <section className="section" id="cs-rounds" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.rounds.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.rounds.headline}</h2>
+            {data.rounds.lead && <p className="lead">{rich(data.rounds.lead)}</p>}
+            <ol className="rnd">
+              {data.rounds.items.map((r, i) => (
+                <li className={i === data.rounds!.items.length - 1 ? 'rnd__card is-final' : 'rnd__card'} key={r.name}>
+                  {r.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={r.image} />
+                    </div>
+                  )}
+                  <p className="rnd__name">{r.name}</p>
+                  <h3>{r.title}</h3>
+                  {r.problems.length > 0 && (
+                    <>
+                      <p className="rnd__l">{r.fixes ? 'Problem → fix' : 'What went wrong'}</p>
+                      <ul className="rnd__list">
+                        {r.problems.map((pr, k) => (
+                          <li key={pr}>
+                            {rich(pr)}
+                            {r.fixes?.[k] && (
+                              <>
+                                <span className="rnd__arrow" aria-hidden="true"> → </span>
+                                <span className="visually-hidden">, fixed by </span>
+                                <b>{rich(r.fixes[k])}</b>
+                              </>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {r.kept && r.kept.length > 0 && (
+                    <>
+                      <p className="rnd__l rnd__l--on">Carried forward</p>
+                      <div className="rnd__kept">
+                        {r.kept.map((k) => (
+                          <span className="ftier__chip ftier__chip--on" key={k}>{k}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      ),
+    storyboard: () =>
+      data.storyboard && (
+        <section className="section section--gray" id="cs-storyboard" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.storyboard.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.storyboard.headline}</h2>
+            {data.storyboard.lead && <p className="lead">{rich(data.storyboard.lead)}</p>}
+            <ol className="sb">
+              {data.storyboard.frames.map((f) => (
+                <li className="sb__frame" key={f.no}>
+                  {f.image && (
+                    <div className="sb__img">
+                      <Shot cs={data} id={f.image} />
+                    </div>
+                  )}
+                  <p className="sb__no">{f.no}</p>
+                  <h3>{f.title}</h3>
+                  <p>{rich(f.body)}</p>
+                </li>
+              ))}
+            </ol>
+            {data.storyboard.footnote && <p className="cmp__note">{rich(data.storyboard.footnote)}</p>}
+          </div>
+        </section>
+      ),
+    spatial: () =>
+      data.spatial && (
+        <section className="section" id="cs-spatial" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow">{data.spatial.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.spatial.headline}</h2>
+            <SpatialSection
+              sp={data.spatial}
+              lead={data.spatial.lead ? rich(data.spatial.lead) : undefined}
+              footnote={data.spatial.footnote ? rich(data.spatial.footnote) : undefined}
+            />
+          </div>
+        </section>
+      ),
     hero: () => (
       <>
       {/* ---- 1 · hero ---- */}
