@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="1600" height="1000" fill="#fbfaf6"/>
+<defs>
+<symbol id="i-light" viewBox="0 0 40 40"><path d="M14 22a9 9 0 1 1 12 0c-1.6 1.4-2.4 3-2.4 5h-7.2c0-2-.8-3.6-2.4-5z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M16.5 31h7M17.5 35h5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-blind" viewBox="0 0 40 40"><rect x="8" y="7" width="24" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M8 13h24M8 19h24M8 25h24" stroke="currentColor" stroke-width="2.2"/></symbol>
+<symbol id="i-thermo" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 24a9 9 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="20" cy="18" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-speaker" viewBox="0 0 40 40"><rect x="10" y="6" width="20" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="24" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="20" cy="12.5" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-camera" viewBox="0 0 40 40"><rect x="6" y="12" width="22" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M28 18l7-4v12l-7-4z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-lock" viewBox="0 0 40 40"><rect x="9" y="17" width="22" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 17v-4a6 6 0 0 1 12 0v4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="25.5" r="2.2" fill="currentColor"/></symbol>
+<symbol id="i-tv" viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 33h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="currentColor"/><path d="M12.5 20.5l5 5 10-11" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+<line x1="800" y1="70" x2="800" y2="900" stroke="#d2d2d7" stroke-width="2"/>
+<text x="400" y="92" font-size="40" fill="#1d1d1f" font-weight="700" text-anchor="middle">Today</text>
+<text x="400" y="136" font-size="28" fill="#6e6e73" font-weight="500" text-anchor="middle">every device fetches its own update</text>
+<path d="M318 250 a44 44 0 0 1 40 -62 a58 58 0 0 1 108 10 a42 42 0 0 1 22 52 Z" fill="#fff" stroke="#6e6e73" stroke-width="3" stroke-linejoin="round"/>
+<path d="M140.0 800 L140.0 527.4 L400 330.0 L660.0 527.4 L660.0 800 Z" fill="#fff" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<line x1="250.0" y1="526.0" x2="330.0" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M331.9 273.9 L330.0 262.0 L321.9 270.8" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="400.0" y1="526.0" x2="412.5" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M417.2 273.0 L412.5 262.0 L406.8 272.5" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="550.0" y1="526.0" x2="495.0" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M502.3 271.5 L495.0 262.0 L492.1 273.6" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="250.0" y1="656.0" x2="330.0" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M333.0 273.6 L330.0 262.0 L322.7 271.6" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="400.0" y1="656.0" x2="412.5" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M417.4 273.0 L412.5 262.0 L406.9 272.6" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="550.0" y1="656.0" x2="495.0" y2="262.0" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M501.7 272.0 L495.0 262.0 L491.3 273.4" fill="none" stroke="#9a9aa2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="250" cy="560" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-light" x="228" y="538" width="44" height="44" style="color:#1d1d1f"/>
+<circle cx="400" cy="560" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-blind" x="378" y="538" width="44" height="44" style="color:#1d1d1f"/>
+<circle cx="550" cy="560" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-thermo" x="528" y="538" width="44" height="44" style="color:#1d1d1f"/>
+<circle cx="250" cy="690" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-speaker" x="228" y="668" width="44" height="44" style="color:#1d1d1f"/>
+<circle cx="400" cy="690" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-camera" x="378" y="668" width="44" height="44" style="color:#1d1d1f"/>
+<circle cx="550" cy="690" r="38" fill="#f3f0e8" stroke="#d2d2d7" stroke-width="2"/>
+<use href="#i-lock" x="528" y="668" width="44" height="44" style="color:#1d1d1f"/>
+<text x="400" y="870" font-size="30" fill="#1d1d1f" font-weight="650" text-anchor="middle">6 downloads · 6 schedules</text>
+<text x="400" y="910" font-size="30" fill="#c2410c" font-weight="650" text-anchor="middle">6 chances to be skipped</text>
+<text x="1200" y="92" font-size="40" fill="#5b4bde" font-weight="700" text-anchor="middle">With iZak</text>
+<text x="1200" y="136" font-size="28" fill="#6e6e73" font-weight="500" text-anchor="middle">one broadcast reaches every home in range</text>
+<path d="M1140 340 A60 60 0 0 1 1260 340" fill="none" stroke="#5b4bde" stroke-width="4" stroke-linecap="round" opacity="0.70"/>
+<path d="M1095 340 A105 105 0 0 1 1305 340" fill="none" stroke="#5b4bde" stroke-width="4" stroke-linecap="round" opacity="0.52"/>
+<path d="M1050 340 A150 150 0 0 1 1350 340" fill="none" stroke="#5b4bde" stroke-width="4" stroke-linecap="round" opacity="0.34"/>
+<path d="M1166 500 L1200 340 L1234 500 M1176 450 H1224 M1186 400 H1214" fill="none" stroke="#1d1d1f" stroke-width="5" stroke-linejoin="round"/>
+<circle cx="1200" cy="340" r="12" fill="#5b4bde"/>
+<line x1="1200.0" y1="360.0" x2="950.0" y2="572.0" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round"/><path d="M955.7 559.2 L950.0 572.0 L963.6 568.5" fill="none" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1200.0" y1="360.0" x2="1110.0" y2="642.0" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round"/><path d="M1108.0 628.1 L1110.0 642.0 L1119.6 631.8" fill="none" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1200.0" y1="360.0" x2="1290.0" y2="642.0" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round"/><path d="M1280.4 631.8 L1290.0 642.0 L1292.0 628.1" fill="none" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1200.0" y1="360.0" x2="1450.0" y2="572.0" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round"/><path d="M1436.4 568.5 L1450.0 572.0 L1444.3 559.2" fill="none" stroke="#5b4bde" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M884.0 690 L884.0 608.8 L950 550.0 L1016.0 608.8 L1016.0 690 Z" fill="#fff" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<use href="#i-tv" x="928" y="620.8" width="44" height="44" style="color:#5b4bde"/>
+<circle cx="924" cy="668" r="7" fill="#6e6e73"/>
+<circle cx="950" cy="668" r="7" fill="#6e6e73"/>
+<circle cx="976" cy="668" r="7" fill="#6e6e73"/>
+<path d="M1044.0 760 L1044.0 678.8 L1110 620.0 L1176.0 678.8 L1176.0 760 Z" fill="#fff" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<use href="#i-tv" x="1088" y="690.8" width="44" height="44" style="color:#5b4bde"/>
+<circle cx="1084" cy="738" r="7" fill="#6e6e73"/>
+<circle cx="1110" cy="738" r="7" fill="#6e6e73"/>
+<circle cx="1136" cy="738" r="7" fill="#6e6e73"/>
+<path d="M1224.0 760 L1224.0 678.8 L1290 620.0 L1356.0 678.8 L1356.0 760 Z" fill="#fff" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<use href="#i-tv" x="1268" y="690.8" width="44" height="44" style="color:#5b4bde"/>
+<circle cx="1264" cy="738" r="7" fill="#6e6e73"/>
+<circle cx="1290" cy="738" r="7" fill="#6e6e73"/>
+<circle cx="1316" cy="738" r="7" fill="#6e6e73"/>
+<path d="M1384.0 690 L1384.0 608.8 L1450 550.0 L1516.0 608.8 L1516.0 690 Z" fill="#fff" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<use href="#i-tv" x="1428" y="620.8" width="44" height="44" style="color:#5b4bde"/>
+<circle cx="1424" cy="668" r="7" fill="#6e6e73"/>
+<circle cx="1450" cy="668" r="7" fill="#6e6e73"/>
+<circle cx="1476" cy="668" r="7" fill="#6e6e73"/>
+<text x="1200" y="870" font-size="30" fill="#1d1d1f" font-weight="650" text-anchor="middle">1 signal · every home · same moment</text>
+<text x="1200" y="910" font-size="28" fill="#6e6e73" font-weight="500" text-anchor="middle">the TV’s tuner passes it to each device</text>
+<text x="800" y="972" font-size="22" fill="#6e6e73" font-weight="500" text-anchor="middle">U.S. homes averaged 22–25 connected devices in 2021–22 (Deloitte, Connectivity and Mobile Trends).</text>
+</svg>

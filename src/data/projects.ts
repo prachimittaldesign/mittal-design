@@ -1,5 +1,6 @@
 import type { Project, FillerTile } from '../types'
 import { SAMSUNG_EQ_CASE_STUDY } from './projects/samsungeq'
+import { IZAK_CASE_STUDY } from './projects/izak'
 
 // Twelve shipped surfaces + the architecture "Studio" cottage, mapped onto the
 // complexity (x) / audience (y) graph.
@@ -21,7 +22,7 @@ export const PROJECTS: Project[] = [
   {
     id: 'izak',
     effort: 5,
-    ownership: 'lead',
+    ownership: 'collab',
     gx: 6,
     gy: 4,
     scale: 1.5,
@@ -29,8 +30,11 @@ export const PROJECTS: Project[] = [
     label: 'iZak',
     sub: 'SMART HOME · SOFTWARE UPDATES',
     glyph: 'scanner',
-    desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including its LiDAR and photogrammetry feature: a sensor-to-3D-model scanning workflow that captures a real space and turns it into a usable spatial model — the same spatial-capture direction now productized in interactive property mapping.',
+    desc: 'A TV-first smart home on NextGenTV: the screen the household shares runs the home, the phone sets it up, and software updates reach every device at once over broadcast. Product designer on the core team: research, IA, TV and mobile UI, the storyboard connecting iZak into Mo, and a LiDAR scanning feature.',
     tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
+    ogImage: '/IMAGES/izak-og.png',
+    // Public rich case study — no password (see src/data/projects/izak.ts).
+    richCaseStudy: IZAK_CASE_STUDY,
   },
   {
     id: 'paas',
@@ -142,7 +146,7 @@ export const PROJECTS: Project[] = [
     label: 'Samsung EQ',
     sub: 'EMOTIONAL UX · SAMSUNG PRISM',
     glyph: 'heart',
-    desc: 'A Samsung PRISM research programme with MIT ID Pune — four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
+    desc: 'A Samsung PRISM research programme with MIT ID Pune: four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
     tags: ['Research', 'Emotional Design', 'Mobile', 'Framework'],
     ogImage: '/IMAGES/samsungeq-og.png',
     // Public rich case study — no password (see src/data/projects/samsungeq.ts).
@@ -240,7 +244,7 @@ export const PROJECTS: Project[] = [
     sub: 'TV SUPER APPS · CES 2024',
     glyph: 'tv',
     featured: true,
-    desc: 'End-to-end design of two smart-TV apps in a 12-app suite — Mo, a community home screen, and Revee, adaptive streaming with non-interruptive advertising. Showcased at CES 2024.',
+    desc: 'End-to-end design of two smart-TV apps in a 12-app suite: Mo, a community home screen, and Revee, adaptive streaming with non-interruptive advertising. Showcased at CES 2024.',
     tags: ['Consumer', 'TV', 'Information Architecture', 'Lean-Back UX', 'Smart TV'],
     locked: true,
     teaser: {

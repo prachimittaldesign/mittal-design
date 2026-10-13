@@ -580,3 +580,733 @@
 .cs .csfig { margin: clamp(28px, 4vw, 44px) 0 0; }
 .cs .csfig .shot { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
 .cs .csfig figcaption { margin-top: 12px; font-size: 13px; line-height: 1.55; color: var(--ink-2); max-width: 76ch; }
+
+/* ---- walkthrough: one real task, onboarding → sharing ---------------------
+   The reuse-collapse diagram plus an actor-laned stage rail. Lane colours are
+   assigned by actor index (set as data-lane) so the handoffs between roles
+   read as a pattern down the left edge, not as decoration. */
+.cs .wt__scenario {
+  margin: clamp(26px, 3.4vw, 38px) auto 0;
+  max-width: 62ch;
+  padding: 20px 24px;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-gray);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.cs .wt__collapse { margin-top: clamp(34px, 4.6vw, 54px); }
+.cs .wt__collapse-h {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+/* Capped so the unit squares land near 22px rather than ~30px on a wide
+   column — still a full-looking band, but at the weight of the body type. */
+.cs .wt__fig { margin: 0; max-width: 780px; }
+.cs .wt__band { padding: 0 0 20px; }
+.cs .wt__band--on { border-top: 1px solid var(--line); padding-top: 22px; }
+.cs .wt__svg { width: 100%; height: auto; display: block; }
+.cs .wt__sq--flat { fill: var(--ink); opacity: 0.17; }
+.cs .wt__sq--src { fill: var(--accent); }
+/* Band labels and tails are DOM, not SVG <text>: the diagram scales to ~0.58
+   at phone width, which would render embedded text at ~6px. */
+.cs .wt__band-l {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+}
+.cs .wt__band-l--on { color: var(--accent); }
+.cs .wt__tail { font-size: 13px; line-height: 1.5; color: var(--ink-2); margin: 12px 0 0; }
+.cs .wt__tail--on { color: var(--ink); font-weight: 600; }
+.cs .wt__fig-cap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.cs .wt__legend { display: flex; align-items: baseline; gap: 9px; max-width: 42ch; }
+.cs .wt__key { width: 11px; height: 11px; border-radius: 2px; flex: none; transform: translateY(1px); }
+.cs .wt__key--flat { background: var(--ink); opacity: 0.17; }
+.cs .wt__key--src { background: var(--accent); }
+
+.cs .wt__note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 74ch;
+  margin-top: 20px;
+}
+.cs .wt__note--foot { margin-top: clamp(30px, 3.6vw, 42px); }
+
+.cs .wt__rail {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.cs .wt__stage {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  padding: 24px 0 24px 18px;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--lane, var(--line));
+}
+.cs .wt__stage:last-child { border-bottom: 1px solid var(--line); }
+/* Four lanes — enough for the roles any one task involves. Shared by the
+   stage rail and the swimlane rows so a role keeps one colour throughout. */
+.cs [data-lane='0'] { --lane: #5b4bde; }
+.cs [data-lane='1'] { --lane: #0071e3; }
+.cs [data-lane='2'] { --lane: #b8860b; }
+.cs [data-lane='3'] { --lane: #1d8a6a; }
+.cs .wt__no {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--lane, var(--ink-2));
+  padding-top: 3px;
+}
+.cs .wt__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+}
+.cs .wt__head h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+.cs .wt__actor {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lane, var(--ink-2));
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.cs .wt__body > p { font-size: 16px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 68ch; }
+.cs .wt__scale {
+  margin-top: 12px !important;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 15px !important;
+  color: var(--ink) !important;
+}
+.cs .wt__scale-l {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-right: 9px;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .cs .wt__stage { grid-template-columns: 1fr; gap: 8px; padding-left: 14px; }
+  .cs .wt__no { padding-top: 0; }
+  .cs .wt__scenario { padding: 16px 18px; font-size: 16px; }
+}
+
+/* ---- walkthrough: blocks, screen flow, swimlane -------------------------- */
+.cs .wt__block { margin-top: clamp(40px, 5.2vw, 64px); }
+.cs .wt__block-lead { font-size: 15px; line-height: 1.55; color: var(--ink-2); max-width: 66ch; margin: -6px 0 18px; }
+.cs .wt__rail-h { margin: clamp(40px, 5.2vw, 64px) 0 0; }
+
+/* Screen flow: a horizontal run of wireframes. Scrolls sideways (same
+   keyboard-focusable region pattern as the comparison table) so the path
+   always reads left to right, on a phone as much as on a laptop. */
+.cs .jf {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 4px 2px 14px;
+}
+.cs .jf:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 8px; }
+.cs .jf__track { list-style: none; margin: 0; padding: 0; display: flex; width: max-content; }
+.cs .jf__step { display: flex; align-items: flex-start; scroll-snap-align: start; }
+.cs .jf__card { width: 196px; flex: none; }
+.cs .jf__viz { background: var(--bg-gray); border-radius: 12px; padding: 10px; }
+.cs .jf__svg { width: 100%; height: auto; display: block; }
+.cs .jf__arrow { width: 30px; height: 12px; flex: none; margin-top: 66px; position: relative; }
+.cs .jf__arrow::before {
+  content: ''; position: absolute; left: 6px; right: 8px; top: 5.25px; height: 1.5px;
+  background: var(--accent); opacity: 0.55;
+}
+.cs .jf__arrow::after {
+  content: ''; position: absolute; right: 7px; top: 2px; width: 7px; height: 7px;
+  border-top: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent);
+  transform: rotate(45deg); opacity: 0.55;
+}
+.cs .jf__no { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; color: var(--accent); margin: 14px 0 4px; }
+.cs .jf__title { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; margin: 0 0 6px; color: var(--ink); }
+.cs .jf__body { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .jf__aff { font-size: 12.5px; line-height: 1.45; font-weight: 600; color: var(--ink); margin: 8px 0 0; }
+.cs .jf__hint { font-size: 12px; color: var(--ink-2); margin: 4px 0 0; }
+
+/* Wireframe language. Neutral greys for structure; the accent marks only the
+   element the user acts on, so following the accent follows the path. */
+.cs .jf__frame { fill: #fff; stroke: var(--line); stroke-width: 1.2; }
+.cs .jf__hair { fill: none; stroke: var(--line); stroke-width: 1; }
+.cs .jf__dot { fill: var(--line); }
+.cs .jf__panel { fill: var(--bg-gray); }
+.cs .jf__page { fill: #fff; stroke: var(--line); stroke-width: 1; }
+.cs .jf__sel { stroke: var(--accent); stroke-width: 2; }
+.cs .jf__line { fill: var(--ink); opacity: 0.55; }
+.cs .jf__line--soft { opacity: 0.2; }
+.cs .jf__fill { fill: var(--ink); opacity: 0.08; }
+.cs .jf__fillA { fill: var(--accent); opacity: 0.85; }
+.cs .jf__cta { fill: var(--accent); }
+.cs .jf__ghost { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 3 2.5; }
+.cs .jf__plus { stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; }
+.cs .jf__tip { fill: var(--accent); opacity: 0.1; }
+.cs .jf__hl { fill: var(--accent); opacity: 0.14; }
+.cs .jf__pop { fill: #fff; stroke: var(--accent); stroke-width: 1.4; }
+.cs .jf__toggle { fill: var(--accent); }
+.cs .jf__knob { fill: #fff; }
+.cs .jf__bubble { fill: var(--bg-gray); }
+.cs .jf__bubbleA { fill: var(--accent); opacity: 0.16; }
+.cs .jf__rowA { fill: var(--accent); opacity: 0.14; }
+.cs .jf__mark { fill: var(--accent); opacity: 0.35; }
+.cs .jf__ok { fill: #1d8a6a; }
+.cs .jf__okTick { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Swimlane: phases across, roles down. An empty (dashed) cell means that role
+   is not involved, so handoffs and the stretches the system covers alone read
+   at a glance. */
+.cs .sl { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+.cs .sl:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; border-radius: 8px; }
+.cs .sl__table { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 860px; table-layout: fixed; }
+.cs .sl__corner { width: 124px; }
+.cs .sl__phase {
+  font-size: 12.5px; font-weight: 600; text-align: left; color: var(--ink);
+  padding: 0 6px 6px; vertical-align: bottom; line-height: 1.3;
+}
+.cs .sl__pno { display: block; font-size: 11px; font-weight: 650; letter-spacing: 0.05em; color: var(--ink-2); margin-bottom: 2px; }
+.cs .sl__actor {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--lane, var(--ink-2)); text-align: left; vertical-align: middle;
+  padding: 10px 8px 10px 10px; border-left: 3px solid var(--lane, var(--line));
+}
+.cs .sl__cell {
+  border: 1px dashed var(--line); border-radius: 8px; padding: 9px;
+  font-size: 12.5px; line-height: 1.4; color: var(--ink); vertical-align: top;
+}
+.cs .sl__cell--on {
+  border: 1px solid transparent;
+  background: var(--bg-gray);
+  background: color-mix(in srgb, var(--lane, var(--accent)) 11%, #fff);
+}
+
+@media (max-width: 640px) {
+  .cs .jf__card { width: 184px; }
+}
+
+/* ---- walkthrough: jobs-to-be-done + the process chain -------------------- */
+.cs .jtbd { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.cs .jtbd__card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--lane, var(--ink-2));
+  border-radius: 14px;
+  padding: 16px 18px 18px;
+}
+.cs .jtbd__actor {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--lane, var(--ink-2)); margin: 0 0 10px;
+}
+.cs .jtbd__story { font-size: 15px; line-height: 1.6; color: var(--ink); margin: 0; }
+.cs .jtbd__k { font-weight: 650; color: var(--ink-2); }
+
+/* The process as a connected chain: a rule runs through numbered nodes, so
+   it reads as one sequence even when the grid wraps on a narrow screen. */
+.cs .mchain {
+  list-style: none; margin: 26px 0 0; padding: 0;
+  display: grid; gap: 22px 14px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.cs .mchain__step { position: relative; padding-top: 30px; }
+.cs .mchain__step::before {
+  content: ''; position: absolute; left: 0; right: -14px; top: 11px; height: 1.5px;
+  background: var(--accent); opacity: 0.3;
+}
+.cs .mchain__step:last-child::before { right: 0; }
+.cs .mchain__no {
+  position: absolute; left: 0; top: 0; width: 23px; height: 23px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: #fff; font-size: 11px; font-weight: 650;
+}
+.cs .mchain__step h4 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 5px; color: var(--ink); }
+.cs .mchain__step p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+
+/* ---- explainer: structured content, in plain words ------------------------
+   Three columns joined by flow arrows: the master document (written once),
+   every reader (coloured by the rule that applies to them), and one reader's
+   assembled copy. data-focus on .dx dims everything except the idea the
+   current step is about; "Show everything" clears it. */
+.cs .dx__analogy {
+  margin: clamp(24px, 3vw, 34px) auto 0; max-width: 62ch; text-align: center;
+  font-size: 17px; line-height: 1.55; color: var(--ink);
+}
+.cs .dx { margin-top: clamp(28px, 3.6vw, 40px); }
+.cs .dx [data-tier='0'] { --tier: #5b4bde; }
+/* The majority tier is neutral graphite so the two outlier tiers stand out;
+   purple beside blue was too close to tell apart at dot size. */
+.cs .dx [data-tier='1'] { --tier: #48484d; }
+.cs .dx [data-tier='2'] { --tier: #9a6b00; }
+
+.cs .dx__steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.cs .dx__step {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px;
+  padding: 8px 16px 8px 9px; border-radius: 999px; border: 1px solid var(--line);
+  background: #fff; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.cs .dx__step:hover { border-color: var(--accent); }
+.cs .dx__step:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__step[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cs .dx__sno {
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--bg-gray); color: var(--accent); font-size: 12px; font-weight: 700;
+}
+.cs .dx__step[aria-pressed='true'] .dx__sno { background: #fff; }
+.cs .dx__step--all { padding-left: 16px; font-weight: 500; color: var(--ink-2); }
+.cs .dx__caption {
+  margin: 16px auto 0; max-width: 66ch; min-height: 3.2em; text-align: center;
+  font-size: 15.5px; line-height: 1.55; color: var(--ink);
+}
+
+.cs .dx__board {
+  margin-top: 22px; display: grid; align-items: start;
+  grid-template-columns: minmax(0, 1.25fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr);
+}
+.cs .dx__col {
+  background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px;
+  transition: opacity 0.35s, box-shadow 0.35s;
+}
+.cs .dx__h {
+  font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ink-2); margin: 0 0 14px; line-height: 1.4;
+}
+.cs .dx__flow { align-self: center; height: 12px; position: relative; }
+.cs .dx__flow::before {
+  content: ''; position: absolute; left: 4px; right: 7px; top: 5.25px; height: 1.5px;
+  background: var(--accent); opacity: 0.5;
+}
+.cs .dx__flow::after {
+  content: ''; position: absolute; right: 5px; top: 2px; width: 7px; height: 7px;
+  border-top: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent);
+  transform: rotate(45deg); opacity: 0.5;
+}
+
+/* bricks */
+.cs .dx__bricks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cs .dx__brick {
+  border: 1px solid var(--line); border-left: 3px solid var(--ink-2); border-radius: 10px;
+  padding: 10px 12px; background: var(--bg); transition: box-shadow 0.3s, border-color 0.3s;
+}
+.cs .dx__brick[data-varies='group'] { border-left-color: #1d8a6a; }
+.cs .dx__brick[data-varies='tier'] { border-left-color: var(--accent); }
+.cs .dx__brick-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 6px; }
+.cs .dx__brick-head b { font-size: 14px; font-weight: 600; color: var(--ink); }
+.cs .dx__bno {
+  width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center;
+  background: var(--ink); color: #fff; font-size: 11px; font-weight: 700;
+}
+.cs .dx__badge {
+  margin-left: auto; font-size: 11px; font-weight: 600; color: var(--ink-2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+}
+.cs .dx__brick[data-varies='group'] .dx__badge { color: #1d8a6a; border-color: currentColor; }
+.cs .dx__brick[data-varies='tier'] .dx__badge { color: var(--accent); border-color: currentColor; }
+.cs .dx__txt { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .dx__versions { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.cs .dx__ver {
+  display: grid; gap: 2px; padding: 6px 8px; border-radius: 7px; border: 1px dashed var(--line);
+  transition: background 0.25s, border-color 0.25s;
+}
+.cs .dx__ver-l { font-size: 11px; font-weight: 650; color: var(--tier, #1d8a6a); }
+.cs .dx__ver.is-on { border: 1px solid var(--tier, #1d8a6a); background: #fff; }
+.cs .dx__ver.is-on .dx__txt { color: var(--ink); }
+.cs .dx__blank {
+  display: inline-block; padding: 0 6px; margin: 0 1px; border-radius: 5px;
+  border: 1.5px dashed var(--accent); color: var(--accent); font-weight: 650; font-size: 0.92em; line-height: 1.35;
+}
+
+/* readers */
+.cs .dx__grids { display: grid; gap: 14px; }
+.cs .dx__team-l { font-size: 13px; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+.cs .dx__team-l span { font-weight: 500; color: var(--ink-2); }
+.cs .dx__grid { display: grid; grid-template-columns: repeat(5, 32px); gap: 6px; }
+.cs .dx__dot {
+  width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  background: var(--tier); color: #fff; font: inherit; font-size: 12px; font-weight: 700;
+  box-shadow: 0 0 0 0 transparent; transition: transform 0.15s, box-shadow 0.2s;
+}
+.cs .dx__dot:hover { transform: scale(1.1); }
+.cs .dx__dot:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__dot.is-on { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--ink); transform: scale(1.08); }
+.cs .dx__grids.is-pulse .dx__dot { animation: dx-pop 0.5s ease-out both; }
+@keyframes dx-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.22); box-shadow: 0 0 0 4px rgba(91, 75, 222, 0.22); }
+  100% { transform: scale(1); }
+}
+.cs .dx__legend { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 5px; }
+.cs .dx__legend li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+.cs .dx__legend i { width: 11px; height: 11px; border-radius: 50%; background: var(--tier); flex: none; }
+.cs .dx__tap { font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+.cs .dx__tap b { color: var(--ink); font-weight: 650; }
+.cs .dx__jump {
+  display: none; margin-top: 10px; min-height: 40px; padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--accent); background: #fff; color: var(--accent);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.cs .dx__jump:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* the assembled letter */
+.cs .dx__letter {
+  border-radius: 12px; padding: 16px; background: var(--bg);
+  border: 1px solid var(--line); border-top: 4px solid var(--tier, var(--accent));
+}
+.cs .dx__line { font-size: 14.5px; line-height: 1.55; color: var(--ink); margin: 0 0 9px; animation: dx-in 0.35s ease-out both; }
+.cs .dx__line:last-child { margin-bottom: 0; }
+.cs .dx__line[data-varies='none'] { animation: none; }
+.cs .dx__line:first-child { font-weight: 650; font-size: 16px; }
+.cs .dx__fill { background: rgba(91, 75, 222, 0.12); color: var(--ink); font-weight: 650; border-radius: 4px; padding: 0 3px; }
+.cs .dx__line.is-edited, .cs .dx__txt.is-edited { animation: dx-flash 1.1s ease-out both; }
+@keyframes dx-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes dx-flash {
+  0%, 30% { background: rgba(29, 138, 106, 0.18); }
+  100% { background: transparent; }
+}
+.cs .dx__meta { font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+
+/* count band + "change it once" */
+.cs .dx__count {
+  margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px;
+  background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 20px;
+}
+.cs .dx__num { display: flex; align-items: baseline; gap: 10px; }
+.cs .dx__num b { font-size: 34px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; color: var(--accent); }
+.cs .dx__num span { font-size: 13.5px; line-height: 1.35; color: var(--ink-2); max-width: 20ch; }
+.cs .dx__count-arrow { font-size: 22px; color: var(--accent); opacity: 0.6; }
+.cs .dx__edit { margin-left: auto; display: grid; gap: 6px; justify-items: end; max-width: 46ch; }
+.cs .dx__edit-btn {
+  min-height: 40px; padding: 8px 16px; border-radius: 999px; border: 1px solid #1d8a6a;
+  background: #fff; color: #1d8a6a; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.cs .dx__edit-btn[aria-pressed='true'] { background: #1d8a6a; color: #fff; }
+.cs .dx__edit-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .dx__edit-note { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); margin: 0; text-align: right; }
+
+/* glossary: DITA words, in plain ones */
+.cs .dx__gloss {
+  margin: clamp(26px, 3.4vw, 38px) 0 0; display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.cs .dx__gloss > div { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.cs .dx__gloss dt { font-size: 14px; font-weight: 650; color: var(--accent); margin-bottom: 4px; }
+.cs .dx__gloss dd { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+
+/* step focus: dim what the current step is not about */
+.cs .dx[data-focus='blocks'] .dx__readers,
+.cs .dx[data-focus='blocks'] .dx__out,
+.cs .dx[data-focus='blanks'] .dx__readers,
+.cs .dx[data-focus='rules'] .dx__out,
+.cs .dx[data-focus='publish'] .dx__src { opacity: 0.38; }
+.cs .dx[data-focus='blocks'] .dx__brick { box-shadow: 0 0 0 2px rgba(91, 75, 222, 0.35); }
+.cs .dx[data-focus='blanks'] .dx__blank,
+.cs .dx[data-focus='blanks'] .dx__fill { box-shadow: 0 0 0 3px rgba(91, 75, 222, 0.25); }
+.cs .dx[data-focus='rules'] .dx__brick[data-varies='none'] { opacity: 0.4; }
+.cs .dx[data-focus='rules'] .dx__readers,
+.cs .dx[data-focus='publish'] .dx__out { box-shadow: 0 0 0 2px var(--accent); }
+
+@media (max-width: 900px) {
+  .cs .dx__board { grid-template-columns: minmax(0, 1fr); }
+  .cs .dx__flow { height: 26px; width: 12px; justify-self: center; }
+  .cs .dx__flow::before { left: 5.25px; right: auto; top: 3px; bottom: 7px; width: 1.5px; height: auto; }
+  .cs .dx__flow::after { right: auto; left: 2.5px; top: auto; bottom: 5px; transform: rotate(135deg); }
+  .cs .dx__edit { margin-left: 0; justify-items: start; }
+  .cs .dx__edit-note { text-align: left; }
+  .cs .dx__grids { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .cs .dx__jump { display: inline-flex; align-items: center; }
+}
+@media (max-width: 560px) {
+  .cs .dx__count { flex-direction: column; align-items: flex-start; }
+  .cs .dx__count-arrow { transform: rotate(90deg); margin-left: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs .dx__grids.is-pulse .dx__dot,
+  .cs .dx__line,
+  .cs .dx__line.is-edited,
+  .cs .dx__txt.is-edited { animation: none; }
+}
+
+/* ---- scroll timeline: side rail for the worked-example stretch ------------
+   Shown only while the explainer and walkthrough are on screen; the top nav
+   covers the rest of the page. Collapsed, it is a column of short lines on a
+   faint pill. Hover or keyboard focus opens it into a labelled list. Desktop
+   and landscape tablets only: on a phone it would sit on top of the text. */
+.cs .srail {
+  position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
+  z-index: 800; display: none;
+  opacity: 1; visibility: visible;
+  transition: opacity 0.25s, transform 0.25s, visibility 0s;
+}
+/* Out of range: fade and slide away, then drop from the tab order. */
+.cs .srail.is-off {
+  opacity: 0; visibility: hidden; transform: translate(10px, -50%);
+  transition: opacity 0.25s, transform 0.25s, visibility 0s linear 0.25s;
+}
+@media (min-width: 1024px) {
+  .cs .srail { display: block; }
+}
+.cs .srail__list {
+  list-style: none; margin: 0; padding: 8px 7px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+  max-height: 82vh; overflow-y: auto; scrollbar-width: none;
+  border-radius: 14px;
+  background: rgba(253, 251, 246, 0.72);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.cs .srail__list::-webkit-scrollbar { display: none; }
+.cs .srail:hover .srail__list,
+.cs .srail:focus-within .srail__list {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.13), 0 0 0 1px var(--line);
+}
+.cs .srail__item {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  min-height: 14px; padding: 4px 3px; border: 0; background: none;
+  font: inherit; cursor: pointer; border-radius: 6px;
+}
+.cs .srail__item:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+.cs .srail__line {
+  width: 14px; height: 2px; border-radius: 2px; flex: none;
+  background: var(--ink); opacity: 0.3;
+  transition: width 0.2s, opacity 0.2s, background 0.2s;
+}
+.cs .srail__item--sub .srail__line { width: 8px; opacity: 0.22; }
+.cs .srail__item:hover .srail__line { opacity: 0.65; }
+.cs .srail__item.is-on .srail__line { width: 22px; background: var(--accent); opacity: 1; }
+.cs .srail__label {
+  font-size: 13px; line-height: 1.3; color: var(--ink-2); white-space: nowrap;
+  max-width: 0; overflow: hidden; opacity: 0;
+  transition: max-width 0.22s ease, opacity 0.15s;
+}
+.cs .srail:hover .srail__label,
+.cs .srail:focus-within .srail__label { max-width: 260px; opacity: 1; }
+.cs .srail__item--sub .srail__label { font-size: 12px; }
+.cs .srail__item:hover .srail__label { color: var(--ink); }
+.cs .srail__item.is-on .srail__label { color: var(--accent); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) {
+  .cs .srail, .cs .srail.is-off, .cs .srail__line, .cs .srail__label, .cs .srail__list { transition: none; }
+}
+
+/* ===========================================================================
+   Long-form UX sections (opt-in per study via `order`).
+   =========================================================================== */
+.cs .section--tight { padding-top: clamp(36px, 5vw, 56px); padding-bottom: clamp(36px, 5vw, 56px); }
+
+/* snapshot: key facts */
+.cs .snap { margin: 14px 0 0; display: grid; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.cs .snap__item { background: #fff; padding: 16px 18px; }
+.cs .snap dt { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 6px; }
+.cs .snap dd { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--ink); }
+
+/* personas */
+.cs .pers { display: grid; gap: 16px; margin-top: clamp(26px, 3.4vw, 40px); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.cs .pers__card { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--pc); border-radius: 20px; padding: 22px 22px 24px; }
+.cs .pers__head { display: flex; align-items: center; gap: 14px; }
+.cs .pers__av { width: 52px; height: 52px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--pc); color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 0.02em; }
+.cs .pers__head h3 { font-size: 20px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+.cs .pers__title { font-size: 13.5px; color: var(--ink-2); margin: 2px 0 0; }
+.cs .pers__arch { display: inline-block; margin: 14px 0 0; font-size: 12px; font-weight: 650; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--pc); border: 1px solid currentColor; border-radius: 999px; padding: 3px 10px; }
+.cs .pers__about { font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 12px 0 0; }
+.cs .pers__quote { margin: 12px 0 0; padding-left: 12px; border-left: 3px solid var(--pc); font-size: 15px; font-style: italic; color: var(--ink-2); }
+.cs .pers__l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 18px 0 6px; }
+.cs .pers__l--on { color: var(--pc); }
+.cs .pers__list { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.cs .pers__list--on { color: var(--ink); }
+.cs .pers__list--on li::marker { color: var(--pc); }
+
+/* feature analysis: tiers */
+.cs .ftier__bench { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
+.cs .ftier__bench-l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin-right: 4px; }
+.cs .ftier__chip { font-size: 13px; font-weight: 600; color: var(--ink); background: var(--bg-gray); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+.cs .ftier__chip--on { background: #fff; color: var(--accent); border-color: var(--accent); }
+.cs .ftier { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.cs .ftier__col { background: var(--bg-gray); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.cs .ftier__col.is-on { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.cs .ftier__no { font-size: 12px; font-weight: 700; color: var(--accent); }
+.cs .ftier__col h3 { font-size: 18px; font-weight: 650; margin: 4px 0 6px; letter-spacing: -0.015em; }
+.cs .ftier__note { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+.cs .ftier__col ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14.5px; color: var(--ink); }
+.cs .ftier__base { margin-top: 16px; padding: 18px 20px; border-radius: 18px; background: var(--ink); color: #fff; }
+.cs .ftier__base h3 { font-size: 13px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: #c7c7cc; margin: 0 0 10px; }
+.cs .ftier__base-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs .ftier__base .ftier__chip--on { background: transparent; color: #fff; border-color: #8f9fff; }
+.cs .ftier__base p { font-size: 14px; line-height: 1.5; color: #c7c7cc; margin: 12px 0 0; }
+
+/* information architecture: one tree per surface */
+.cs .iat { display: grid; gap: 16px; margin-top: clamp(26px, 3.4vw, 40px); grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.cs .iat__tree { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px 22px; }
+.cs .iat__root { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+.cs .iat__root h3 { font-size: 20px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+.cs .iat__root p { font-size: 13.5px; color: var(--accent); font-weight: 600; margin: 2px 0 0; }
+.cs .iat__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cs .iat__list--sub { margin: 6px 0 2px 8px; padding-left: 14px; border-left: 1.5px solid var(--line); gap: 4px; }
+.cs .iat__node { position: relative; }
+.cs .iat__list--sub > .iat__node::before { content: ''; position: absolute; left: -14px; top: 0.75em; width: 10px; height: 1.5px; background: var(--line); }
+.cs .iat__label { font-size: 14px; color: var(--ink); }
+.cs .iat__label--top { font-size: 15.5px; font-weight: 650; }
+.cs .iat__note { display: block; font-size: 12.5px; color: var(--ink-2); line-height: 1.4; margin-top: 1px; }
+
+/* design rounds */
+.cs .rnd { list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+.cs .rnd__card { background: var(--bg-gray); border: 1px solid var(--line); border-radius: 20px; padding: 20px; }
+.cs .rnd__card.is-final { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.cs .rnd__card .fig { margin: -4px -4px 14px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+.cs .rnd__name { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); margin: 0; }
+.cs .rnd__card h3 { font-size: 19px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.3; margin: 6px 0 0; }
+.cs .rnd__l { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 16px 0 6px; }
+.cs .rnd__l--on { color: var(--accent); }
+.cs .rnd__list { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+.cs .rnd__list b { font-weight: 600; color: var(--accent); }
+.cs .rnd__arrow { color: var(--ink-2); }
+.cs .rnd__kept { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* storyboard */
+.cs .sb { list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); counter-reset: sb; }
+.cs .sb__frame { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 12px 12px 16px; }
+.cs .sb__img { border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.cs .sb__no { font-size: 12px; font-weight: 700; color: var(--accent); margin: 0 4px; }
+.cs .sb__frame h3 { font-size: 16.5px; font-weight: 650; margin: 4px 4px 4px; letter-spacing: -0.01em; }
+.cs .sb__frame p:last-child { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin: 0 4px; }
+
+/* ---- spatial: the interactive 3D home ---------------------------------- */
+.cs .sp__grid { display: grid; gap: 18px; margin-top: clamp(20px, 3vw, 32px); grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; }
+.cs .sp__stage { position: relative; width: 100%; background: radial-gradient(120% 90% at 50% 40%, #fff 0%, var(--bg-gray) 100%);
+  border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+.cs .sp__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: pan-y; user-select: none; }
+.cs .sp__svg:active { cursor: grabbing; }
+.cs .sp__svg:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; border-radius: 22px; }
+.cs .sp__slab { fill: #ece8de; stroke: #d6d0c3; stroke-width: 1; }
+.cs .sp__slab-edge { fill: #d8d2c4; stroke: #cbc4b4; stroke-width: 0.8; }
+.cs .sp__wall { fill: #f7f5ef; stroke: #d6d0c3; stroke-width: 1; }
+.cs .sp__room { fill: #fff; stroke: #cfc8b8; stroke-width: 1.3; cursor: pointer; transition: fill 0.2s; }
+.cs .sp__room:hover { fill: #f4f2ff; }
+.cs .sp__room.is-sel { fill: #ece9fb; stroke: var(--accent); stroke-width: 2.2; }
+.cs .sp__room.is-ev { animation: sp-ev 1.6s ease-in-out infinite; }
+@keyframes sp-ev { 0%, 100% { fill: #fff8e6; } 50% { fill: #ffe9b3; } }
+.cs .sp__room.is-sel.is-ev { animation: none; }
+.cs .sp__pt { fill: var(--accent); opacity: 0.55; }
+.cs .sp__stem { stroke: #9a9aa2; stroke-width: 1.3; }
+.cs .sp__pin { fill: #1d1d1f; stroke: #fff; stroke-width: 2; }
+.cs .sp__dev.is-off .sp__pin { fill: #8e8e93; }
+.cs .sp__dev.is-sel .sp__pin { fill: var(--accent); }
+.cs .sp__glyph { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs .sp__dev { cursor: pointer; }
+.cs .sp__labels { position: absolute; inset: 0; pointer-events: none; }
+.cs .sp__lab { position: absolute; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; color: var(--ink-2);
+  white-space: nowrap; background: rgba(255, 255, 255, 0.82); padding: 1px 6px; border-radius: 6px; }
+.cs .sp__lab.is-sel { color: var(--accent); font-weight: 700; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); }
+.cs[data-mode] .sp__lab { opacity: 1; }
+.cs .sp__callout { position: absolute; transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: 7px;
+  background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px;
+  white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); animation: sp-in 0.35s ease-out both; }
+.cs .sp__callout i { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); animation: sp-dot 1.6s infinite; }
+@keyframes sp-in { from { opacity: 0; transform: translate(-50%, -80%); } to { opacity: 1; transform: translate(-50%, -100%); } }
+@keyframes sp-dot { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); } 100% { box-shadow: 0 0 0 9px rgba(52, 211, 153, 0); } }
+.cs .sp__hint { position: absolute; left: 14px; bottom: 10px; margin: 0; font-size: 12px; color: var(--ink-2); pointer-events: none; }
+
+.cs .sp__panel { display: grid; gap: 14px; }
+.cs .sp__modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--bg-gray); border: 1px solid var(--line); border-radius: 14px; padding: 5px; }
+.cs .sp__btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; border: 0; border-radius: 10px;
+  background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.cs .sp__btn[aria-pressed='true'] { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+.cs .sp__btn-no { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--line); color: var(--ink); }
+.cs .sp__btn[aria-pressed='true'] .sp__btn-no { background: var(--accent); color: #fff; }
+.cs .sp__caption { font-size: 15px; line-height: 1.55; color: var(--ink); margin: 0; min-height: 4.6em; }
+.cs .sp__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cs .sp__seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs .sp__chip { min-height: 36px; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.cs .sp__chip[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.cs .sp__chip:disabled { opacity: 0.45; cursor: not-allowed; }
+.cs .sp__icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 19px; line-height: 1; color: var(--ink); cursor: pointer; }
+.cs .sp__btn:focus-visible, .cs .sp__chip:focus-visible, .cs .sp__icon:focus-visible, .cs .sp__room-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cs .sp__room-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+.cs .sp__room-floor { font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); margin: 0; }
+.cs .sp__room-card h3 { font-size: 18px; font-weight: 650; margin: 2px 0 8px; }
+.cs .sp__meta { font-size: 14px; color: var(--ink-2); margin: 0; }
+.cs .sp__devs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cs .sp__devs li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 9px; font-size: 14px; }
+.cs .sp__devs svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cs .sp__dev-l { color: var(--ink); font-weight: 600; }
+.cs .sp__dev-s { color: var(--ink-2); font-size: 13px; text-align: right; }
+.cs .sp__devs li.is-off svg { stroke: #8e8e93; }
+.cs .sp__devs li.is-off .sp__dev-l { color: var(--ink-2); font-weight: 500; }
+.cs .sp__rooms { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs .sp__room-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 11px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg-gray); font: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.cs .sp__room-btn span { font-size: 11px; font-weight: 700; color: var(--accent); }
+.cs .sp__room-btn[aria-pressed='true'] { background: #ece9fb; border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  .cs .sp__grid { grid-template-columns: minmax(0, 1fr); }
+  .cs .sp__caption { min-height: 0; }
+}
+@media (max-width: 560px) {
+  /* Too many labels for a phone: keep only the selected room's. */
+  .cs .sp__lab:not(.is-sel) { display: none; }
+  .cs .sp__callout { font-size: 11.5px; padding: 5px 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs .sp__room.is-ev, .cs .sp__callout, .cs .sp__callout i { animation: none; }
+}
+
+/* TV + phone wireframes (couch/pocket flows) */
+.cs .jf__tv { fill: #17171c; }
+.cs .jf__stand { stroke: #b9b2a4; stroke-width: 3; stroke-linecap: round; }
+.cs .jf__ph { fill: #111114; }
+.cs .jf__phscreen { fill: #f7f7f9; }
+.cs .jf__tvline { fill: #e5e5ea; opacity: 0.75; }
+.cs .jf__tvsoft { fill: #e5e5ea; opacity: 0.28; }
+.cs .jf__tvsoftc { fill: #e5e5ea; opacity: 0.22; }
+.cs .jf__tvcard { fill: #2a2a32; }
+.cs .jf__tvrail { fill: #101014; }
+.cs .jf__tvchip { fill: #34343d; }
+.cs .jf__tvghost { fill: none; stroke: #5a5a66; stroke-width: 1.2; stroke-dasharray: 3 2.5; }
+.cs .jf__tvbanner { fill: var(--accent); opacity: 0.3; }
+.cs .jf__focus { fill: none; stroke: var(--accent); stroke-width: 2; }
+.cs .jf__ok2 { fill: #34d399; }
+.cs .jf__qrbg { fill: #fff; }
+.cs .jf__qrfg { fill: #17171c; }
+.cs .jf__inp { fill: #fff; stroke: var(--line); stroke-width: 1; }
+.cs .jf__cam { fill: #2a2a32; }
+.cs .jf__corner { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+.cs .jf__qrmini { fill: none; stroke: #e5e5ea; stroke-width: 1.4; stroke-dasharray: 2.5 1.5; }
+/* The site's CSS reset strips list markers; the long-form lists read better with them. */
+.cs .pers__list, .cs .ftier__col ul, .cs .rnd__list { list-style: disc; }

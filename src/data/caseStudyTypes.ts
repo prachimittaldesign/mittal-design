@@ -167,6 +167,279 @@ export interface CSGamification {
   caption?: string
 }
 
+/** One stage in an end-to-end task walkthrough. */
+export interface CSWalkStage {
+  no: string
+  title: string
+  /** Who drives this stage. Must appear in CSWalkthrough.actors — the index
+   *  there picks the lane colour, so the handoffs read down the rail. */
+  actor: string
+  body: string
+  /** What this stage buys you when the job is 50 of these instead of one. */
+  atScale?: string
+}
+/**
+ * One screen in a depicted journey. `kind` selects the wireframe the renderer
+ * draws — the point is that the flow is shown as screens, not described, so a
+ * reader can see the path is continuous with no dead ends or detours.
+ */
+export type CSScreenKind =
+  | 'invite'
+  | 'workspace'
+  | 'template'
+  | 'canvas'
+  | 'topic'
+  | 'conditional'
+  | 'media'
+  | 'review'
+  | 'export'
+  | 'published'
+  // TV + phone screens (iZak): the couch and the pocket
+  | 'tv-signin'
+  | 'ph-signin'
+  | 'tv-detected'
+  | 'tv-pair'
+  | 'ph-pair'
+  | 'tv-space'
+  | 'tv-templates'
+  | 'tv-sentence'
+  | 'tv-home'
+export interface CSScreen {
+  kind: CSScreenKind
+  no: string
+  title: string
+  /** What the user does here. One sentence — the wireframe carries the rest. */
+  body: string
+  /** The single affordance that moves them to the next screen. */
+  affordance?: string
+}
+/**
+ * A swimlane read of the same journey: phases across, actors down. A null cell
+ * means that actor is not involved in that phase, so the handoffs — and the
+ * stretches the system covers on its own — are visible at a glance.
+ */
+export interface CSLanes {
+  title?: string
+  phases: string[]
+  rows: Array<{ actor: string; cells: Array<string | null> }>
+  caption?: string
+}
+/**
+ * An end-to-end walkthrough of one concrete, named task — "walk me through how
+ * a real user actually does this, at scale". Rendered as a scenario card, the
+ * reuse-collapse diagram, a depicted screen flow, an actor-laned stage rail,
+ * and a swimlane summary. Every part is optional except the stages.
+ */
+export interface CSWalkthrough {
+  eyebrow: string
+  headline: string
+  lead: string
+  /** The concrete task, shown as a framed scenario card above the rail. */
+  scenario?: string
+  /** Distinct actors in first-appearance order; the index drives lane colour. */
+  actors?: string[]
+  /** "N deliverables, but only M units of authoring" — the whole point. */
+  collapse?: {
+    title: string
+    /** Deliverables the task names (e.g. 50 policies). */
+    total: number
+    /** Units of real authoring work the structured model actually needs. */
+    sources: number
+    flatLabel: string
+    flatNote: string
+    structuredLabel: string
+    structuredNote: string
+    caption?: string
+  }
+  /**
+   * How the journey was derived: the jobs-to-be-done it serves, written as job
+   * stories, and the process steps that produced it. Shown before the screens
+   * so the reader meets the user's need before the interface.
+   */
+  method?: {
+    title: string
+    lead?: string
+    jobs: Array<{ actor: string; when: string; want: string; so: string }>
+    steps: Array<{ title: string; body: string }>
+  }
+  /** The journey depicted as a left-to-right run of screens. */
+  screens?: { title: string; lead?: string; items: CSScreen[] }
+  stages: CSWalkStage[]
+  lanes?: CSLanes
+  footnote?: string
+}
+
+/**
+ * One brick of the explainer's master document. Text may carry {name}, {team},
+ * {amount} and {tier} tokens, filled per reader when the letter is assembled.
+ */
+export interface CSExplainerBlock {
+  id: string
+  /** Plain-language name of the brick, e.g. 'Greeting'. */
+  label: string
+  /** 'none' = same for everyone; 'group' / 'tier' = versions keyed by id. */
+  varies: 'none' | 'group' | 'tier'
+  text?: string
+  versions?: Record<string, string>
+}
+/**
+ * An interactive, plain-language explainer of structured content for a reader
+ * with no technical background: one master document of reusable bricks, a
+ * population of readers, and the personal output each reader receives. Steps
+ * light up one idea at a time; picking a reader assembles their copy live.
+ */
+export interface CSExplainer {
+  eyebrow: string
+  headline: string
+  lead: string
+  /** The one-line analogy that carries the concept. */
+  analogy?: string
+  steps: Array<{ focus: 'blocks' | 'blanks' | 'rules' | 'publish'; title: string; body: string }>
+  /** Prompt shown before any step is chosen. */
+  idle?: string
+  /** Reader groups; each person is [name, tierId]. */
+  groups: Array<{ id: string; label: string; people: Array<[string, string]> }>
+  tiers: Array<{ id: string; label: string; amount: string }>
+  blocks: CSExplainerBlock[]
+  labels: {
+    source: string
+    readers: string
+    /** May contain {name}. */
+    result: string
+    none: string
+    group: string
+    tier: string
+    writtenOnce: string
+    delivered: string
+  }
+  /** "Change it once": swaps one shared brick's text everywhere. */
+  edit?: { blockId: string; button: string; undo: string; text: string; note: string }
+  glossary?: Array<{ term: string; plain: string }>
+  footnote?: string
+}
+
+// ── Sections for full, long-form UX case studies (first used by iZak) ──────
+
+/** Key facts in a compact grid, shown near the top. */
+export interface CSSnapshot {
+  eyebrow?: string
+  items: Array<{ k: string; v: string }>
+}
+
+/** A research persona. No invented quotes: `quote` only when one exists. */
+export interface CSPersona {
+  name: string
+  /** Occupation / life stage, e.g. 'Busy professional · Family of four'. */
+  title: string
+  /** The one-line archetype, e.g. 'The admin'. */
+  archetype: string
+  about: string
+  needs: string[]
+  /** What this persona forced into the design. */
+  forced: string[]
+  quote?: string
+  colour?: string
+}
+export interface CSPersonas {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: CSPersona[]
+  footnote?: string
+}
+
+/** Feature analysis: the benchmark set, capability tiers, and a baseline. */
+export interface CSFeatureTiers {
+  eyebrow: string
+  headline: string
+  lead?: string
+  benchmarked?: string[]
+  tiers: Array<{ name: string; note: string; items: string[]; highlight?: boolean }>
+  baseline?: { title: string; items: string[]; note?: string }
+  footnote?: string
+}
+
+/** Information architecture: one tree per surface. */
+export interface CSIaNode {
+  label: string
+  note?: string
+  children?: CSIaNode[]
+}
+export interface CSIa {
+  eyebrow: string
+  headline: string
+  lead?: string
+  trees: Array<{ surface: string; role: string; nodes: CSIaNode[] }>
+  footnote?: string
+}
+
+/** Design rounds, each with what went wrong and what carried forward. */
+export interface CSRounds {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: Array<{
+    name: string
+    title: string
+    problems: string[]
+    fixes?: string[]
+    kept?: string[]
+    image?: string
+  }>
+}
+
+/** A storyboard: numbered frames, each with an image and a line of story. */
+export interface CSStoryboard {
+  eyebrow: string
+  headline: string
+  lead?: string
+  frames: Array<{ no: string; title: string; body: string; image?: string }>
+  footnote?: string
+}
+
+/** Device kinds the spatial model can draw. */
+export type CSDeviceKind = 'light' | 'blind' | 'thermo' | 'speaker' | 'camera' | 'lock' | 'tv' | 'sensor'
+/**
+ * An interactive 3D model of a home, drawn in SVG (no WebGL). Rooms are
+ * axis-aligned rectangles on a shared footprint; each floor stacks above the
+ * last. Coordinates are in metres-ish units; devices sit inside their room.
+ */
+export interface CSSpatial {
+  eyebrow: string
+  headline: string
+  lead?: string
+  footprint: { w: number; d: number }
+  floors: Array<{
+    id: string
+    label: string
+    rooms: Array<{
+      id: string
+      label: string
+      x: number
+      y: number
+      w: number
+      d: number
+      devices?: Array<{ kind: CSDeviceKind; label: string; state: string; x: number; y: number; on?: boolean }>
+    }>
+  }>
+  /** Live-mode events, cycled on the model where they happen. */
+  events?: Array<{ room: string; text: string }>
+  modes: { scan: string; model: string; live: string }
+  footnote?: string
+}
+
+/** A titled matrix that can appear more than once in a study. */
+export interface CSNamedTable extends CSMatrix {
+  tone?: 'plain' | 'gray'
+}
+/** A card section that can appear more than once in a study. */
+export interface CSNamedCards extends CSCardSection {
+  tone?: 'plain' | 'gray' | 'dark'
+  /** Optional figure shown between the lead and the cards. */
+  image?: string
+  imageCaption?: string
+}
+
 export interface CSCapabilitiesGrid {
   type: 'grid'
   headline?: string
@@ -198,6 +471,9 @@ export interface CSResearch {
   eyebrow: string
   headline: string
   lead?: string
+  /** Optional artefact shown under the lead (e.g. a service blueprint). */
+  image?: string
+  imageCaption?: string
   groups: Array<{ label: string; snips: CSResearchSnip[] }>
   converge?: { tracks: CSResearchTrack[]; conclusion: string }
 }
@@ -300,6 +576,22 @@ export interface CSRole {
 }
 
 export interface RichCaseStudy {
+  /** Optional narrative order of section keys (see DEFAULT_ORDER in the
+   *  renderer). Omit to use the default sequence. */
+  order?: string[]
+  /** Optional local-nav override: [section id, label]. */
+  nav?: Array<{ id: string; label: string }>
+  snapshot?: CSSnapshot
+  personas?: CSPersonas
+  featureTiers?: CSFeatureTiers
+  ia?: CSIa
+  rounds?: CSRounds
+  storyboard?: CSStoryboard
+  spatial?: CSSpatial
+  /** Extra tables, rendered where `order` names 'table:<key>'. */
+  tables?: Record<string, CSNamedTable>
+  /** Extra card sections, rendered where `order` names 'cards:<key>'. */
+  cardSets?: Record<string, CSNamedCards>
   meta: CSMeta
   /** Public path prefix for this project's screenshots, e.g. '/IMAGES/Ved'. */
   imageBase: string
@@ -321,6 +613,8 @@ export interface RichCaseStudy {
   decisions?: CSDecisions
   outcome?: CSOutcome
   interactions?: CSInteractions
+  explainer?: CSExplainer
+  walkthrough?: CSWalkthrough
   gamification?: CSGamification
   capabilities?: CSCapabilities
   techHandoff?: CSTechHandoff

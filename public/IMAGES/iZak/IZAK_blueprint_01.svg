@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 820" width="1600" height="820" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="1600" height="820" fill="#fbfaf6"/>
+<defs>
+<symbol id="i-light" viewBox="0 0 40 40"><path d="M14 22a9 9 0 1 1 12 0c-1.6 1.4-2.4 3-2.4 5h-7.2c0-2-.8-3.6-2.4-5z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M16.5 31h7M17.5 35h5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-blind" viewBox="0 0 40 40"><rect x="8" y="7" width="24" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M8 13h24M8 19h24M8 25h24" stroke="currentColor" stroke-width="2.2"/></symbol>
+<symbol id="i-thermo" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 24a9 9 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="20" cy="18" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-speaker" viewBox="0 0 40 40"><rect x="10" y="6" width="20" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="24" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="20" cy="12.5" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-camera" viewBox="0 0 40 40"><rect x="6" y="12" width="22" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M28 18l7-4v12l-7-4z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-lock" viewBox="0 0 40 40"><rect x="9" y="17" width="22" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 17v-4a6 6 0 0 1 12 0v4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="25.5" r="2.2" fill="currentColor"/></symbol>
+<symbol id="i-tv" viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 33h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="currentColor"/><path d="M12.5 20.5l5 5 10-11" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+<text x="60" y="78" font-size="40" fill="#1d1d1f" font-weight="700" text-anchor="start">The service blueprint, summarised</text>
+<text x="60" y="120" font-size="24" fill="#6e6e73" font-weight="500" text-anchor="start">from the shop floor to the first update, with effort marked only where it was measured</text>
+<rect x="40" y="170" width="180" height="62" rx="12" fill="#f3f0e8"/>
+<text x="58" y="209.0" font-size="21" fill="#1d1d1f" font-weight="650" text-anchor="start">Stage</text>
+<rect x="40" y="240" width="180" height="62" rx="12" fill="#f3f0e8"/>
+<text x="58" y="279.0" font-size="21" fill="#1d1d1f" font-weight="650" text-anchor="start">Timeline</text>
+<rect x="40" y="310" width="180" height="112" rx="12" fill="#f3f0e8"/>
+<text x="58" y="374.0" font-size="21" fill="#1d1d1f" font-weight="650" text-anchor="start">Effort</text>
+<rect x="40" y="430" width="180" height="122" rx="12" fill="#f3f0e8"/>
+<text x="58" y="499.0" font-size="21" fill="#1d1d1f" font-weight="650" text-anchor="start">Actors</text>
+<rect x="40" y="560" width="180" height="72" rx="12" fill="#f3f0e8"/>
+<text x="58" y="604.0" font-size="21" fill="#1d1d1f" font-weight="650" text-anchor="start">Channels</text>
+<rect x="40" y="640" width="180" height="142" rx="12" fill="#ece9fb"/>
+<text x="58" y="719.0" font-size="21" fill="#5b4bde" font-weight="650" text-anchor="start">Response</text>
+<rect x="230" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="322.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Explore the store</text>
+<rect x="424" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="516.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Choose TV + devices</text>
+<rect x="618" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="710.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Sign up, log in</text>
+<rect x="812" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="904.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">First dashboard</text>
+<rect x="1006" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="1098.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Set up devices</text>
+<rect x="1200" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="1292.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Create scenes</text>
+<rect x="1394" y="170" width="184" height="62" rx="12" fill="#1d1d1f"/>
+<text x="1486.0" y="208" font-size="16" fill="#fff" font-weight="650" text-anchor="middle">Device updates</text>
+<rect x="230" y="250" width="378" height="42" rx="10" fill="#fff" stroke="#d2d2d7" stroke-width="2"/>
+<text x="419" y="281" font-size="19" fill="#1d1d1f" font-weight="600" text-anchor="middle">more than a week</text>
+<rect x="618" y="250" width="184" height="42" rx="10" fill="#fff" stroke="#d2d2d7" stroke-width="2"/>
+<text x="710.0" y="281" font-size="19" fill="#1d1d1f" font-weight="600" text-anchor="middle">~5 minutes</text>
+<rect x="1200" y="250" width="184" height="42" rx="10" fill="#fff" stroke="#d2d2d7" stroke-width="2"/>
+<text x="1292.0" y="281" font-size="19" fill="#1d1d1f" font-weight="600" text-anchor="middle">8–10 min each</text>
+<rect x="676.0" y="332" width="68" height="76" rx="8" fill="#c2410c" opacity="0.88"/>
+<text x="710.0" y="324.0" font-size="17" fill="#c2410c" font-weight="700" text-anchor="middle">Very high</text>
+<rect x="870.0" y="332" width="68" height="76" rx="8" fill="#c2410c" opacity="0.88"/>
+<text x="904.0" y="324.0" font-size="17" fill="#c2410c" font-weight="700" text-anchor="middle">Very high</text>
+<rect x="1258.0" y="380" width="68" height="28" rx="8" fill="#b8860b" opacity="0.88"/>
+<text x="1292.0" y="372.0" font-size="17" fill="#b8860b" font-weight="700" text-anchor="middle">Longest task</text>
+<line x1="230" y1="408" x2="1578" y2="408" stroke="#d2d2d7" stroke-width="2"/>
+<rect x="240" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="322.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Salesperson</text>
+<rect x="240" y="490" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="322.0" y="514" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">House owner</text>
+<rect x="434" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="516.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Salesperson</text>
+<rect x="434" y="490" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="516.0" y="514" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">House owner</text>
+<rect x="628" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="710.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">House owner</text>
+<rect x="822" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="904.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Household</text>
+<rect x="1016" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="1098.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Household</text>
+<rect x="1016" y="490" width="164" height="36" rx="18" fill="#fff" stroke="#b8860b" stroke-width="2"/>
+<text x="1098.0" y="514" font-size="17" fill="#b8860b" font-weight="600" text-anchor="middle">Manufacturers</text>
+<rect x="1210" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="1292.0" y="468" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">House owner</text>
+<rect x="1210" y="490" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="1292.0" y="514" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Household</text>
+<rect x="1404" y="444" width="164" height="36" rx="18" fill="#fff" stroke="#b8860b" stroke-width="2"/>
+<text x="1486.0" y="468" font-size="17" fill="#b8860b" font-weight="600" text-anchor="middle">Manufacturers</text>
+<rect x="1404" y="490" width="164" height="36" rx="18" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="1486.0" y="514" font-size="17" fill="#1d1d1f" font-weight="600" text-anchor="middle">Household</text>
+<rect x="230" y="576" width="98" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="279.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Mobile</text>
+<rect x="340" y="576" width="98" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="389.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Laptop</text>
+<rect x="450" y="576" width="50" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="475.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">TV</text>
+<rect x="512" y="576" width="98" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="561.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Tablet</text>
+<rect x="622" y="576" width="86" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="665.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Watch</text>
+<rect x="720" y="576" width="50" height="38" rx="19" fill="#ece9fb" stroke="#5b4bde" stroke-width="1.5"/>
+<text x="745.0" y="601" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">QR</text>
+<text x="796" y="601" font-size="18" fill="#6e6e73" font-weight="500" text-anchor="start">six channels carry the journey; “scan QR to log in” continues on the phone</text>
+<rect x="230" y="650" width="378" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="419.0" y="693" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Storefront inside the</text>
+<text x="419.0" y="719" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">product</text>
+<rect x="618" y="650" width="184" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="710.0" y="680" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Credentials</text>
+<text x="710.0" y="706" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">move to the</text>
+<text x="710.0" y="732" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">phone</text>
+<rect x="812" y="650" width="184" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="904.0" y="693" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">First run shows</text>
+<text x="904.0" y="719" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">found devices</text>
+<rect x="1006" y="650" width="184" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="1098.0" y="693" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">QR pairing; TV</text>
+<text x="1098.0" y="719" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">confirms</text>
+<rect x="1200" y="650" width="184" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="1292.0" y="706" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Templates first</text>
+<rect x="1394" y="650" width="184" height="122" rx="12" fill="#fff" stroke="#5b4bde" stroke-width="2"/>
+<text x="1486.0" y="693" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">Updating card +</text>
+<text x="1486.0" y="719" font-size="18" fill="#5b4bde" font-weight="650" text-anchor="middle">receipts</text>
+</svg>
