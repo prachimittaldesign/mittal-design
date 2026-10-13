@@ -3,7 +3,9 @@ import { createPortal } from 'react-dom'
 import {
   csImage,
   type CSExplainer,
+  type CSMatrix,
   type CSModal,
+  type CSNamedCards,
   type CSPrinciple,
   type CSWalkthrough,
   type RichCaseStudy,
@@ -1292,7 +1294,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   }
 
   const { meta, hero } = data
-  const navItems = [
+  const navItems = data.nav ?? [
     { id: 'cs-highlights', label: 'Overview' },
     ...(data.explainer ? [{ id: 'cs-explainer', label: data.explainer.eyebrow }] : []),
     ...(data.walkthrough ? [{ id: 'cs-walkthrough', label: 'Walkthrough' }] : []),
@@ -1308,6 +1310,110 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   // Each section is a keyed renderer so a study can set its own narrative
   // order (`data.order`). DEFAULT_ORDER is the original fixed sequence, so
   // a study without `order` renders exactly as before.
+  // A matrix section. Used by `matrix` and by every named `table:<key>`.
+  const renderTable = (m: CSMatrix, id: string, tone: 'plain' | 'gray' = 'plain') => (
+    <section className={tone === 'gray' ? 'section section--gray' : 'section'} id={id} data-cs-section style={{ scrollMarginTop: 64 }}>
+      <div className="wrap reveal">
+        <p className="eyebrow">{m.eyebrow}</p>
+        <h2 className="h-sub" style={{ marginBottom: 18 }}>{m.headline}</h2>
+        {m.lead && <p className="lead">{rich(m.lead)}</p>}
+        {m.image && (
+          <figure className="csfig">
+            <Shot cs={data} id={m.image} />
+            {m.imageCaption && <figcaption>{m.imageCaption}</figcaption>}
+          </figure>
+        )}
+        <div className="jscroll" role="region" aria-label={m.headline} tabIndex={0}>
+          <table className="jtable">
+            <thead>
+              <tr>
+                {m.columns.map((c) => (
+                  <th key={c} scope="col">{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {m.rows.map((r) => (
+                <tr key={r.label} className={r.hot ? 'hot' : undefined}>
+                  <th scope="row">{r.label}</th>
+                  {r.cells.map((c, i) => (
+                    <td key={i}>{rich(c)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {m.footnote && <p className="cmp__note">{m.footnote}</p>}
+      </div>
+    </section>
+  )
+
+  // A card section that can appear many times (`cards:<key>`). Dark tone uses
+  // the AI-layer card style; the others use the design-system trio.
+  const renderCardSet = (c: CSNamedCards, id: string) => {
+    const tone = c.tone ?? 'plain'
+    const cls = tone === 'dark' ? 'section section--dark' : tone === 'gray' ? 'section section--gray' : 'section'
+    return (
+      <section className={cls} id={id} data-cs-section style={{ scrollMarginTop: 64 }}>
+        <div className="wrap reveal">
+          <p className="eyebrow">{c.eyebrow}</p>
+          <h2 className="h-sub" style={{ marginBottom: 22 }}>{c.headline}</h2>
+          {c.lead && <p className="lead">{rich(c.lead)}</p>}
+          {c.image && (
+            <figure className="csfig">
+              <Shot cs={data} id={c.image} />
+              {c.imageCaption && <figcaption>{rich(c.imageCaption)}</figcaption>}
+            </figure>
+          )}
+          {tone === 'dark' ? (
+            <div className="cards3">
+              {c.cards.map((card) => (
+                <article className="icard" key={card.title}>
+                  {card.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={card.image} />
+                    </div>
+                  )}
+                  <div className="icard__txt">
+                    <h3>{card.title}</h3>
+                    <p>{rich(card.body)}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="trio">
+              {c.cards.map((card) => (
+                <div className="trio__card" key={card.title}>
+                  {card.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={card.image} />
+                    </div>
+                  )}
+                  <h3>{card.title}</h3>
+                  <p>{rich(card.body)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  const renderKey = (key: string): ReactNode => {
+    if (key.startsWith('table:')) {
+      const t = data.tables?.[key.slice(6)]
+      return t ? renderTable(t, `cs-t-${key.slice(6)}`, t.tone) : null
+    }
+    if (key.startsWith('cards:')) {
+      const c = data.cardSets?.[key.slice(6)]
+      return c ? renderCardSet(c, `cs-c-${key.slice(6)}`) : null
+    }
+    return sections[key]?.()
+  }
+
   const sections: Record<string, () => ReactNode> = {
     hero: () => (
       <>
@@ -1584,6 +1690,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
               </div>
             )}
 
+            {data.walkthrough.stages.length > 0 && (<>
             <h3 className="wt__collapse-h wt__rail-h" id="cs-wt-stages" data-cs-anchor="Stage by stage" style={{ scrollMarginTop: 72 }}>
               Stage by stage
             </h3>
@@ -1610,6 +1717,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
                 )
               })}
             </ol>
+            </>)}
 
             {data.walkthrough.footnote && (
               <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
@@ -1783,6 +1891,12 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
             <p className="eyebrow">{data.research.eyebrow}</p>
             <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.research.headline}</h2>
             {data.research.lead && <p className="lead">{rich(data.research.lead)}</p>}
+            {data.research.image && (
+              <figure className="csfig">
+                <Shot cs={data} id={data.research.image} />
+                {data.research.imageCaption && <figcaption>{rich(data.research.imageCaption)}</figcaption>}
+              </figure>
+            )}
             {data.research.groups.map((g) => (
               <div key={g.label} className="rgroup">
                 <p className="sublabel">{g.label}</p>
@@ -1914,43 +2028,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
     matrix: () => (
       <>
       {/* ---- 9f · matrix (a journey read through the framework) ---- */}
-      {data.matrix && (
-        <section className="section" id="cs-matrix" data-cs-section style={{ scrollMarginTop: 64 }}>
-          <div className="wrap reveal">
-            <p className="eyebrow">{data.matrix.eyebrow}</p>
-            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.matrix.headline}</h2>
-            {data.matrix.lead && <p className="lead">{rich(data.matrix.lead)}</p>}
-            {data.matrix.image && (
-              <figure className="csfig">
-                <Shot cs={data} id={data.matrix.image} />
-                {data.matrix.imageCaption && <figcaption>{data.matrix.imageCaption}</figcaption>}
-              </figure>
-            )}
-            <div className="jscroll" role="region" aria-label={data.matrix.headline} tabIndex={0}>
-              <table className="jtable">
-                <thead>
-                  <tr>
-                    {data.matrix.columns.map((c) => (
-                      <th key={c} scope="col">{c}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.matrix.rows.map((r) => (
-                    <tr key={r.label} className={r.hot ? 'hot' : undefined}>
-                      <th scope="row">{r.label}</th>
-                      {r.cells.map((c, i) => (
-                        <td key={i}>{rich(c)}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {data.matrix.footnote && <p className="cmp__note">{data.matrix.footnote}</p>}
-          </div>
-        </section>
-      )}
+      {data.matrix && renderTable(data.matrix, 'cs-matrix')}
       </>
     ),
     decisions: () => (
@@ -2291,7 +2369,7 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
 
       <main>
         {(data.order ?? DEFAULT_ORDER).map((key) => (
-          <Fragment key={key}>{sections[key]?.()}</Fragment>
+          <Fragment key={key}>{renderKey(key)}</Fragment>
         ))}
       </main>
 

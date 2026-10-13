@@ -308,6 +308,128 @@ export interface CSExplainer {
   footnote?: string
 }
 
+// ── Sections for full, long-form UX case studies (first used by iZak) ──────
+
+/** Key facts in a compact grid, shown near the top. */
+export interface CSSnapshot {
+  eyebrow?: string
+  items: Array<{ k: string; v: string }>
+}
+
+/** A research persona. No invented quotes: `quote` only when one exists. */
+export interface CSPersona {
+  name: string
+  /** Occupation / life stage, e.g. 'Busy professional · Family of four'. */
+  title: string
+  /** The one-line archetype, e.g. 'The admin'. */
+  archetype: string
+  about: string
+  needs: string[]
+  /** What this persona forced into the design. */
+  forced: string[]
+  quote?: string
+  colour?: string
+}
+export interface CSPersonas {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: CSPersona[]
+  footnote?: string
+}
+
+/** Feature analysis: the benchmark set, capability tiers, and a baseline. */
+export interface CSFeatureTiers {
+  eyebrow: string
+  headline: string
+  lead?: string
+  benchmarked?: string[]
+  tiers: Array<{ name: string; note: string; items: string[]; highlight?: boolean }>
+  baseline?: { title: string; items: string[]; note?: string }
+  footnote?: string
+}
+
+/** Information architecture: one tree per surface. */
+export interface CSIaNode {
+  label: string
+  note?: string
+  children?: CSIaNode[]
+}
+export interface CSIa {
+  eyebrow: string
+  headline: string
+  lead?: string
+  trees: Array<{ surface: string; role: string; nodes: CSIaNode[] }>
+  footnote?: string
+}
+
+/** Design rounds, each with what went wrong and what carried forward. */
+export interface CSRounds {
+  eyebrow: string
+  headline: string
+  lead?: string
+  items: Array<{
+    name: string
+    title: string
+    problems: string[]
+    fixes?: string[]
+    kept?: string[]
+    image?: string
+  }>
+}
+
+/** A storyboard: numbered frames, each with an image and a line of story. */
+export interface CSStoryboard {
+  eyebrow: string
+  headline: string
+  lead?: string
+  frames: Array<{ no: string; title: string; body: string; image?: string }>
+  footnote?: string
+}
+
+/** Device kinds the spatial model can draw. */
+export type CSDeviceKind = 'light' | 'blind' | 'thermo' | 'speaker' | 'camera' | 'lock' | 'tv' | 'sensor'
+/**
+ * An interactive 3D model of a home, drawn in SVG (no WebGL). Rooms are
+ * axis-aligned rectangles on a shared footprint; each floor stacks above the
+ * last. Coordinates are in metres-ish units; devices sit inside their room.
+ */
+export interface CSSpatial {
+  eyebrow: string
+  headline: string
+  lead?: string
+  footprint: { w: number; d: number }
+  floors: Array<{
+    id: string
+    label: string
+    rooms: Array<{
+      id: string
+      label: string
+      x: number
+      y: number
+      w: number
+      d: number
+      devices?: Array<{ kind: CSDeviceKind; label: string; state: string; x: number; y: number; on?: boolean }>
+    }>
+  }>
+  /** Live-mode events, cycled on the model where they happen. */
+  events?: Array<{ room: string; text: string }>
+  modes: { scan: string; model: string; live: string }
+  footnote?: string
+}
+
+/** A titled matrix that can appear more than once in a study. */
+export interface CSNamedTable extends CSMatrix {
+  tone?: 'plain' | 'gray'
+}
+/** A card section that can appear more than once in a study. */
+export interface CSNamedCards extends CSCardSection {
+  tone?: 'plain' | 'gray' | 'dark'
+  /** Optional figure shown between the lead and the cards. */
+  image?: string
+  imageCaption?: string
+}
+
 export interface CSCapabilitiesGrid {
   type: 'grid'
   headline?: string
@@ -339,6 +461,9 @@ export interface CSResearch {
   eyebrow: string
   headline: string
   lead?: string
+  /** Optional artefact shown under the lead (e.g. a service blueprint). */
+  image?: string
+  imageCaption?: string
   groups: Array<{ label: string; snips: CSResearchSnip[] }>
   converge?: { tracks: CSResearchTrack[]; conclusion: string }
 }
@@ -444,6 +569,19 @@ export interface RichCaseStudy {
   /** Optional narrative order of section keys (see DEFAULT_ORDER in the
    *  renderer). Omit to use the default sequence. */
   order?: string[]
+  /** Optional local-nav override: [section id, label]. */
+  nav?: Array<{ id: string; label: string }>
+  snapshot?: CSSnapshot
+  personas?: CSPersonas
+  featureTiers?: CSFeatureTiers
+  ia?: CSIa
+  rounds?: CSRounds
+  storyboard?: CSStoryboard
+  spatial?: CSSpatial
+  /** Extra tables, rendered where `order` names 'table:<key>'. */
+  tables?: Record<string, CSNamedTable>
+  /** Extra card sections, rendered where `order` names 'cards:<key>'. */
+  cardSets?: Record<string, CSNamedCards>
   meta: CSMeta
   /** Public path prefix for this project's screenshots, e.g. '/IMAGES/Ved'. */
   imageBase: string
