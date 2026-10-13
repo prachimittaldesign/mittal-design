@@ -146,7 +146,7 @@ export const PROJECTS: Project[] = [
     label: 'Samsung EQ',
     sub: 'EMOTIONAL UX · SAMSUNG PRISM',
     glyph: 'heart',
-    desc: 'A Samsung PRISM research programme with MIT ID Pune — four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
+    desc: 'A Samsung PRISM research programme with MIT ID Pune: four months on how Gen Z bonds with their phones, ending in eight emotional-design principles and a framework that maps them against levels of consciousness.',
     tags: ['Research', 'Emotional Design', 'Mobile', 'Framework'],
     ogImage: '/IMAGES/samsungeq-og.png',
     // Public rich case study — no password (see src/data/projects/samsungeq.ts).
@@ -244,7 +244,7 @@ export const PROJECTS: Project[] = [
     sub: 'TV SUPER APPS · CES 2024',
     glyph: 'tv',
     featured: true,
-    desc: 'End-to-end design of two smart-TV apps in a 12-app suite — Mo, a community home screen, and Revee, adaptive streaming with non-interruptive advertising. Showcased at CES 2024.',
+    desc: 'End-to-end design of two smart-TV apps in a 12-app suite: Mo, a community home screen, and Revee, adaptive streaming with non-interruptive advertising. Showcased at CES 2024.',
     tags: ['Consumer', 'TV', 'Information Architecture', 'Lean-Back UX', 'Smart TV'],
     locked: true,
     teaser: {
