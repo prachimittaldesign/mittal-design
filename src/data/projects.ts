@@ -1,5 +1,6 @@
 import type { Project, FillerTile } from '../types'
 import { SAMSUNG_EQ_CASE_STUDY } from './projects/samsungeq'
+import { IZAK_CASE_STUDY } from './projects/izak'
 
 // Twelve shipped surfaces + the architecture "Studio" cottage, mapped onto the
 // complexity (x) / audience (y) graph.
@@ -31,6 +32,9 @@ export const PROJECTS: Project[] = [
     glyph: 'scanner',
     desc: 'Home automation delivered as a service — a platform that broadcasts software updates to consumer devices across a whole city over the NextGenTV spectrum, instead of updating them one at a time. UX research and design for the platform, including its LiDAR and photogrammetry feature: a sensor-to-3D-model scanning workflow that captures a real space and turns it into a usable spatial model — the same spatial-capture direction now productized in interactive property mapping.',
     tags: ['Enterprise', 'Smart Home', 'Spatial', 'UX Research', 'Mobile'],
+    ogImage: '/IMAGES/izak-og.png',
+    // Public rich case study — no password (see src/data/projects/izak.ts).
+    richCaseStudy: IZAK_CASE_STUDY,
   },
   {
     id: 'paas',

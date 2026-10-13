@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="1600" height="1000" fill="#fbfaf6"/>
+<defs>
+<symbol id="i-light" viewBox="0 0 40 40"><path d="M14 22a9 9 0 1 1 12 0c-1.6 1.4-2.4 3-2.4 5h-7.2c0-2-.8-3.6-2.4-5z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M16.5 31h7M17.5 35h5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-blind" viewBox="0 0 40 40"><rect x="8" y="7" width="24" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M8 13h24M8 19h24M8 25h24" stroke="currentColor" stroke-width="2.2"/></symbol>
+<symbol id="i-thermo" viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 24a9 9 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="20" cy="18" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-speaker" viewBox="0 0 40 40"><rect x="10" y="6" width="20" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="24" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="20" cy="12.5" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-camera" viewBox="0 0 40 40"><rect x="6" y="12" width="22" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M28 18l7-4v12l-7-4z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></symbol>
+<symbol id="i-lock" viewBox="0 0 40 40"><rect x="9" y="17" width="22" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 17v-4a6 6 0 0 1 12 0v4" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="20" cy="25.5" r="2.2" fill="currentColor"/></symbol>
+<symbol id="i-tv" viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M14 33h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="currentColor"/><path d="M12.5 20.5l5 5 10-11" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs>
+<text x="80" y="96" font-size="42" fill="#1d1d1f" font-weight="700" text-anchor="start">An update people can trust</text>
+<text x="80" y="142" font-size="28" fill="#6e6e73" font-weight="500" text-anchor="start">every path is visible, never mid-use, and ends with a receipt</text>
+<rect x="80" y="400" width="250" height="120" rx="18" fill="#fff" stroke="#d2d2d7" stroke-width="2.5"/>
+<text x="205.0" y="452.0" font-size="26" fill="#1d1d1f" font-weight="650" text-anchor="middle">Broadcast</text>
+<text x="205.0" y="486.0" font-size="21" fill="#6e6e73" font-weight="500" text-anchor="middle">sent to every home</text>
+<path d="M470 380 L560 460 L470 540 L380 460 Z" fill="#ece9fb" stroke="#5b4bde" stroke-width="2.5"/>
+<text x="470" y="469" font-size="24" fill="#1d1d1f" font-weight="650" text-anchor="middle">Received?</text>
+<line x1="330.0" y1="460.0" x2="376.0" y2="460.0" stroke="#6e6e73" stroke-width="3" stroke-linecap="round"/><path d="M363.4 466.1 L376.0 460.0 L363.4 453.9" fill="none" stroke="#6e6e73" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M470 380 V280 H600" fill="none" stroke="#1d8a6a" stroke-width="3"/>
+<text x="484" y="340" font-size="22" fill="#1d8a6a" font-weight="650" text-anchor="start">yes</text>
+<rect x="610" y="220" width="330" height="120" rx="18" fill="#fff" stroke="#d2d2d7" stroke-width="2.5"/>
+<text x="775.0" y="272.0" font-size="26" fill="#1d1d1f" font-weight="650" text-anchor="middle">Wait if in use</text>
+<text x="775.0" y="306.0" font-size="21" fill="#6e6e73" font-weight="500" text-anchor="middle">or outside quiet hours</text>
+<line x1="940.0" y1="280.0" x2="1000.0" y2="280.0" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round"/><path d="M987.4 286.1 L1000.0 280.0 L987.4 273.9" fill="none" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1010" y="220" width="260" height="120" rx="18" fill="#fff" stroke="#d2d2d7" stroke-width="2.5"/>
+<text x="1140.0" y="272.0" font-size="26" fill="#1d1d1f" font-weight="650" text-anchor="middle">Install</text>
+<text x="1140.0" y="306.0" font-size="21" fill="#6e6e73" font-weight="500" text-anchor="middle">quietly</text>
+<path d="M470 540 V640 H600" fill="none" stroke="#c2410c" stroke-width="3"/>
+<text x="484" y="600" font-size="22" fill="#c2410c" font-weight="650" text-anchor="start">missed</text>
+<rect x="610" y="580" width="330" height="120" rx="18" fill="#fff" stroke="#d2d2d7" stroke-width="2.5"/>
+<text x="775.0" y="632.0" font-size="26" fill="#1d1d1f" font-weight="650" text-anchor="middle">Wi-Fi fallback</text>
+<text x="775.0" y="666.0" font-size="21" fill="#6e6e73" font-weight="500" text-anchor="middle">pulls the same package</text>
+<line x1="940.0" y1="640.0" x2="1000.0" y2="640.0" stroke="#c2410c" stroke-width="3" stroke-linecap="round"/><path d="M987.4 646.1 L1000.0 640.0 L987.4 633.9" fill="none" stroke="#c2410c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1010" y="580" width="260" height="120" rx="18" fill="#fff" stroke="#d2d2d7" stroke-width="2.5"/>
+<text x="1140.0" y="632.0" font-size="26" fill="#1d1d1f" font-weight="650" text-anchor="middle">Visible retry</text>
+<text x="1140.0" y="666.0" font-size="21" fill="#6e6e73" font-weight="500" text-anchor="middle">on the Updating card</text>
+<path d="M1270 280 H1300 V440" fill="none" stroke="#1d8a6a" stroke-width="3"/>
+<line x1="1300.0" y1="440.0" x2="1334.0" y2="440.0" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round"/><path d="M1321.4 446.1 L1334.0 440.0 L1321.4 433.9" fill="none" stroke="#1d8a6a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1270 640 H1300 V480" fill="none" stroke="#c2410c" stroke-width="3"/>
+<line x1="1300.0" y1="480.0" x2="1334.0" y2="480.0" stroke="#c2410c" stroke-width="3" stroke-linecap="round"/><path d="M1321.4 486.1 L1334.0 480.0 L1321.4 473.9" fill="none" stroke="#c2410c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1340" y="380" width="220" height="160" rx="20" fill="#1d1d1f"/>
+<use href="#i-check" x="1424" y="398" width="52" height="52" style="color:#1d8a6a"/>
+<text x="1450" y="486" font-size="28" fill="#fff" font-weight="700" text-anchor="middle">Current</text>
+<text x="1450" y="518" font-size="21" fill="#c7c7cc" font-weight="500" text-anchor="middle">receipt logged</text>
+<rect x="610" y="770" width="660" height="170" rx="18" fill="#17171c"/>
+<text x="638" y="814" font-size="24" fill="#c7c7cc" font-weight="650" text-anchor="start">Updating</text>
+<text x="638" y="862" font-size="20" fill="#fff" font-weight="600" text-anchor="start">Ceiling light</text>
+<rect x="800" y="848" width="240" height="14" rx="7" fill="#3a3a44"/>
+<rect x="800" y="848" width="240" height="14" rx="7" fill="#1d8a6a"/>
+<text x="1058" y="862" font-size="19" fill="#1d8a6a" font-weight="600" text-anchor="start">current</text>
+<text x="638" y="912" font-size="20" fill="#fff" font-weight="600" text-anchor="start">Door lock</text>
+<rect x="800" y="898" width="240" height="14" rx="7" fill="#3a3a44"/>
+<rect x="800" y="898" width="132" height="14" rx="7" fill="#b8860b"/>
+<text x="1058" y="912" font-size="19" fill="#b8860b" font-weight="600" text-anchor="start">retrying on Wi-Fi</text>
+<path d="M1140 700 V770" stroke="#c2410c" stroke-width="2.5" stroke-dasharray="6 6"/>
+</svg>
