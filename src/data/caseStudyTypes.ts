@@ -441,6 +441,9 @@ export interface CSRole {
 }
 
 export interface RichCaseStudy {
+  /** Optional narrative order of section keys (see DEFAULT_ORDER in the
+   *  renderer). Omit to use the default sequence. */
+  order?: string[]
   meta: CSMeta
   /** Public path prefix for this project's screenshots, e.g. '/IMAGES/Ved'. */
   imageBase: string

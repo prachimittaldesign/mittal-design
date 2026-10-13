@@ -1130,6 +1130,35 @@ function ScrollRail({ rootRef, deps }: { rootRef: RefObject<HTMLDivElement>; dep
   )
 }
 
+/** The original fixed section sequence; studies may override via `order`. */
+export const DEFAULT_ORDER = [
+  'hero',
+  'highlights',
+  'figures',
+  'closerLook',
+  'flagship',
+  'explainer',
+  'walkthrough',
+  'impact',
+  'metrics',
+  'designSystem',
+  'aiLayer',
+  'process',
+  'research',
+  'hypotheses',
+  'principles',
+  'wheel',
+  'matrix',
+  'decisions',
+  'outcome',
+  'interactions',
+  'gamification',
+  'capabilities',
+  'techHandoff',
+  'role',
+  'related',
+]
+
 export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const hlRef = useRef<HTMLDivElement>(null)
@@ -1276,6 +1305,948 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
     .map((slug) => PROJECTS.find((p) => p.id === slug))
     .filter((p): p is NonNullable<typeof p> => !!p)
 
+  // Each section is a keyed renderer so a study can set its own narrative
+  // order (`data.order`). DEFAULT_ORDER is the original fixed sequence, so
+  // a study without `order` renders exactly as before.
+  const sections: Record<string, () => ReactNode> = {
+    hero: () => (
+      <>
+      {/* ---- 1 · hero ---- */}
+      <header className="hero">
+        <p className="eyebrow reveal">{hero.eyebrow}</p>
+        <h1 className="h-hero reveal">{hero.title}</h1>
+        <p className="hero__tag reveal">{hero.tagline}</p>
+        {hero.cta.url && (
+          <div className="reveal" style={{ display: 'flex', gap: 26, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a className="btn" href={hero.cta.url} target="_blank" rel="noopener noreferrer">
+              {hero.cta.label}&nbsp;↗
+            </a>
+          </div>
+        )}
+        <div className="hero__visual reveal">
+          <Shot cs={data} id={hero.image} eager />
+        </div>
+      </header>
+
+      <TrailBand />
+      </>
+    ),
+    highlights: () => (
+      <>
+      {/* ---- 2 · highlights ---- */}
+      <section className="section" id="cs-highlights" data-cs-section style={{ paddingBottom: 'calc(var(--pad) - 30px)', scrollMarginTop: 64 }}>
+        <div className="hl__head reveal">
+          <h2 className="h-sect">Get the highlights.</h2>
+          <div className="hl__arrows">
+            <button className="arrow" onClick={() => hlStep(-1)} disabled={hlAt === 'start'} aria-label="Previous">‹</button>
+            <button className="arrow" onClick={() => hlStep(1)} disabled={hlAt === 'end'} aria-label="Next">›</button>
+          </div>
+        </div>
+        <div className="hl__scroller" ref={hlRef} onScroll={syncHl}>
+          {data.highlights.map((h) => (
+            <article className="hl__card" key={h.title}>
+              <span className="k">{h.kicker}</span>
+              <h3>{h.title}</h3>
+              <p>{rich(h.body)}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      </>
+    ),
+    figures: () => (
+      <>
+      {/* ---- 2b · figures: conceptual diagrams (e.g. the TV context) ---- */}
+      {data.figures && data.figures.items.length > 0 && (
+        <section className="section section--gray" id="cs-figures" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow center">{data.figures.eyebrow}</p>
+            <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 8px' }}>{data.figures.headline}</h2>
+            {data.figures.lead && <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.figures.lead)}</p>}
+            <div className="figstack">
+              {data.figures.items.map((f) => (
+                <FigureBlock key={f.title} item={f} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    closerLook: () => (
+      <>
+      {/* ---- 3 · closer look ---- */}
+      {data.closerLook && data.closerLook.items.length > 0 && (
+        <section className="section section--gray center" id="cs-look" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <h2 className="h-sect">Take a closer look.</h2>
+            <div className="look__controls">
+              {data.closerLook.themes.length > 1 && (
+                <div className="toggle" role="group" aria-label="Theme">
+                  {data.closerLook.themes.map((t) => (
+                    <button key={t} aria-pressed={lookTheme === t} onClick={() => setLookTheme(t)}>
+                      {t[0].toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {data.closerLook.items.length > 1 && (
+                <div className="look__arrows">
+                  <button className="arrow" onClick={() => lookStep(-1)} disabled={lookAt === 'start'} aria-label="Previous screenshot">‹</button>
+                  <button className="arrow" onClick={() => lookStep(1)} disabled={lookAt === 'end'} aria-label="Next screenshot">›</button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="look__scroller" data-ui={lookTheme} ref={lookRef} onScroll={syncLook}>
+            {data.closerLook.items.map((item) => (
+              <figure className="look__item" key={item.image}>
+                <Shot cs={data} id={item.image} />
+                <figcaption className="look__cap">{item.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+          {data.closerLook.items.length > 1 && (
+            <div className="look__dots" role="tablist" aria-label="Screenshot">
+              {data.closerLook.items.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="look__dot"
+                  aria-label={`Go to screenshot ${i + 1} of ${data.closerLook!.items.length}`}
+                  aria-current={i === lookIdx}
+                  onClick={() => lookGoTo(i)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+      </>
+    ),
+    flagship: () => (
+      <>
+      {/* ---- 4 · flagship feature ---- */}
+      {data.flagship && (
+        <section className="section" id="cs-feature" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <div className="feat">
+              <div>
+                <p className="eyebrow">{data.flagship.eyebrow}</p>
+                <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.flagship.headline}</h2>
+                <p className="lead">{rich(data.flagship.lead)}</p>
+                <div className="stats-row">
+                  {data.flagship.stats.map((s) => (
+                    <div className="stat" key={s.label}>
+                      <div className="num">{s.num}</div>
+                      <div className="lbl">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                {data.flagship.modal && (
+                  <div className="row-cta">
+                    <button className="tlink" onClick={() => setModal(data.flagship!.modal!)}>
+                      See how it works
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="feat__media">
+                <Shot cs={data} id={data.flagship.image} />
+              </div>
+            </div>
+            {data.flagship.diagrams && data.flagship.diagrams.length > 0 && (
+              <div className="figstack figstack--flag">
+                {data.flagship.diagrams.map((f) => (
+                  <FigureBlock key={f.title} item={f} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    explainer: () => (
+      <>
+      {/* ---- 4a · explainer: structured content in plain words ---- */}
+      {data.explainer && data.explainer.groups.length > 0 && data.explainer.groups[0].people.length > 0 && (
+        <section className="section section--gray" id="cs-explainer" data-cs-section data-cs-anchor={data.explainer.eyebrow} style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow center">{data.explainer.eyebrow}</p>
+            <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
+              {data.explainer.headline}
+            </h2>
+            <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
+              {rich(data.explainer.lead)}
+            </p>
+            {data.explainer.analogy && <p className="dx__analogy">{rich(data.explainer.analogy)}</p>}
+            <DitaExplainer x={data.explainer} />
+            {data.explainer.glossary && data.explainer.glossary.length > 0 && (
+              <dl className="dx__gloss">
+                {data.explainer.glossary.map((g) => (
+                  <div key={g.term}>
+                    <dt>{g.term}</dt>
+                    <dd>{rich(g.plain)}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {data.explainer.footnote && <p className="wt__note wt__note--foot">{rich(data.explainer.footnote)}</p>}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    walkthrough: () => (
+      <>
+      {/* ---- 4b · walkthrough: one real task, onboarding → sharing ---- */}
+      {data.walkthrough && data.walkthrough.stages.length > 0 && (
+        <section className="section" id="cs-walkthrough" data-cs-section data-cs-anchor="The worked example" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
+            <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
+              {data.walkthrough.headline}
+            </h2>
+            <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
+              {rich(data.walkthrough.lead)}
+            </p>
+
+            {data.walkthrough.scenario && (
+              <p className="wt__scenario">{rich(data.walkthrough.scenario)}</p>
+            )}
+
+            {data.walkthrough.method && (
+              <div className="wt__block" id="cs-wt-jobs" data-cs-anchor="Jobs & process" style={{ scrollMarginTop: 72 }}>
+                <h3 className="wt__collapse-h">{data.walkthrough.method.title}</h3>
+                {data.walkthrough.method.lead && (
+                  <p className="wt__block-lead">{rich(data.walkthrough.method.lead)}</p>
+                )}
+                <div className="jtbd">
+                  {data.walkthrough.method.jobs.map((j) => {
+                    const lane = (data.walkthrough!.actors ?? []).indexOf(j.actor)
+                    return (
+                      <article className="jtbd__card" key={j.actor} data-lane={lane >= 0 ? lane : undefined}>
+                        <p className="jtbd__actor">{j.actor}</p>
+                        <p className="jtbd__story">
+                          <span className="jtbd__k">When</span> {j.when}
+                          <br />
+                          <span className="jtbd__k">I want to</span> {j.want}
+                          <br />
+                          <span className="jtbd__k">so I can</span> {j.so}
+                        </p>
+                      </article>
+                    )
+                  })}
+                </div>
+                <ol className="mchain" aria-label="Process used">
+                  {data.walkthrough.method.steps.map((m, i) => (
+                    <li className="mchain__step" key={m.title}>
+                      <span className="mchain__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                      <h4>{m.title}</h4>
+                      <p>{rich(m.body)}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {data.walkthrough.screens && data.walkthrough.screens.items.length > 0 && (
+              <div className="wt__block" id="cs-wt-screens" data-cs-anchor="Journey in screens" style={{ scrollMarginTop: 72 }}>
+                <h3 className="wt__collapse-h">{data.walkthrough.screens.title}</h3>
+                {data.walkthrough.screens.lead && (
+                  <p className="wt__block-lead">{rich(data.walkthrough.screens.lead)}</p>
+                )}
+                <ScreenFlow items={data.walkthrough.screens.items} />
+                <p className="jf__hint" aria-hidden="true">Scroll sideways to follow the path →</p>
+              </div>
+            )}
+
+            {data.walkthrough.lanes && (
+              <div className="wt__block" id="cs-wt-lanes" data-cs-anchor="Who does what" style={{ scrollMarginTop: 72 }}>
+                {data.walkthrough.lanes.title && (
+                  <h3 className="wt__collapse-h">{data.walkthrough.lanes.title}</h3>
+                )}
+                <Swimlane lanes={data.walkthrough.lanes} actors={data.walkthrough.actors ?? []} />
+                {data.walkthrough.lanes.caption && (
+                  <p className="wt__note">{rich(data.walkthrough.lanes.caption)}</p>
+                )}
+              </div>
+            )}
+
+            {data.walkthrough.collapse && (
+              <div className="wt__collapse" id="cs-wt-fifty" data-cs-anchor={data.walkthrough.collapse.title} style={{ scrollMarginTop: 72 }}>
+                <h3 className="wt__collapse-h">{data.walkthrough.collapse.title}</h3>
+                <CollapseDiagram c={data.walkthrough.collapse} />
+                {data.walkthrough.collapse.caption && (
+                  <p className="wt__note">{rich(data.walkthrough.collapse.caption)}</p>
+                )}
+              </div>
+            )}
+
+            <h3 className="wt__collapse-h wt__rail-h" id="cs-wt-stages" data-cs-anchor="Stage by stage" style={{ scrollMarginTop: 72 }}>
+              Stage by stage
+            </h3>
+            <ol className="wt__rail">
+              {data.walkthrough.stages.map((s) => {
+                const lane = Math.max(0, (data.walkthrough!.actors ?? []).indexOf(s.actor))
+                return (
+                  <li className="wt__stage" key={s.no} data-lane={lane}>
+                    <span className="wt__no" aria-hidden="true">{s.no}</span>
+                    <div className="wt__body">
+                      <div className="wt__head">
+                        <h3>{s.title}</h3>
+                        <span className="wt__actor">{s.actor}</span>
+                      </div>
+                      <p>{rich(s.body)}</p>
+                      {s.atScale && (
+                        <p className="wt__scale">
+                          <span className="wt__scale-l">At 50</span>
+                          {rich(s.atScale)}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+
+            {data.walkthrough.footnote && (
+              <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    impact: () => (
+      <>
+      {/* ---- 5 · impact bars ---- */}
+      {data.impact && (
+        <section className="section section--dark" id="cs-impact" data-cs-section style={{ scrollMarginTop: 64 }}>
+          {/* No .reveal here: this is the only dark section, so content that
+              fails to un-hide reads as a solid black screen. The text is
+              always visible; only the bar fills animate in. */}
+          <div className={`wrap${impactOn ? ' is-animated' : ''}`}>
+            <p className="eyebrow">{data.impact.eyebrow}</p>
+            <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.impact.headline}</h2>
+            {data.impact.note && <p className="lead" style={{ maxWidth: '68ch' }}>{rich(data.impact.note)}</p>}
+            <div className="bars">
+              {data.impact.bars.map((b) => (
+                <div className="bar" key={b.label}>
+                  <div className="bar__top">
+                    <b>{b.label}</b>
+                    <span>
+                      <span style={{ color: '#a1a1a6' }}>{b.before}&nbsp;→&nbsp;</span>
+                      <span className="delta">{b.after}</span>
+                    </span>
+                  </div>
+                  <div className="bar__track">
+                    <div className="bar__before" style={{ '--b': `${b.beforePct}%` } as React.CSSProperties} />
+                    <div className="bar__after" style={{ '--a': `${b.afterPct}%` } as React.CSSProperties} />
+                  </div>
+                </div>
+              ))}
+              <div className="bar__legend">
+                <span><i className="dot dot--b" />Before</span>
+                <span><i className="dot dot--a" />After</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    metrics: () => (
+      <>
+      {/* ---- 6 · metrics band ---- */}
+      {data.metrics && data.metrics.length > 0 && (
+        <section className="section" id="cs-metrics" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto' }}>
+              A project in {COUNT_WORDS[data.metrics.length] ?? data.metrics.length} numbers.
+            </h2>
+            <div className="metrics">
+              {data.metrics.map((m) => (
+                <div className="metric" key={m.label}>
+                  <div className="m-num">{m.num}</div>
+                  <div className="m-lbl">{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    designSystem: () => (
+      <>
+      {/* ---- 7 · design system ---- */}
+      {data.designSystem && (
+        <section className="section section--gray" id="cs-system" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.designSystem.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.designSystem.headline}</h2>
+            {data.designSystem.lead && <p className="lead">{rich(data.designSystem.lead)}</p>}
+            <div className="trio">
+              {data.designSystem.cards.map((c) => (
+                <div className="trio__card" key={c.title}>
+                  {c.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={c.image} />
+                    </div>
+                  )}
+                  <h3>{c.title}</h3>
+                  <p>{rich(c.body)}</p>
+                </div>
+              ))}
+            </div>
+            {data.designSystem.modal && (
+              <div className="row-cta">
+                <button className="tlink" onClick={() => setModal(data.designSystem!.modal!)}>
+                  Explore the system
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    aiLayer: () => (
+      <>
+      {/* ---- 8 · AI / intelligence layer ---- */}
+      {data.aiLayer && (
+        <section className="section section--dark" id="cs-ai" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.aiLayer.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.aiLayer.headline}</h2>
+            {data.aiLayer.lead && <p className="lead">{rich(data.aiLayer.lead)}</p>}
+            <div className="cards3">
+              {data.aiLayer.cards.map((c) => (
+                <article className="icard" key={c.title}>
+                  {c.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={c.image} />
+                    </div>
+                  )}
+                  <div className="icard__txt">
+                    <h3>{c.title}</h3>
+                    <p>{rich(c.body)}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    process: () => (
+      <>
+      {/* ---- 9 · process ---- */}
+      {data.process && (
+        <section className="section section--gray" id="cs-process" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.process.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 20 }}>{data.process.headline}</h2>
+            <p className="lead">{rich(data.process.lead)}</p>
+            <div className="steps">
+              {data.process.steps.map((s) => (
+                <div className="step" key={s.no}>
+                  <div className="no">{s.no}</div>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p>{rich(s.body)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {data.process.modal && (
+              <div className="row-cta">
+                <button className="tlink" onClick={() => setModal(data.process!.modal!)}>
+                  See the process in detail
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    research: () => (
+      <>
+      {/* ---- 9b · research: tracks, snippets, convergence ---- */}
+      {data.research && (
+        <section className="section" id="cs-research" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.research.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.research.headline}</h2>
+            {data.research.lead && <p className="lead">{rich(data.research.lead)}</p>}
+            {data.research.groups.map((g) => (
+              <div key={g.label} className="rgroup">
+                <p className="sublabel">{g.label}</p>
+                <div className="snips">
+                  {g.snips.map((s, i) => (
+                    <div className="snip" key={i}>
+                      <p>{rich(s.body)}</p>
+                      <cite>{s.cite}</cite>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {data.research.converge && (
+              <div className="rgroup">
+                <p className="sublabel">Where the tracks met</p>
+                <div className="converge">
+                  {data.research.converge.tracks.map((t) => (
+                    <div key={t.title}>
+                      <h3>{t.title}</h3>
+                      <p className="n">{t.count}</p>
+                      <div className="themes">
+                        {t.themes.map((th) => (
+                          <span key={th.label} className={th.shared ? 'theme is-shared' : 'theme'}>{th.label}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="lead" style={{ marginTop: 32 }}>{rich(data.research.converge.conclusion)}</p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    hypotheses: () => (
+      <>
+      {/* ---- 9c · hypotheses ---- */}
+      {data.hypotheses && (
+        <section className="section section--gray" id="cs-hypotheses" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.hypotheses.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.hypotheses.headline}</h2>
+            {data.hypotheses.lead && <p className="lead">{rich(data.hypotheses.lead)}</p>}
+            <div className="hyp">
+              {data.hypotheses.items.map((h) => (
+                <article className="hypo" key={h.title}>
+                  <h3>
+                    {h.emphasis ? (
+                      <>
+                        {h.title.split(h.emphasis)[0]}
+                        <em>{h.emphasis}</em>
+                        {h.title.split(h.emphasis)[1]}
+                      </>
+                    ) : (
+                      h.title
+                    )}
+                  </h3>
+                  <p>{h.body}</p>
+                  <div className="scale">
+                    {h.rungs.map((r, i) => (
+                      <div className="rung" key={r}>
+                        <b>{String(i + 1).padStart(2, '0')}</b>
+                        {r}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="scale-ends">
+                    <span>{h.scaleStart}</span>
+                    <span>{h.scaleEnd}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    principles: () => (
+      <>
+      {/* ---- 9d · principles ---- */}
+      {data.principles && (
+        <section className="section" id="cs-principles" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.principles.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.principles.headline}</h2>
+            {data.principles.lead && <p className="lead">{rich(data.principles.lead)}</p>}
+            <div className="prins">
+              {data.principles.items.map((p) => (
+                <div className="prin" key={p.key} style={{ borderTopColor: p.colour }}>
+                  <h3>{p.name}</h3>
+                  <p className="cat">{p.cat}</p>
+                  <p>{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    wheel: () => (
+      <>
+      {/* ---- 9e · the framework wheel (interactive) ---- */}
+      {data.wheel && data.principles && (
+        <section className="section section--gray" id="cs-wheel" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.wheel.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.wheel.headline}</h2>
+            {data.wheel.lead.map((l, i) => (
+              <p className="lead" key={i} style={i > 0 ? { marginTop: 16 } : undefined}>{rich(l)}</p>
+            ))}
+            <FrameworkWheel principles={data.principles.items} levelNames={data.wheel.levelNames} hint={data.wheel.hint} />
+            {data.wheel.image && (
+              <figure className="csfig">
+                <Shot cs={data} id={data.wheel.image} />
+                {data.wheel.imageCaption && <figcaption>{data.wheel.imageCaption}</figcaption>}
+              </figure>
+            )}
+            {data.wheel.footnote && <p className="cmp__note">{data.wheel.footnote}</p>}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    matrix: () => (
+      <>
+      {/* ---- 9f · matrix (a journey read through the framework) ---- */}
+      {data.matrix && (
+        <section className="section" id="cs-matrix" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.matrix.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.matrix.headline}</h2>
+            {data.matrix.lead && <p className="lead">{rich(data.matrix.lead)}</p>}
+            {data.matrix.image && (
+              <figure className="csfig">
+                <Shot cs={data} id={data.matrix.image} />
+                {data.matrix.imageCaption && <figcaption>{data.matrix.imageCaption}</figcaption>}
+              </figure>
+            )}
+            <div className="jscroll" role="region" aria-label={data.matrix.headline} tabIndex={0}>
+              <table className="jtable">
+                <thead>
+                  <tr>
+                    {data.matrix.columns.map((c) => (
+                      <th key={c} scope="col">{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.matrix.rows.map((r) => (
+                    <tr key={r.label} className={r.hot ? 'hot' : undefined}>
+                      <th scope="row">{r.label}</th>
+                      {r.cells.map((c, i) => (
+                        <td key={i}>{rich(c)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {data.matrix.footnote && <p className="cmp__note">{data.matrix.footnote}</p>}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    decisions: () => (
+      <>
+      {/* ---- 9g · decisions ---- */}
+      {data.decisions && (
+        <section className="section section--gray" id="cs-decisions" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow">{data.decisions.eyebrow}</p>
+            <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.decisions.headline}</h2>
+            {data.decisions.lead && <p className="lead">{rich(data.decisions.lead)}</p>}
+            <ul className="decisions">
+              {data.decisions.items.map((d) => (
+                <li className="decision" key={d.title}>
+                  <h3>{d.title}</h3>
+                  <dl>
+                    <div><dt>Chose</dt><dd>{d.chose}</dd></div>
+                    <div><dt>Instead of</dt><dd>{d.instead}</dd></div>
+                    <div><dt>Cost</dt><dd className="cost">{d.cost}</dd></div>
+                  </dl>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    outcome: () => (
+      <>
+      {/* ---- 9h · outcome (dark band) ---- */}
+      {data.outcome && (
+        <section className="section section--dark" id="cs-outcome" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap">
+            <p className="eyebrow">{data.outcome.eyebrow}</p>
+            <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.outcome.headline}</h2>
+            <p className="claim">{data.outcome.claim}</p>
+            <div className="nums">
+              {data.outcome.nums.map((n) => (
+                <div className="num" key={n.label}>
+                  <b>{n.num}</b>
+                  <span>{n.label}</span>
+                </div>
+              ))}
+            </div>
+            {data.outcome.footnote && <p className="onote">{data.outcome.footnote}</p>}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    interactions: () => (
+      <>
+      {/* ---- 10 · key interactions ---- */}
+      {data.interactions && (
+        <section className="section" id="cs-interactions" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <p className="eyebrow center">{data.interactions.eyebrow}</p>
+            <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 8px' }}>{data.interactions.headline}</h2>
+            <div className="cards3">
+              {data.interactions.cards.map((c) => (
+                <article className="icard" key={c.title}>
+                  {c.image && (
+                    <div className="fig">
+                      <Shot cs={data} id={c.image} />
+                    </div>
+                  )}
+                  <div className="icard__txt">
+                    <h3>{c.title}</h3>
+                    <p>{rich(c.body)}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            {data.interactions.signatureFlow && data.interactions.signatureFlow.length > 0 && (
+              <div className="sigflow reveal" aria-label="Signature interaction, step by step">
+                {data.interactions.signatureFlow.map((step, i) => (
+                  <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <span className="sigflow__step">
+                      <span className="sigflow__no">{i + 1}</span>
+                      {step}
+                    </span>
+                    {i < data.interactions!.signatureFlow!.length - 1 && <span className="sigflow__arrow">›</span>}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    gamification: () => (
+      <>
+      {/* ---- 10b · gamification: Octalysis octagon + leaned-in / refused ---- */}
+      {data.gamification && data.gamification.drives.length >= 8 && (
+        <section className="section section--gray" id="cs-gamification" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow center">{data.gamification.eyebrow}</p>
+            <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto 8px' }}>{data.gamification.headline}</h2>
+            <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.gamification.lead)}</p>
+            {data.gamification.framework && <p className="octa__attr center">{data.gamification.framework}</p>}
+            <div className="octa__grid">
+              <div className="octa__viz">
+                <Octagon drives={data.gamification.drives} />
+                <div className="octa__legend">
+                  <span className="octa__key"><i className="octa__swatch octa__swatch--on" />Leaned in</span>
+                  <span className="octa__key"><i className="octa__swatch octa__swatch--off" />Refused</span>
+                </div>
+              </div>
+              <div className="octa__cols">
+                <div className="octa__col">
+                  <h3 className="octa__col-h octa__col-h--on">Leaned into</h3>
+                  <ul>
+                    {data.gamification.drives.filter((d) => d.used).map((d) => (
+                      <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="octa__col">
+                  <h3 className="octa__col-h octa__col-h--off">Deliberately refused</h3>
+                  <ul>
+                    {data.gamification.drives.filter((d) => !d.used).map((d) => (
+                      <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {data.gamification.caption && <p className="octa__caption center">{rich(data.gamification.caption)}</p>}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    capabilities: () => (
+      <>
+      {/* ---- 11 · capabilities: comparison matrix or icon grid ---- */}
+      {data.capabilities?.type === 'comparison' && (
+        <section className="section section--gray" id="cs-capabilities" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <p className="eyebrow center">How it compares</p>
+            <h2 className="h-sect center" style={{ maxWidth: '15ch', margin: '0 auto 10px' }}>{data.capabilities.headline}</h2>
+            <div className="cmp" role="region" aria-label="Feature comparison" tabIndex={0}>
+              <table className="cmp__table">
+                <caption className="visually-hidden">
+                  Feature comparison: {data.capabilities.competitors[0]} versus {data.capabilities.competitors.slice(1).join(', ')}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col" className="cmp__feat-h"><span className="visually-hidden">Capability</span></th>
+                    {data.capabilities.competitors.map((c, i) => (
+                      <th scope="col" key={c} className={i === 0 ? 'cmp__col cmp__col--us' : 'cmp__col'}>{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.capabilities.rows.map((row) => (
+                    <tr key={row.feature}>
+                      <th scope="row" className="cmp__feat">{row.feature}</th>
+                      {row.values.map((v, i) => (
+                        <td key={i} className={i === 0 ? 'cmp__cell cmp__cell--us' : undefined}>
+                          <Mark value={v} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {data.capabilities.note && <p className="cmp__note">{data.capabilities.note}</p>}
+          </div>
+        </section>
+      )}
+      {data.capabilities?.type === 'grid' && (
+        <section className="section section--gray" id="cs-capabilities" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            {data.capabilities.headline && (
+              <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto' }}>{data.capabilities.headline}</h2>
+            )}
+            <div className="caps">
+              {data.capabilities.items.map((item) => (
+                <div className="cap" key={item.title}>
+                  <h3>{item.title}</h3>
+                  <p>{rich(item.body)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    techHandoff: () => (
+      <>
+      {/* ---- 12 · tech & handoff ---- */}
+      {data.techHandoff && (
+        <section className="section" id="cs-tech" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <div className="feat">
+              <div>
+                <p className="eyebrow">{data.techHandoff.eyebrow}</p>
+                <h2 className="h-sub" style={{ marginBottom: 20 }}>{data.techHandoff.headline}</h2>
+                <p className="body" style={{ maxWidth: '52ch' }}>{rich(data.techHandoff.body)}</p>
+                {data.techHandoff.compliance && data.techHandoff.compliance.length > 0 && (
+                  <div className="role__chips">
+                    {data.techHandoff.compliance.map((c) => (
+                      <span className="role__chip" key={c}>{c}</span>
+                    ))}
+                  </div>
+                )}
+                {data.techHandoff.modal && (
+                  <div className="row-cta">
+                    <button className="tlink" onClick={() => setModal(data.techHandoff!.modal!)}>
+                      DRM &amp; compliance, in detail
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="feat__media">
+                <div className="trio" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 0, gap: 16 }}>
+                  {data.techHandoff.items.map((item) => (
+                    <div className="trio__card" style={{ padding: 22 }} key={item.title}>
+                      <h3 style={{ fontSize: 18 }}>{item.title}</h3>
+                      <p>{rich(item.body)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    role: () => (
+      <>
+      {/* ---- 13 · my role ---- */}
+      {data.role && (
+        <section className="section section--gray" id="cs-role" data-cs-section style={{ scrollMarginTop: 64 }}>
+          <div className="wrap reveal">
+            <h2 className="h-sect" style={{ marginBottom: 8 }}>My role.</h2>
+            <div className="role">
+              <div className="role__card">
+                <div className="k">Role</div>
+                <p>{data.role.role}<span className="sub">{data.role.ownership}</span></p>
+              </div>
+              <div className="role__card">
+                <div className="k">Timeline</div>
+                <p>{data.role.timeline}<span className="sub">{data.meta.status}</span></p>
+              </div>
+              <div className="role__card">
+                <div className="k">Team</div>
+                <p style={{ fontSize: 'clamp(16px,2vw,19px)' }}>{data.role.team}</p>
+              </div>
+              <div className="role__card">
+                <div className="k">Tools</div>
+                <p>{data.role.tools.join(' · ')}</p>
+              </div>
+            </div>
+            {data.role.responsibilities.length > 0 && (
+              <div className="role__chips">
+                {data.role.responsibilities.map((r) => (
+                  <span className="role__chip" key={r} style={{ background: '#fff' }}>{r}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+      </>
+    ),
+    related: () => (
+      <>
+      {/* ---- 14 · keep exploring ---- */}
+      {related.length > 0 && (
+        <section className="section" id="cs-more" style={{ scrollMarginTop: 64 }}>
+          <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
+            <h2 className="h-sect" style={{ marginBottom: 8 }}>Keep exploring.</h2>
+            <div className="work">
+              {related.map((p) => (
+                <button className="tile" key={p.id} onClick={() => onNavigate?.(p.id)}>
+                  <span className="k">{p.sub}</span>
+                  <h3>{p.label}</h3>
+                  <p>{p.desc}</p>
+                  <span className="go">View case study ›</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      </>
+    ),
+  }
+
   return (
     <div className="cs" ref={rootRef}>
       <span id="cs-top" />
@@ -1319,866 +2290,9 @@ export function CaseStudy({ data, onNavigate }: CaseStudyProps) {
       </nav>
 
       <main>
-        {/* ---- 1 · hero ---- */}
-        <header className="hero">
-          <p className="eyebrow reveal">{hero.eyebrow}</p>
-          <h1 className="h-hero reveal">{hero.title}</h1>
-          <p className="hero__tag reveal">{hero.tagline}</p>
-          {hero.cta.url && (
-            <div className="reveal" style={{ display: 'flex', gap: 26, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a className="btn" href={hero.cta.url} target="_blank" rel="noopener noreferrer">
-                {hero.cta.label}&nbsp;↗
-              </a>
-            </div>
-          )}
-          <div className="hero__visual reveal">
-            <Shot cs={data} id={hero.image} eager />
-          </div>
-        </header>
-
-        <TrailBand />
-
-        {/* ---- 2 · highlights ---- */}
-        <section className="section" id="cs-highlights" data-cs-section style={{ paddingBottom: 'calc(var(--pad) - 30px)', scrollMarginTop: 64 }}>
-          <div className="hl__head reveal">
-            <h2 className="h-sect">Get the highlights.</h2>
-            <div className="hl__arrows">
-              <button className="arrow" onClick={() => hlStep(-1)} disabled={hlAt === 'start'} aria-label="Previous">‹</button>
-              <button className="arrow" onClick={() => hlStep(1)} disabled={hlAt === 'end'} aria-label="Next">›</button>
-            </div>
-          </div>
-          <div className="hl__scroller" ref={hlRef} onScroll={syncHl}>
-            {data.highlights.map((h) => (
-              <article className="hl__card" key={h.title}>
-                <span className="k">{h.kicker}</span>
-                <h3>{h.title}</h3>
-                <p>{rich(h.body)}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* ---- 2b · figures: conceptual diagrams (e.g. the TV context) ---- */}
-        {data.figures && data.figures.items.length > 0 && (
-          <section className="section section--gray" id="cs-figures" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow center">{data.figures.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 8px' }}>{data.figures.headline}</h2>
-              {data.figures.lead && <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.figures.lead)}</p>}
-              <div className="figstack">
-                {data.figures.items.map((f) => (
-                  <FigureBlock key={f.title} item={f} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 3 · closer look ---- */}
-        {data.closerLook && data.closerLook.items.length > 0 && (
-          <section className="section section--gray center" id="cs-look" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <h2 className="h-sect">Take a closer look.</h2>
-              <div className="look__controls">
-                {data.closerLook.themes.length > 1 && (
-                  <div className="toggle" role="group" aria-label="Theme">
-                    {data.closerLook.themes.map((t) => (
-                      <button key={t} aria-pressed={lookTheme === t} onClick={() => setLookTheme(t)}>
-                        {t[0].toUpperCase() + t.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {data.closerLook.items.length > 1 && (
-                  <div className="look__arrows">
-                    <button className="arrow" onClick={() => lookStep(-1)} disabled={lookAt === 'start'} aria-label="Previous screenshot">‹</button>
-                    <button className="arrow" onClick={() => lookStep(1)} disabled={lookAt === 'end'} aria-label="Next screenshot">›</button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="look__scroller" data-ui={lookTheme} ref={lookRef} onScroll={syncLook}>
-              {data.closerLook.items.map((item) => (
-                <figure className="look__item" key={item.image}>
-                  <Shot cs={data} id={item.image} />
-                  <figcaption className="look__cap">{item.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
-            {data.closerLook.items.length > 1 && (
-              <div className="look__dots" role="tablist" aria-label="Screenshot">
-                {data.closerLook.items.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="look__dot"
-                    aria-label={`Go to screenshot ${i + 1} of ${data.closerLook!.items.length}`}
-                    aria-current={i === lookIdx}
-                    onClick={() => lookGoTo(i)}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* ---- 4 · flagship feature ---- */}
-        {data.flagship && (
-          <section className="section" id="cs-feature" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
-              <div className="feat">
-                <div>
-                  <p className="eyebrow">{data.flagship.eyebrow}</p>
-                  <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.flagship.headline}</h2>
-                  <p className="lead">{rich(data.flagship.lead)}</p>
-                  <div className="stats-row">
-                    {data.flagship.stats.map((s) => (
-                      <div className="stat" key={s.label}>
-                        <div className="num">{s.num}</div>
-                        <div className="lbl">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {data.flagship.modal && (
-                    <div className="row-cta">
-                      <button className="tlink" onClick={() => setModal(data.flagship!.modal!)}>
-                        See how it works
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="feat__media">
-                  <Shot cs={data} id={data.flagship.image} />
-                </div>
-              </div>
-              {data.flagship.diagrams && data.flagship.diagrams.length > 0 && (
-                <div className="figstack figstack--flag">
-                  {data.flagship.diagrams.map((f) => (
-                    <FigureBlock key={f.title} item={f} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 4a · explainer: structured content in plain words ---- */}
-        {data.explainer && data.explainer.groups.length > 0 && data.explainer.groups[0].people.length > 0 && (
-          <section className="section section--gray" id="cs-explainer" data-cs-section data-cs-anchor={data.explainer.eyebrow} style={{ scrollMarginTop: 64 }}>
-            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
-              <p className="eyebrow center">{data.explainer.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
-                {data.explainer.headline}
-              </h2>
-              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
-                {rich(data.explainer.lead)}
-              </p>
-              {data.explainer.analogy && <p className="dx__analogy">{rich(data.explainer.analogy)}</p>}
-              <DitaExplainer x={data.explainer} />
-              {data.explainer.glossary && data.explainer.glossary.length > 0 && (
-                <dl className="dx__gloss">
-                  {data.explainer.glossary.map((g) => (
-                    <div key={g.term}>
-                      <dt>{g.term}</dt>
-                      <dd>{rich(g.plain)}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-              {data.explainer.footnote && <p className="wt__note wt__note--foot">{rich(data.explainer.footnote)}</p>}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 4b · walkthrough: one real task, onboarding → sharing ---- */}
-        {data.walkthrough && data.walkthrough.stages.length > 0 && (
-          <section className="section" id="cs-walkthrough" data-cs-section data-cs-anchor="The worked example" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow center">{data.walkthrough.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 10px' }}>
-                {data.walkthrough.headline}
-              </h2>
-              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>
-                {rich(data.walkthrough.lead)}
-              </p>
-
-              {data.walkthrough.scenario && (
-                <p className="wt__scenario">{rich(data.walkthrough.scenario)}</p>
-              )}
-
-              {data.walkthrough.method && (
-                <div className="wt__block" id="cs-wt-jobs" data-cs-anchor="Jobs & process" style={{ scrollMarginTop: 72 }}>
-                  <h3 className="wt__collapse-h">{data.walkthrough.method.title}</h3>
-                  {data.walkthrough.method.lead && (
-                    <p className="wt__block-lead">{rich(data.walkthrough.method.lead)}</p>
-                  )}
-                  <div className="jtbd">
-                    {data.walkthrough.method.jobs.map((j) => {
-                      const lane = (data.walkthrough!.actors ?? []).indexOf(j.actor)
-                      return (
-                        <article className="jtbd__card" key={j.actor} data-lane={lane >= 0 ? lane : undefined}>
-                          <p className="jtbd__actor">{j.actor}</p>
-                          <p className="jtbd__story">
-                            <span className="jtbd__k">When</span> {j.when}
-                            <br />
-                            <span className="jtbd__k">I want to</span> {j.want}
-                            <br />
-                            <span className="jtbd__k">so I can</span> {j.so}
-                          </p>
-                        </article>
-                      )
-                    })}
-                  </div>
-                  <ol className="mchain" aria-label="Process used">
-                    {data.walkthrough.method.steps.map((m, i) => (
-                      <li className="mchain__step" key={m.title}>
-                        <span className="mchain__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                        <h4>{m.title}</h4>
-                        <p>{rich(m.body)}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              {data.walkthrough.screens && data.walkthrough.screens.items.length > 0 && (
-                <div className="wt__block" id="cs-wt-screens" data-cs-anchor="Journey in screens" style={{ scrollMarginTop: 72 }}>
-                  <h3 className="wt__collapse-h">{data.walkthrough.screens.title}</h3>
-                  {data.walkthrough.screens.lead && (
-                    <p className="wt__block-lead">{rich(data.walkthrough.screens.lead)}</p>
-                  )}
-                  <ScreenFlow items={data.walkthrough.screens.items} />
-                  <p className="jf__hint" aria-hidden="true">Scroll sideways to follow the path →</p>
-                </div>
-              )}
-
-              {data.walkthrough.lanes && (
-                <div className="wt__block" id="cs-wt-lanes" data-cs-anchor="Who does what" style={{ scrollMarginTop: 72 }}>
-                  {data.walkthrough.lanes.title && (
-                    <h3 className="wt__collapse-h">{data.walkthrough.lanes.title}</h3>
-                  )}
-                  <Swimlane lanes={data.walkthrough.lanes} actors={data.walkthrough.actors ?? []} />
-                  {data.walkthrough.lanes.caption && (
-                    <p className="wt__note">{rich(data.walkthrough.lanes.caption)}</p>
-                  )}
-                </div>
-              )}
-
-              {data.walkthrough.collapse && (
-                <div className="wt__collapse" id="cs-wt-fifty" data-cs-anchor={data.walkthrough.collapse.title} style={{ scrollMarginTop: 72 }}>
-                  <h3 className="wt__collapse-h">{data.walkthrough.collapse.title}</h3>
-                  <CollapseDiagram c={data.walkthrough.collapse} />
-                  {data.walkthrough.collapse.caption && (
-                    <p className="wt__note">{rich(data.walkthrough.collapse.caption)}</p>
-                  )}
-                </div>
-              )}
-
-              <h3 className="wt__collapse-h wt__rail-h" id="cs-wt-stages" data-cs-anchor="Stage by stage" style={{ scrollMarginTop: 72 }}>
-                Stage by stage
-              </h3>
-              <ol className="wt__rail">
-                {data.walkthrough.stages.map((s) => {
-                  const lane = Math.max(0, (data.walkthrough!.actors ?? []).indexOf(s.actor))
-                  return (
-                    <li className="wt__stage" key={s.no} data-lane={lane}>
-                      <span className="wt__no" aria-hidden="true">{s.no}</span>
-                      <div className="wt__body">
-                        <div className="wt__head">
-                          <h3>{s.title}</h3>
-                          <span className="wt__actor">{s.actor}</span>
-                        </div>
-                        <p>{rich(s.body)}</p>
-                        {s.atScale && (
-                          <p className="wt__scale">
-                            <span className="wt__scale-l">At 50</span>
-                            {rich(s.atScale)}
-                          </p>
-                        )}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ol>
-
-              {data.walkthrough.footnote && (
-                <p className="wt__note wt__note--foot">{rich(data.walkthrough.footnote)}</p>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 5 · impact bars ---- */}
-        {data.impact && (
-          <section className="section section--dark" id="cs-impact" data-cs-section style={{ scrollMarginTop: 64 }}>
-            {/* No .reveal here: this is the only dark section, so content that
-                fails to un-hide reads as a solid black screen. The text is
-                always visible; only the bar fills animate in. */}
-            <div className={`wrap${impactOn ? ' is-animated' : ''}`}>
-              <p className="eyebrow">{data.impact.eyebrow}</p>
-              <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.impact.headline}</h2>
-              {data.impact.note && <p className="lead" style={{ maxWidth: '68ch' }}>{rich(data.impact.note)}</p>}
-              <div className="bars">
-                {data.impact.bars.map((b) => (
-                  <div className="bar" key={b.label}>
-                    <div className="bar__top">
-                      <b>{b.label}</b>
-                      <span>
-                        <span style={{ color: '#a1a1a6' }}>{b.before}&nbsp;→&nbsp;</span>
-                        <span className="delta">{b.after}</span>
-                      </span>
-                    </div>
-                    <div className="bar__track">
-                      <div className="bar__before" style={{ '--b': `${b.beforePct}%` } as React.CSSProperties} />
-                      <div className="bar__after" style={{ '--a': `${b.afterPct}%` } as React.CSSProperties} />
-                    </div>
-                  </div>
-                ))}
-                <div className="bar__legend">
-                  <span><i className="dot dot--b" />Before</span>
-                  <span><i className="dot dot--a" />After</span>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 6 · metrics band ---- */}
-        {data.metrics && data.metrics.length > 0 && (
-          <section className="section" id="cs-metrics" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
-              <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto' }}>
-                A project in {COUNT_WORDS[data.metrics.length] ?? data.metrics.length} numbers.
-              </h2>
-              <div className="metrics">
-                {data.metrics.map((m) => (
-                  <div className="metric" key={m.label}>
-                    <div className="m-num">{m.num}</div>
-                    <div className="m-lbl">{m.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 7 · design system ---- */}
-        {data.designSystem && (
-          <section className="section section--gray" id="cs-system" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.designSystem.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.designSystem.headline}</h2>
-              {data.designSystem.lead && <p className="lead">{rich(data.designSystem.lead)}</p>}
-              <div className="trio">
-                {data.designSystem.cards.map((c) => (
-                  <div className="trio__card" key={c.title}>
-                    {c.image && (
-                      <div className="fig">
-                        <Shot cs={data} id={c.image} />
-                      </div>
-                    )}
-                    <h3>{c.title}</h3>
-                    <p>{rich(c.body)}</p>
-                  </div>
-                ))}
-              </div>
-              {data.designSystem.modal && (
-                <div className="row-cta">
-                  <button className="tlink" onClick={() => setModal(data.designSystem!.modal!)}>
-                    Explore the system
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 8 · AI / intelligence layer ---- */}
-        {data.aiLayer && (
-          <section className="section section--dark" id="cs-ai" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.aiLayer.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 22 }}>{data.aiLayer.headline}</h2>
-              {data.aiLayer.lead && <p className="lead">{rich(data.aiLayer.lead)}</p>}
-              <div className="cards3">
-                {data.aiLayer.cards.map((c) => (
-                  <article className="icard" key={c.title}>
-                    {c.image && (
-                      <div className="fig">
-                        <Shot cs={data} id={c.image} />
-                      </div>
-                    )}
-                    <div className="icard__txt">
-                      <h3>{c.title}</h3>
-                      <p>{rich(c.body)}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9 · process ---- */}
-        {data.process && (
-          <section className="section section--gray" id="cs-process" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.process.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 20 }}>{data.process.headline}</h2>
-              <p className="lead">{rich(data.process.lead)}</p>
-              <div className="steps">
-                {data.process.steps.map((s) => (
-                  <div className="step" key={s.no}>
-                    <div className="no">{s.no}</div>
-                    <div>
-                      <h3>{s.title}</h3>
-                      <p>{rich(s.body)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {data.process.modal && (
-                <div className="row-cta">
-                  <button className="tlink" onClick={() => setModal(data.process!.modal!)}>
-                    See the process in detail
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9b · research: tracks, snippets, convergence ---- */}
-        {data.research && (
-          <section className="section" id="cs-research" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.research.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.research.headline}</h2>
-              {data.research.lead && <p className="lead">{rich(data.research.lead)}</p>}
-              {data.research.groups.map((g) => (
-                <div key={g.label} className="rgroup">
-                  <p className="sublabel">{g.label}</p>
-                  <div className="snips">
-                    {g.snips.map((s, i) => (
-                      <div className="snip" key={i}>
-                        <p>{rich(s.body)}</p>
-                        <cite>{s.cite}</cite>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {data.research.converge && (
-                <div className="rgroup">
-                  <p className="sublabel">Where the tracks met</p>
-                  <div className="converge">
-                    {data.research.converge.tracks.map((t) => (
-                      <div key={t.title}>
-                        <h3>{t.title}</h3>
-                        <p className="n">{t.count}</p>
-                        <div className="themes">
-                          {t.themes.map((th) => (
-                            <span key={th.label} className={th.shared ? 'theme is-shared' : 'theme'}>{th.label}</span>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="lead" style={{ marginTop: 32 }}>{rich(data.research.converge.conclusion)}</p>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9c · hypotheses ---- */}
-        {data.hypotheses && (
-          <section className="section section--gray" id="cs-hypotheses" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.hypotheses.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.hypotheses.headline}</h2>
-              {data.hypotheses.lead && <p className="lead">{rich(data.hypotheses.lead)}</p>}
-              <div className="hyp">
-                {data.hypotheses.items.map((h) => (
-                  <article className="hypo" key={h.title}>
-                    <h3>
-                      {h.emphasis ? (
-                        <>
-                          {h.title.split(h.emphasis)[0]}
-                          <em>{h.emphasis}</em>
-                          {h.title.split(h.emphasis)[1]}
-                        </>
-                      ) : (
-                        h.title
-                      )}
-                    </h3>
-                    <p>{h.body}</p>
-                    <div className="scale">
-                      {h.rungs.map((r, i) => (
-                        <div className="rung" key={r}>
-                          <b>{String(i + 1).padStart(2, '0')}</b>
-                          {r}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="scale-ends">
-                      <span>{h.scaleStart}</span>
-                      <span>{h.scaleEnd}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9d · principles ---- */}
-        {data.principles && (
-          <section className="section" id="cs-principles" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.principles.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.principles.headline}</h2>
-              {data.principles.lead && <p className="lead">{rich(data.principles.lead)}</p>}
-              <div className="prins">
-                {data.principles.items.map((p) => (
-                  <div className="prin" key={p.key} style={{ borderTopColor: p.colour }}>
-                    <h3>{p.name}</h3>
-                    <p className="cat">{p.cat}</p>
-                    <p>{p.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9e · the framework wheel (interactive) ---- */}
-        {data.wheel && data.principles && (
-          <section className="section section--gray" id="cs-wheel" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.wheel.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.wheel.headline}</h2>
-              {data.wheel.lead.map((l, i) => (
-                <p className="lead" key={i} style={i > 0 ? { marginTop: 16 } : undefined}>{rich(l)}</p>
-              ))}
-              <FrameworkWheel principles={data.principles.items} levelNames={data.wheel.levelNames} hint={data.wheel.hint} />
-              {data.wheel.image && (
-                <figure className="csfig">
-                  <Shot cs={data} id={data.wheel.image} />
-                  {data.wheel.imageCaption && <figcaption>{data.wheel.imageCaption}</figcaption>}
-                </figure>
-              )}
-              {data.wheel.footnote && <p className="cmp__note">{data.wheel.footnote}</p>}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9f · matrix (a journey read through the framework) ---- */}
-        {data.matrix && (
-          <section className="section" id="cs-matrix" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.matrix.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.matrix.headline}</h2>
-              {data.matrix.lead && <p className="lead">{rich(data.matrix.lead)}</p>}
-              {data.matrix.image && (
-                <figure className="csfig">
-                  <Shot cs={data} id={data.matrix.image} />
-                  {data.matrix.imageCaption && <figcaption>{data.matrix.imageCaption}</figcaption>}
-                </figure>
-              )}
-              <div className="jscroll" role="region" aria-label={data.matrix.headline} tabIndex={0}>
-                <table className="jtable">
-                  <thead>
-                    <tr>
-                      {data.matrix.columns.map((c) => (
-                        <th key={c} scope="col">{c}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.matrix.rows.map((r) => (
-                      <tr key={r.label} className={r.hot ? 'hot' : undefined}>
-                        <th scope="row">{r.label}</th>
-                        {r.cells.map((c, i) => (
-                          <td key={i}>{rich(c)}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {data.matrix.footnote && <p className="cmp__note">{data.matrix.footnote}</p>}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9g · decisions ---- */}
-        {data.decisions && (
-          <section className="section section--gray" id="cs-decisions" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow">{data.decisions.eyebrow}</p>
-              <h2 className="h-sub" style={{ marginBottom: 18 }}>{data.decisions.headline}</h2>
-              {data.decisions.lead && <p className="lead">{rich(data.decisions.lead)}</p>}
-              <ul className="decisions">
-                {data.decisions.items.map((d) => (
-                  <li className="decision" key={d.title}>
-                    <h3>{d.title}</h3>
-                    <dl>
-                      <div><dt>Chose</dt><dd>{d.chose}</dd></div>
-                      <div><dt>Instead of</dt><dd>{d.instead}</dd></div>
-                      <div><dt>Cost</dt><dd className="cost">{d.cost}</dd></div>
-                    </dl>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 9h · outcome (dark band) ---- */}
-        {data.outcome && (
-          <section className="section section--dark" id="cs-outcome" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap">
-              <p className="eyebrow">{data.outcome.eyebrow}</p>
-              <h2 className="h-sect" style={{ maxWidth: '16ch' }}>{data.outcome.headline}</h2>
-              <p className="claim">{data.outcome.claim}</p>
-              <div className="nums">
-                {data.outcome.nums.map((n) => (
-                  <div className="num" key={n.label}>
-                    <b>{n.num}</b>
-                    <span>{n.label}</span>
-                  </div>
-                ))}
-              </div>
-              {data.outcome.footnote && <p className="onote">{data.outcome.footnote}</p>}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 10 · key interactions ---- */}
-        {data.interactions && (
-          <section className="section" id="cs-interactions" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
-              <p className="eyebrow center">{data.interactions.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '20ch', margin: '0 auto 8px' }}>{data.interactions.headline}</h2>
-              <div className="cards3">
-                {data.interactions.cards.map((c) => (
-                  <article className="icard" key={c.title}>
-                    {c.image && (
-                      <div className="fig">
-                        <Shot cs={data} id={c.image} />
-                      </div>
-                    )}
-                    <div className="icard__txt">
-                      <h3>{c.title}</h3>
-                      <p>{rich(c.body)}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              {data.interactions.signatureFlow && data.interactions.signatureFlow.length > 0 && (
-                <div className="sigflow reveal" aria-label="Signature interaction, step by step">
-                  {data.interactions.signatureFlow.map((step, i) => (
-                    <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      <span className="sigflow__step">
-                        <span className="sigflow__no">{i + 1}</span>
-                        {step}
-                      </span>
-                      {i < data.interactions!.signatureFlow!.length - 1 && <span className="sigflow__arrow">›</span>}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 10b · gamification: Octalysis octagon + leaned-in / refused ---- */}
-        {data.gamification && data.gamification.drives.length >= 8 && (
-          <section className="section section--gray" id="cs-gamification" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow center">{data.gamification.eyebrow}</p>
-              <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto 8px' }}>{data.gamification.headline}</h2>
-              <p className="lead center" style={{ maxWidth: '64ch', margin: '0 auto' }}>{rich(data.gamification.lead)}</p>
-              {data.gamification.framework && <p className="octa__attr center">{data.gamification.framework}</p>}
-              <div className="octa__grid">
-                <div className="octa__viz">
-                  <Octagon drives={data.gamification.drives} />
-                  <div className="octa__legend">
-                    <span className="octa__key"><i className="octa__swatch octa__swatch--on" />Leaned in</span>
-                    <span className="octa__key"><i className="octa__swatch octa__swatch--off" />Refused</span>
-                  </div>
-                </div>
-                <div className="octa__cols">
-                  <div className="octa__col">
-                    <h3 className="octa__col-h octa__col-h--on">Leaned into</h3>
-                    <ul>
-                      {data.gamification.drives.filter((d) => d.used).map((d) => (
-                        <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="octa__col">
-                    <h3 className="octa__col-h octa__col-h--off">Deliberately refused</h3>
-                    <ul>
-                      {data.gamification.drives.filter((d) => !d.used).map((d) => (
-                        <li key={d.name}><b>{d.name}</b><span>{d.note}</span></li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              {data.gamification.caption && <p className="octa__caption center">{rich(data.gamification.caption)}</p>}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 11 · capabilities: comparison matrix or icon grid ---- */}
-        {data.capabilities?.type === 'comparison' && (
-          <section className="section section--gray" id="cs-capabilities" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <p className="eyebrow center">How it compares</p>
-              <h2 className="h-sect center" style={{ maxWidth: '15ch', margin: '0 auto 10px' }}>{data.capabilities.headline}</h2>
-              <div className="cmp" role="region" aria-label="Feature comparison" tabIndex={0}>
-                <table className="cmp__table">
-                  <caption className="visually-hidden">
-                    Feature comparison: {data.capabilities.competitors[0]} versus {data.capabilities.competitors.slice(1).join(', ')}
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col" className="cmp__feat-h"><span className="visually-hidden">Capability</span></th>
-                      {data.capabilities.competitors.map((c, i) => (
-                        <th scope="col" key={c} className={i === 0 ? 'cmp__col cmp__col--us' : 'cmp__col'}>{c}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.capabilities.rows.map((row) => (
-                      <tr key={row.feature}>
-                        <th scope="row" className="cmp__feat">{row.feature}</th>
-                        {row.values.map((v, i) => (
-                          <td key={i} className={i === 0 ? 'cmp__cell cmp__cell--us' : undefined}>
-                            <Mark value={v} />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {data.capabilities.note && <p className="cmp__note">{data.capabilities.note}</p>}
-            </div>
-          </section>
-        )}
-        {data.capabilities?.type === 'grid' && (
-          <section className="section section--gray" id="cs-capabilities" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              {data.capabilities.headline && (
-                <h2 className="h-sect center" style={{ maxWidth: '18ch', margin: '0 auto' }}>{data.capabilities.headline}</h2>
-              )}
-              <div className="caps">
-                {data.capabilities.items.map((item) => (
-                  <div className="cap" key={item.title}>
-                    <h3>{item.title}</h3>
-                    <p>{rich(item.body)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 12 · tech & handoff ---- */}
-        {data.techHandoff && (
-          <section className="section" id="cs-tech" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <div className="feat">
-                <div>
-                  <p className="eyebrow">{data.techHandoff.eyebrow}</p>
-                  <h2 className="h-sub" style={{ marginBottom: 20 }}>{data.techHandoff.headline}</h2>
-                  <p className="body" style={{ maxWidth: '52ch' }}>{rich(data.techHandoff.body)}</p>
-                  {data.techHandoff.compliance && data.techHandoff.compliance.length > 0 && (
-                    <div className="role__chips">
-                      {data.techHandoff.compliance.map((c) => (
-                        <span className="role__chip" key={c}>{c}</span>
-                      ))}
-                    </div>
-                  )}
-                  {data.techHandoff.modal && (
-                    <div className="row-cta">
-                      <button className="tlink" onClick={() => setModal(data.techHandoff!.modal!)}>
-                        DRM &amp; compliance, in detail
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="feat__media">
-                  <div className="trio" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 0, gap: 16 }}>
-                    {data.techHandoff.items.map((item) => (
-                      <div className="trio__card" style={{ padding: 22 }} key={item.title}>
-                        <h3 style={{ fontSize: 18 }}>{item.title}</h3>
-                        <p>{rich(item.body)}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ---- 13 · my role ---- */}
-        {data.role && (
-          <section className="section section--gray" id="cs-role" data-cs-section style={{ scrollMarginTop: 64 }}>
-            <div className="wrap reveal">
-              <h2 className="h-sect" style={{ marginBottom: 8 }}>My role.</h2>
-              <div className="role">
-                <div className="role__card">
-                  <div className="k">Role</div>
-                  <p>{data.role.role}<span className="sub">{data.role.ownership}</span></p>
-                </div>
-                <div className="role__card">
-                  <div className="k">Timeline</div>
-                  <p>{data.role.timeline}<span className="sub">{data.meta.status}</span></p>
-                </div>
-                <div className="role__card">
-                  <div className="k">Team</div>
-                  <p style={{ fontSize: 'clamp(16px,2vw,19px)' }}>{data.role.team}</p>
-                </div>
-                <div className="role__card">
-                  <div className="k">Tools</div>
-                  <p>{data.role.tools.join(' · ')}</p>
-                </div>
-              </div>
-              {data.role.responsibilities.length > 0 && (
-                <div className="role__chips">
-                  {data.role.responsibilities.map((r) => (
-                    <span className="role__chip" key={r} style={{ background: '#fff' }}>{r}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ---- 14 · keep exploring ---- */}
-        {related.length > 0 && (
-          <section className="section" id="cs-more" style={{ scrollMarginTop: 64 }}>
-            <div className="wrap--wide reveal" style={{ margin: '0 auto' }}>
-              <h2 className="h-sect" style={{ marginBottom: 8 }}>Keep exploring.</h2>
-              <div className="work">
-                {related.map((p) => (
-                  <button className="tile" key={p.id} onClick={() => onNavigate?.(p.id)}>
-                    <span className="k">{p.sub}</span>
-                    <h3>{p.label}</h3>
-                    <p>{p.desc}</p>
-                    <span className="go">View case study ›</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {(data.order ?? DEFAULT_ORDER).map((key) => (
+          <Fragment key={key}>{sections[key]?.()}</Fragment>
+        ))}
       </main>
 
       <TrailBand flip />
