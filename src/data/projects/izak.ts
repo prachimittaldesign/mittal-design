@@ -42,10 +42,13 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
     'designSystem',
     'ia',
     'walkthrough',
+    'cards:onboarding',
+    'cards:spacesflow',
     'rounds',
     'matrix',
     'table:alignment',
     'cards:dashboard',
+    'cards:devicectl',
     'interactions',
     'cards:agentic',
     'aiLayer',
@@ -96,7 +99,7 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
     tagline:
       'Come home to intelligence: a smart home run from the screen the whole household shares, with software updates that reach every device at once.',
     cta: { label: '', url: '' },
-    image: 'IZAK_hero_01',
+    image: 'IZAK_scr_dashboard',
   },
 
   snapshot: {
@@ -414,6 +417,39 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
   },
 
   cardSets: {
+    onboarding: {
+      tone: 'gray',
+      eyebrow: 'User flows · the real screens',
+      headline: 'Onboarding, as designed.',
+      lead:
+        'The final onboarding runs in five steps, and every one keeps typing off the remote: **the TV shows a QR code, and the phone does the writing.**',
+      cards: [
+        { title: '1/5 · Sign up by QR', body: 'Scan to sign up on the phone, or use the form, with Apple, Facebook and Google sign-in as shortcuts.', image: 'IZAK_scr_onboard21' },
+        { title: 'Inline validation', body: 'Password rules check as you type, so errors never reach the next screen.', image: 'IZAK_scr_onboard24' },
+        { title: '2/5 · Personal details', body: 'Name, date of birth and address, with the same QR route to the phone.', image: 'IZAK_scr_onboard22' },
+        { title: '3/5 · Add your spaces', body: 'Predefined areas to start from, so the home has a shape before any device arrives.', image: 'IZAK_scr_onboard11' },
+        { title: '4/5 · Watch for new devices', body: 'The household chooses whether iZak scans for devices automatically or adds them by hand.', image: 'IZAK_scr_onboard12' },
+        { title: '5/5 · Devices found', body: 'Three devices already detected and ready to configure, so the first dashboard is never empty.', image: 'IZAK_scr_onboard13' },
+      ],
+    },
+    spacesflow: {
+      eyebrow: 'Spaces · the real screens',
+      headline: 'Making a space.',
+      cards: [
+        { title: 'Name it', body: 'Give the space a name, and add your own photo by scanning a QR code with the phone.', image: 'IZAK_scr_onboard27' },
+        { title: 'Assign its devices', body: 'Pick the devices that live there, filtered by type, and the floor it sits on.', image: 'IZAK_scr_spaces1' },
+        { title: 'Confirmed', body: 'The new space appears with its devices, ready to control as one.', image: 'IZAK_scr_spaces1b' },
+      ],
+    },
+    devicectl: {
+      tone: 'gray',
+      eyebrow: 'Device control · the real screens',
+      headline: 'One device, from the couch.',
+      cards: [
+        { title: 'Direct control', body: 'Blinds set by preset or by step, with large targets a remote reaches in a press or two.', image: 'IZAK_scr_blinds' },
+        { title: 'A new device, with an update waiting', body: 'Rename it, add it to a space, and see at once that a newer version is available.', image: 'IZAK_scr_newdevice' },
+      ],
+    },
     agentic: {
       tone: 'dark',
       eyebrow: 'Agentic behaviour',
@@ -569,10 +605,10 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
       {
         title: 'Devices',
         body: 'Filter by type or maker, control any device directly, or switch the whole home on or off, with its version history one step away.',
-        image: 'IZAK_model_01',
+        image: 'IZAK_scr_filter',
       },
-      { title: 'Spaces', body: 'Floors, groups and rooms all at once, each controllable as one, instead of one space visible at a time.' },
-      { title: 'Playbooks', body: 'Running, available, and offered by partners, filterable by type, provider and space.' },
+      { title: 'Spaces', body: 'Floors, groups and rooms all at once, each controllable as one, instead of one space visible at a time.', image: 'IZAK_scr_spaces' },
+      { title: 'Playbooks', body: 'Running, available, and offered by partners, filterable by type, provider and space.', image: 'IZAK_model_01' },
     ],
     modal: null,
   },
@@ -829,7 +865,7 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
         body: 'Rollouts across the home are visible from the couch, next to energy and safety, not buried in settings.',
         image: 'IZAK_update_01',
       },
-      { title: 'Every device carries its receipt', body: 'Firmware history and version detail on the phone’s device page, so “current” can be checked rather than assumed.' },
+      { title: 'Every device carries its receipt', body: 'Firmware history and version detail on the device page, so “current” can be checked rather than assumed.', image: 'IZAK_scr_blinds1' },
       { title: 'Rollouts never interrupt use', body: 'Quiet hours and in-use rules protect whatever the household is doing.' },
       {
         title: 'Failure is designed, not ignored',
@@ -1022,6 +1058,21 @@ export const IZAK_CASE_STUDY: RichCaseStudy = {
   // Every asset is an original illustration drawn for this portfolio — a
   // diagram of a concept, not a product screenshot. Screens arrive later.
   images: [
+    { id: 'IZAK_scr_dashboard', status: 'received', ext: 'jpg', feature: 'final TV home dashboard', alt: 'The final iZak TV dashboard: energy consumption, all devices, cameras, running playbooks and an Updating row showing firmware rollouts', caption: 'The final home dashboard.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_filter', status: 'received', ext: 'jpg', feature: 'devices grid with filters', alt: 'The Devices screen filtered by device type, with curtains, blinds, thermostat and light cards and a turn-all-on-or-off switch', caption: 'Devices, filtered by type.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_spaces', status: 'received', ext: 'jpg', feature: 'spaces overview', alt: 'The Spaces screen with floor and group filters and room cards for living room, bedroom, washroom and garage', caption: 'Spaces: floors, groups and rooms at once.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_blinds1', status: 'received', ext: 'jpg', feature: 'device detail with version history', alt: 'Blinds device detail: last used, the next scheduled playbook, warranty, IP and MAC address, with Version History and Update Device buttons', caption: 'The receipt: version history and update.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard21', status: 'received', ext: 'jpg', feature: 'sign up by QR', alt: 'Onboarding step 1 of 5: a QR code to sign up on the phone, beside an email, phone and password form', caption: 'Sign up by QR.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard24', status: 'received', ext: 'jpg', feature: 'inline password validation', alt: 'The sign-up form showing password rules checked inline as the user types', caption: 'Inline validation.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard22', status: 'received', ext: 'jpg', feature: 'personal details', alt: 'Onboarding step 2 of 5: personal details form beside a QR code to continue on the phone', caption: 'Personal details.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard11', status: 'received', ext: 'jpg', feature: 'add spaces', alt: 'Onboarding step 3 of 5: predefined spaces such as living room, studio and kid’s room, plus create new', caption: 'Add your spaces.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard12', status: 'received', ext: 'jpg', feature: 'device scanning opt-in', alt: 'Onboarding step 4 of 5: choosing whether iZak keeps an eye out for new devices automatically', caption: 'Watch for new devices.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard13', status: 'received', ext: 'jpg', feature: 'devices found', alt: 'Onboarding step 5 of 5: three devices found and ready to configure', caption: 'Devices found.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_onboard27', status: 'received', ext: 'jpg', feature: 'name a space', alt: 'A dialog to name a new space, with a QR code to add your own photo from the phone', caption: 'Name the space.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_spaces1', status: 'received', ext: 'jpg', feature: 'add new space', alt: 'Add New Space: name, photo, devices assigned by type, and the floor it belongs to', caption: 'Assign its devices.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_spaces1b', status: 'received', ext: 'jpg', feature: 'space created', alt: 'Confirmation that the new bedroom space has been created with its devices', caption: 'Space created.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_blinds', status: 'received', ext: 'jpg', feature: 'blinds control', alt: 'Blinds control with preset positions and up and down controls', caption: 'Direct control.', tags: ['screen', 'TV'] },
+    { id: 'IZAK_scr_newdevice', status: 'received', ext: 'jpg', feature: 'new device detail', alt: 'A new device detail screen with a new-update-available badge, rename and add-to-space options', caption: 'A new device, update waiting.', tags: ['screen', 'TV'] },
     { id: 'IZAK_hero_01', status: 'received', ext: 'svg', highlight: true, feature: 'TV-first smart home', alt: 'Illustration of a living room: a wall-mounted TV showing a dark home dashboard of eight cards, a sofa in front of it, and a phone showing the companion app', caption: 'The home, run from the shared screen.', tags: ['illustration', 'smart home', 'TV'] },
     { id: 'IZAK_broadcast_01', status: 'received', ext: 'svg', highlight: true, feature: 'broadcast vs per-device updates', alt: 'Diagram comparing two models: each device in a home fetching its own update from the internet, versus one broadcast tower reaching every home in range at once', caption: 'One device at a time, or every home at once.', tags: ['diagram', 'broadcast', 'OTA'] },
     { id: 'IZAK_blueprint_01', status: 'received', ext: 'svg', highlight: true, feature: 'service blueprint summary', alt: 'Service blueprint summary across journey stages from store to updates, with rows for effort, channels and actors; effort peaks at sign-in and at authoring automations', caption: 'The journey, its channels, its actors, and where effort peaks.', tags: ['service blueprint', 'journey', 'research'] },
